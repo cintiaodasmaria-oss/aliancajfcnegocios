@@ -151,17 +151,17 @@
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (depois de implantar como Web App)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
 
   let TOKEN = sessionStorage.getItem('jfc-token') || '';
 
   async function apiGet(action, extraParams) {
     const params = new URLSearchParams({ action, token: TOKEN, ...(extraParams || {}) });
-    const res = await fetch(`${https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec}?${params.toString()}`);
+    const res = await fetch(`${API_URL}?${params.toString()}`);
     return res.json();
   }
   async function apiPost(body) {
-    const res = await fetch(https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec, {
+    const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita preflight CORS no Apps Script
       body: JSON.stringify({ ...body, token: TOKEN })
