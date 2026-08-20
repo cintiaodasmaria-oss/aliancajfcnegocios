@@ -140,7 +140,7 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
   let TOKEN = sessionStorage.getItem('jfc-token') || '';
 
   document.getElementById('gate-btn').addEventListener('click', tryLogin);
@@ -149,7 +149,7 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
   async function tryLogin() {
     TOKEN = document.getElementById('gate-token').value.trim();
     try {
-      const res = await fetch(`${https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec}?action=list&token=${encodeURIComponent(TOKEN)}`);
+      const res = await fetch(`${API_URL}?action=list&token=${encodeURIComponent(TOKEN)}`);
       const data = await res.json();
       if (data.ok) {
         sessionStorage.setItem('jfc-token', TOKEN);
@@ -218,7 +218,7 @@ Responda APENAS com JSON válido: [{"titulo":"...","local":"...","preco":"...","
 Máximo ${cidadeInput ? 8 : 15} resultados reais. Se não encontrar, responda [].`;
 
     try {
-      const res = await fetch(https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec, {
+      const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'search', token: TOKEN, prompt })
