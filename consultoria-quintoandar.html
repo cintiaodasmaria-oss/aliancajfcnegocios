@@ -140,8 +140,22 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3lBxF9xG8xPhiffYv0sunED-KvOQ/exec";
   let TOKEN = sessionStorage.getItem('jfc-token') || '';
+
+  // JSONP: contorna o bloqueio de CORS do Apps Script fazendo a chamada via <script>.
+  function jsonp(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'jfc_cb_' + Math.random().toString(36).slice(2);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado ao contatar o backend.')); }, 15000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = (data) => { cleanup(); resolve(data); };
+      const script = document.createElement('script');
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('Falha ao carregar o backend. Verifique a API_URL.')); };
+      document.body.appendChild(script);
+    });
+  }
 
   document.getElementById('gate-btn').addEventListener('click', tryLogin);
   document.getElementById('gate-token').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
@@ -149,8 +163,7 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
   async function tryLogin() {
     TOKEN = document.getElementById('gate-token').value.trim();
     try {
-      const res = await fetch(`${API_URL}?action=list&token=${encodeURIComponent(TOKEN)}`);
-      const data = await res.json();
+      const data = await jsonp(`${API_URL}?action=list&token=${encodeURIComponent(TOKEN)}`);
       if (data.ok) {
         sessionStorage.setItem('jfc-token', TOKEN);
         document.getElementById('gate').classList.add('hidden');
@@ -218,12 +231,7 @@ Responda APENAS com JSON válido: [{"titulo":"...","local":"...","preco":"...","
 Máximo ${cidadeInput ? 8 : 15} resultados reais. Se não encontrar, responda [].`;
 
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'search', token: TOKEN, prompt })
-      });
-      const data = await res.json();
+      const data = await jsonp(`${API_URL}?action=search&token=${encodeURIComponent(TOKEN)}&prompt=${encodeURIComponent(prompt)}`);
       if (!data.ok) { statusLine.textContent = 'Erro: ' + data.error; return; }
 
       const cleaned = (data.text || '').replace(/```json|```/g, '').trim();
