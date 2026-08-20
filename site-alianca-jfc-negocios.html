@@ -198,7 +198,21 @@
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3lBxF9xG8xPhiffYv0sunED-KvOQ/exec";
+
+  // JSONP: contorna o bloqueio de CORS do Apps Script fazendo a chamada via <script>.
+  function jsonp(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'jfc_cb_' + Math.random().toString(36).slice(2);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado ao contatar o backend.')); }, 15000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = (data) => { cleanup(); resolve(data); };
+      const script = document.createElement('script');
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('Falha ao carregar o backend. Verifique a API_URL.')); };
+      document.body.appendChild(script);
+    });
+  }
 
   const tabs = {
     site: { btn: document.getElementById('tab-site'), view: document.getElementById('view-site') },
@@ -235,12 +249,7 @@
     };
     const msg = document.getElementById('form-msg');
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'addPublic', lead })
-      });
-      const data = await res.json();
+      const data = await jsonp(`${API_URL}?action=addPublic&lead=${encodeURIComponent(JSON.stringify(lead))}`);
       if (data.ok) {
         msg.textContent = 'Cadastro recebido — vou entrar em contato em breve.';
         e.target.reset();
@@ -258,8 +267,7 @@
     const empty = document.getElementById('empty-catalogo');
     grid.innerHTML = '<div class="empty-catalogo">Carregando…</div>';
     try {
-      const res = await fetch(`${API_URL}?action=listPublic`);
-      const data = await res.json();
+      const data = await jsonp(`${API_URL}?action=listPublic`);
       let items = data.ok ? data.data : [];
 
       const cidadeF = document.getElementById('ac-cidade').value.trim().toLowerCase();
