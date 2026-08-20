@@ -198,7 +198,7 @@
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
 
   const tabs = {
     site: { btn: document.getElementById('tab-site'), view: document.getElementById('view-site') },
@@ -235,7 +235,7 @@
     };
     const msg = document.getElementById('form-msg');
     try {
-      const res = await fetch(API_URL, {https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec
+      const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'addPublic', lead })
@@ -258,7 +258,7 @@
     const empty = document.getElementById('empty-catalogo');
     grid.innerHTML = '<div class="empty-catalogo">Carregando…</div>';
     try {
-      const res = await fetch(`${https://script.google.com/macros/s/AKfycbyRhaloKemSa0FRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec_URL}?action=listPublic`);
+      const res = await fetch(`${API_URL}?action=listPublic`);
       const data = await res.json();
       let items = data.ok ? data.data : [];
 
