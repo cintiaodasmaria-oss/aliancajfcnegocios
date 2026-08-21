@@ -3,171 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consultoria QuintoAndar — Cintia Odas</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Aliança JFC Negócios — Cintia Odas, Consultora Imobiliária</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --verde-profundo:#3D4A34; --verde-musgo:#5C6B4F; --pergaminho:#F1EDE2;
     --pergaminho-escuro:#E4DDC9; --latao:#A87A45; --grafite:#262620; --selo:#8B3A2F;
-    --serif:'Fraunces', Georgia, serif; --sans:'Inter', sans-serif; --mono:'IBM Plex Mono', monospace;
+    --serif:'Fraunces', Georgia, serif; --sans:'Inter', sans-serif; --mono:'IBM Plex Mono', 'Courier New', monospace;
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
   body{margin:0; background:var(--pergaminho); color:var(--grafite); font-family:var(--sans); line-height:1.55;}
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px clamp(20px,5vw,56px); border-bottom:1px solid var(--pergaminho-escuro);}
-  .brand{font-family:var(--serif); font-weight:600; font-size:1.1rem; color:var(--verde-profundo);}
-  .brand small{display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; color:var(--verde-musgo); font-weight:400;}
-  .navtabs{display:flex; gap:6px; background:var(--pergaminho-escuro); padding:4px; border-radius:999px;}
-  .navtabs button{border:none; background:transparent; cursor:pointer; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; padding:9px 16px; border-radius:999px; color:var(--verde-musgo);}
+  a{color:inherit;}
+  .nav{position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between; padding:14px clamp(20px,5vw,64px); background:rgba(241,237,226,0.94); backdrop-filter:blur(6px); border-bottom:1px solid var(--pergaminho-escuro); flex-wrap:wrap; gap:12px;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand svg{width:38px; height:38px;}
+  .brand .word{font-family:var(--serif); font-weight:600; font-size:1.1rem;}
+  .brand .word small{display:block; font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; color:var(--verde-musgo); font-weight:400;}
+  .navtabs{display:flex; gap:4px; background:var(--pergaminho-escuro); padding:4px; border-radius:999px;}
+  .navtabs button{border:none; background:transparent; cursor:pointer; font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; padding:8px 15px; border-radius:999px; color:var(--verde-musgo);}
   .navtabs button.active{background:var(--verde-profundo); color:var(--pergaminho);}
-  main{max-width:1080px; margin:0 auto; padding:36px clamp(20px,5vw,56px) 80px;}
-  h2{font-family:var(--serif); color:var(--verde-profundo); font-size:1.5rem; margin-top:0;}
-  .disclaimer{background:#fff8ea; border:1px solid var(--latao); border-radius:6px; padding:14px 18px; font-size:.84rem; margin-bottom:28px;}
-  .disclaimer b{color:var(--selo);}
-  .search-box{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:24px; display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;}
-  .field{display:flex; flex-direction:column; gap:6px;}
-  .field label{font-family:var(--mono); font-size:.66rem; text-transform:uppercase; color:var(--verde-musgo);}
-  .field input, .field select{font-family:var(--sans); padding:10px 12px; border:1.4px solid var(--pergaminho-escuro); border-radius:4px; background:var(--pergaminho); min-width:160px;}
-  .btn{font-family:var(--mono); font-size:.78rem; text-transform:uppercase; padding:12px 22px; border-radius:4px; border:1.4px solid var(--verde-profundo); background:var(--verde-profundo); color:var(--pergaminho); cursor:pointer;}
-  .btn:hover{background:var(--verde-musgo);}
-  .btn:disabled{opacity:.6;}
-  .status-line{margin-top:18px; font-family:var(--mono); font-size:.8rem; color:var(--verde-musgo);}
-  .results{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
-  .lead-item{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:18px;}
-  .lead-item .top{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .lead-item h4{margin:0; font-family:var(--serif); color:var(--verde-profundo); font-size:1.05rem;}
-  .lead-item .plataforma{font-family:var(--mono); font-size:.66rem; text-transform:uppercase; background:var(--pergaminho-escuro); color:var(--verde-musgo); padding:3px 9px; border-radius:999px;}
-  .lead-item .meta{font-size:.84rem; color:#4a4a3e; margin-top:4px;}
-  .lead-item a.btn-link{font-family:var(--mono); font-size:.72rem; color:var(--verde-profundo); border-bottom:1px solid var(--latao); text-decoration:none;}
-  .stage{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:24px; margin-bottom:20px;}
-  .stage .tag{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--latao);}
-  .stage h3{font-family:var(--serif); color:var(--verde-profundo); margin:.3em 0 .6em; font-size:1.2rem;}
-  .stage .texto{white-space:pre-wrap; font-size:.92rem; background:var(--pergaminho); border:1px dashed var(--pergaminho-escuro); border-radius:4px; padding:14px; line-height:1.6;}
-  .copy-btn{margin-top:10px; font-family:var(--mono); font-size:.7rem; background:none; border:1px solid var(--verde-profundo); color:var(--verde-profundo); padding:6px 12px; border-radius:4px; cursor:pointer;}
-  .gate{max-width:420px; margin:80px auto; text-align:center;}
-  .gate input{width:100%; text-align:center; padding:14px; font-family:var(--mono); border:1.4px solid var(--pergaminho-escuro); border-radius:4px; margin-bottom:12px;}
-  .error-msg{color:var(--selo); font-family:var(--mono); font-size:.8rem; margin-top:10px;}
-  .hidden{display:none !important;}
+  section{padding:clamp(40px,7vw,90px) clamp(20px,5vw,64px);}
+  h2.section-title{font-family:var(--serif); color:var(--verde-profundo); font-size:1.6rem; margin-top:0;}
+  .hero{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center; max-width:1180px; margin:0 auto;}
+  @media (max-width:860px){ .hero{grid-template-columns:1fr;} }
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--selo);}
+  .hero h1{font-family:var(--serif); font-weight:600; font-size:clamp(2.2rem,4.4vw,3.4rem); line-height:1.08; margin:.5em 0 .4em; color:var(--verde-profundo);}
+  .hero p.lead{font-size:1.05rem; max-width:46ch; color:#3d3d33;}
+  .hero-ctas{display:flex; gap:14px; margin-top:28px; flex-wrap:wrap;}
+  .btn{font-family:var(--mono); font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; padding:14px 26px; border-radius:4px; border:1.4px solid var(--verde-profundo); cursor:pointer;}
+  .btn-solid{background:var(--verde-profundo); color:var(--pergaminho);}
+  .btn-solid:hover{background:var(--verde-musgo);}
+  .btn-ghost{background:transparent; color:var(--verde-profundo);}
+  .btn-sm{font-size:.68rem; padding:9px 16px;}
+  .ficha{position:relative; background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:30px 28px 26px; box-shadow:0 18px 40px -22px rgba(38,38,32,0.35);}
+  .ficha-row{display:flex; justify-content:space-between; border-bottom:1px dashed var(--pergaminho-escuro); padding:9px 0; font-size:.85rem;}
+  .ficha-row span:first-child{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--verde-musgo);}
+  .sobre{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:.7fr 1.3fr; gap:56px;}
+  @media (max-width:860px){ .sobre{grid-template-columns:1fr;} }
+  .creci-tag{display:inline-block; margin-top:18px; font-family:var(--mono); font-size:.72rem; background:var(--verde-profundo); color:var(--pergaminho); padding:6px 12px; border-radius:3px;}
+  .contato{max-width:760px; margin:0 auto; text-align:center;}
+  .form-ficha{text-align:left; margin-top:32px; background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:32px;}
+  .form-ficha .tag{font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--latao);}
+  .field{margin-top:16px; display:flex; flex-direction:column; gap:6px;}
+  .field label{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--verde-musgo);}
+  .field input, .field textarea, .field select{font-family:var(--sans); font-size:.92rem; padding:11px 12px; border:1.4px solid var(--pergaminho-escuro); border-radius:4px; background:var(--pergaminho);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  @media (max-width:560px){ .grid2,.grid4{grid-template-columns:1fr 1fr;} }
+  .checkgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px 14px; margin-top:6px;}
+  @media (max-width:700px){ .checkgrid{grid-template-columns:1fr 1fr;} }
+  .checkgrid label{display:flex; align-items:center; gap:6px; font-size:.84rem; text-transform:none;}
+  .form-msg{margin-top:14px; font-family:var(--mono); font-size:.78rem; color:var(--verde-profundo);}
+  footer{padding:32px clamp(20px,5vw,64px); text-align:center; font-family:var(--mono); font-size:.72rem; color:var(--verde-musgo); border-top:1px solid var(--pergaminho-escuro);}
 
-  /* seletor de estados */
-  .uf-field{position:relative;}
-  .uf-toggle{
-    font-family:var(--sans); font-size:.9rem; padding:10px 12px; border:1.4px solid var(--pergaminho-escuro);
-    border-radius:4px; background:var(--pergaminho); min-width:220px; cursor:pointer;
-    display:flex; align-items:center; gap:8px; text-align:left; color:var(--grafite);
-  }
-  .uf-toggle:hover{border-color:var(--verde-musgo);}
-  .uf-icon{font-size:1rem;}
-  .uf-panel{
-    position:absolute; top:calc(100% + 6px); left:0; z-index:30; width:340px;
-    background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px;
-    box-shadow:0 14px 30px -14px rgba(38,38,32,0.35); padding:14px;
-  }
-  .uf-panel-actions{display:flex; gap:8px; margin-bottom:10px;}
-  .uf-panel-actions button{
-    font-family:var(--mono); font-size:.66rem; text-transform:uppercase; background:none;
-    border:1px solid var(--verde-profundo); color:var(--verde-profundo); padding:5px 10px; border-radius:4px; cursor:pointer;
-  }
-  .uf-panel-actions button:hover{background:var(--pergaminho-escuro);}
-  .uf-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px 10px; max-height:260px; overflow-y:auto;}
-  .uf-grid label{display:flex; align-items:center; gap:6px; font-size:.78rem; cursor:pointer;}
-  .uf-grid input{width:auto;}
+  .catalogo{max-width:1180px; margin:0 auto;}
+  .filtros{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:20px 24px; display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-top:24px;}
+  .grid-anuncios{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; margin-top:28px;}
+  .imovel-card{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; overflow:hidden; display:flex; flex-direction:column;}
+  .imovel-foto{width:100%; height:170px; background:var(--pergaminho-escuro) center/cover no-repeat; display:flex; align-items:center; justify-content:center; color:var(--verde-musgo); font-family:var(--mono); font-size:.7rem; text-transform:uppercase; position:relative;}
+  .imovel-body{padding:16px 18px; flex:1; display:flex; flex-direction:column;}
+  .imovel-badge{align-self:flex-start; font-family:var(--mono); font-size:.62rem; text-transform:uppercase; background:var(--verde-profundo); color:var(--pergaminho); padding:3px 9px; border-radius:999px; margin-bottom:8px;}
+  .imovel-titulo{font-family:var(--serif); font-size:1.1rem; color:var(--verde-profundo); margin:0 0 4px;}
+  .imovel-local{font-size:.82rem; color:#5b5b4e; margin-bottom:10px;}
+  .imovel-specs{display:flex; flex-wrap:wrap; gap:8px; font-family:var(--mono); font-size:.68rem; color:var(--verde-musgo); margin-bottom:12px;}
+  .imovel-specs span{background:var(--pergaminho); border:1px solid var(--pergaminho-escuro); padding:3px 8px; border-radius:4px;}
+  .imovel-valor{font-family:var(--serif); font-weight:600; font-size:1.15rem; color:var(--verde-profundo); margin-top:auto; margin-bottom:12px;}
+  .empty-catalogo{font-family:var(--mono); font-size:.84rem; color:var(--verde-musgo); padding:40px 0; text-align:center;}
+  .hidden{display:none !important;}
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <div class="brand">Consultoria QuintoAndar<small>CINTIA ODAS · CRECI-PF 122.970</small></div>
+  <div class="brand">
+    <svg viewBox="0 0 240 240" aria-hidden="true">
+      <circle cx="120" cy="120" r="112" fill="none" stroke="#A87A45" stroke-width="3" stroke-dasharray="4.2 5.8"/>
+      <circle cx="120" cy="120" r="100" fill="none" stroke="#A87A45" stroke-width="1.4"/>
+      <circle cx="120" cy="120" r="92" fill="#3D4A34"/>
+      <text x="120" y="146" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="72" font-weight="600" fill="#F1EDE2">JFC</text>
+    </svg>
+    <div class="word">Aliança JFC Negócios<small>CINTIA ODAS · CONSULTORA IMOBILIÁRIA</small></div>
+  </div>
+  <div class="navtabs">
+    <button id="tab-site" class="active">Site</button>
+    <button id="tab-anuncios">Anúncios</button>
+  </div>
 </nav>
 
-<div class="gate" id="gate">
-  <h2>Acesso da equipe</h2>
-  <p style="color:#5b5b4e; font-size:.9rem;">Digite a senha de acesso (a mesma do Painel).</p>
-  <input type="password" id="gate-token" placeholder="Senha de acesso">
-  <button class="btn" id="gate-btn" style="width:100%;">Entrar</button>
-  <div class="error-msg hidden" id="gate-error"></div>
-</div>
-
-<main id="app" class="hidden">
-  <div class="navtabs" style="margin-bottom:24px; display:inline-flex;">
-    <button id="tab-busca" class="active">Buscar anúncios</button>
-    <button id="tab-abordagem">Roteiro de abordagem</button>
-  </div>
-
-  <section id="view-busca">
-    <h2>Buscar anúncios de proprietários particulares</h2>
-    <div class="disclaimer">
-      <b>Como isso funciona:</b> a busca cobre plataformas onde qualquer pessoa pode anunciar (pago ou gratuito) — OLX, ZAP Imóveis, VivaReal, Imovelweb, Chaves na Mão, Facebook Marketplace, Mercado Livre — priorizando anúncios "particular" ou "direto com o proprietário". Não usa CPF, IPTU ou dado privado.
-    </div>
-    <div class="search-box">
-      <div class="field uf-field">
-        <label>Estados</label>
-        <button type="button" class="uf-toggle" id="uf-toggle"><span class="uf-icon">📍</span><span id="uf-summary">Todos os estados</span></button>
-        <div class="uf-panel hidden" id="uf-panel">
-          <div class="uf-panel-actions">
-            <button type="button" id="uf-all">Marcar todos</button>
-            <button type="button" id="uf-none">Limpar</button>
-          </div>
-          <div class="uf-grid" id="uf-grid"></div>
-        </div>
+<main id="view-site">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Assessoria imobiliária · São Paulo Capital e interior</div>
+      <h1>Cada imóvel tem uma ficha. Cada ficha merece ser conduzida por alguém.</h1>
+      <p class="lead">Sou a Cintia Odas, corretora desde 2010. Cuido do seu cadastro, da sua análise de viabilidade e da assinatura do contrato com atendimento humano — do início ao fim.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-solid" onclick="document.getElementById('contato').scrollIntoView()">Cadastrar meu imóvel</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('tab-anuncios').click()">Ver anúncios</button>
       </div>
-      <div class="field"><label>Bairro / Cidade</label><input id="bairro" placeholder="Opcional"></div>
-      <div class="field"><label>Tipo</label><select id="tipo"><option value="venda ou locação" selected>Venda e Locação</option><option value="venda">Só venda</option><option value="locação">Só locação</option></select></div>
-      <div class="field"><label>Tipo de imóvel</label><select id="imovel"><option value="qualquer">Qualquer</option><option value="apartamento">Apartamento</option><option value="casa">Casa</option><option value="cobertura">Cobertura</option><option value="terreno">Terreno</option></select></div>
-      <div class="field"><label>Dorm. (mín.)</label><input id="dorm-min" type="number" min="0"></div>
-      <div class="field"><label>Vagas (mín.)</label><input id="vagas-min" type="number" min="0"></div>
-      <div class="field"><label>Área mín. (m²)</label><input id="area-min" type="number" min="0"></div>
-      <div class="field"><label>Preço mín.</label><input id="preco-min" type="number" min="0"></div>
-      <div class="field"><label>Preço máx.</label><input id="preco-max" type="number" min="0"></div>
-      <button class="btn" id="btn-buscar">Buscar agora</button>
     </div>
-    <div class="status-line hidden" id="status-line"></div>
-    <div class="results" id="results"></div>
+    <div class="ficha">
+      <div class="ficha-row"><span>Consultora</span><span>Cintia Odas</span></div>
+      <div class="ficha-row"><span>CRECI-PF</span><span>122.970</span></div>
+      <div class="ficha-row"><span>Atuação</span><span>SP Capital · Interior</span></div>
+      <div class="ficha-row" style="border-bottom:none;"><span>Segmentos</span><span>Incorporação · Locação · Venda</span></div>
+    </div>
   </section>
 
-  <section id="view-abordagem" class="hidden">
-    <h2>Roteiro de abordagem — etapa por etapa</h2>
-    <div class="stage">
-      <span class="tag">Etapa 1 · Primeiro contato</span>
-      <h3>Quando você acabou de ver o anúncio particular</h3>
-      <div class="texto" id="txt-1">Bom dia [Nome], como vai? Sou a Cintia, corretora com CRECI 122.970, consultora parceira da QuintoAndar. Vi seu anúncio de aluguel do imóvel na [Rua/Bairro].
-
-Você sabia que o QuintoAndar registrou em outubro seu maior volume mensal da história? Foram 16,3 mil contratos de aluguel e 2,6 mil operações de compra e venda concluídas.
-
-Temos uma grande demanda de pessoas procurando imóvel no QuintoAndar: são cerca de 400 mil visitas agendadas por mês — ou seja, uma nova visita a cada 7 segundos.
-
-Com o auxílio da nossa equipe, os imóveis são alugados de 35% a 50% mais rápido, e todo o processo, da busca à assinatura do contrato, leva em média 30 dias.
-
-E além de agilidade, você também tem mais tranquilidade:
-*Análise jurídica: o contrato é por nossa conta, levantamos todas as certidões, fazemos aprovação de crédito e acompanhamos até a assinatura;
-*Pagamento garantido: o aluguel cai na sua conta todo dia 12, mesmo se o inquilino atrasar;
-*Proteção contra danos: se houver danos de responsabilidade do inquilino ao final do contrato e ele não pagar, o QuintoAndar cobre para você. Consulte condições.
-
-Que tal anunciar seu imóvel comigo? É simples, rápido e gratuito! Serei seu canal direto, sem robôs.
-
-[link do anúncio dela]</div>
-      <button class="copy-btn" onclick="copiar('txt-1', this)">Copiar texto</button>
+  <section class="sobre">
+    <div><h2 class="section-title">Sobre</h2><span class="creci-tag">ALIANÇA JFC NEGÓCIOS</span></div>
+    <div>
+      <p>Atuo no mercado imobiliário desde 2010, indo além da intermediação tradicional: meu foco é encontrar a oportunidade exata que faz sentido para cada cliente, seja investidor, construtora ou comprador residencial.</p>
+      <p>Trabalho com segurança jurídica e análise minuciosa de viabilidade — mapeando zoneamento, potencial construtivo e legislação para operações de incorporação, loteamento, galpões e prédios comerciais em São Paulo Capital e interior.</p>
     </div>
-    <div class="stage">
-      <span class="tag">Etapa 2 · Convencer a aprovar o cadastro</span>
-      <h3>Depois que o proprietário topou</h3>
-      <div class="texto" id="txt-2">[Nome], tudo certo! Já preenchi o pré-cadastro do seu imóvel na QuintoAndar. Agora falta só uma etapa, que é sua: a QuintoAndar vai te mandar um link oficial, direto do domínio quintoandar.com.br, pra você revisar e aprovar os dados.
+  </section>
 
-Esse link é gerado pela própria plataforma — é 100% seguro clicar. Assim que você aprovar, eu já entro em contato pra agendar a sessão de fotos.</div>
-      <button class="copy-btn" onclick="copiar('txt-2', this)">Copiar texto</button>
-    </div>
-    <div class="stage">
-      <span class="tag">Etapa 3 · Agendamento de fotos</span>
-      <h3>Depois do cadastro aprovado</h3>
-      <div class="texto" id="txt-3">Boa notícia, [Nome]! Seu cadastro foi aprovado. Agora é hora de agendar a sessão de fotos profissionais — sem custo pra você.
+  <section class="contato" id="contato">
+    <h2 class="section-title">Quero cadastrar meu imóvel</h2>
+    <p style="color:#3d3d33;">Preencha os dados abaixo. Eu entro em contato para dar sequência ao cadastro com você.</p>
+    <form class="form-ficha" id="lead-form">
+      <span class="tag">Ficha de contato</span>
+      <div class="grid2">
+        <div class="field"><label>Nome</label><input id="f-nome" required></div>
+        <div class="field"><label>Telefone</label><input id="f-tel" required></div>
+      </div>
+      <div class="field"><label>CEP</label><input id="f-cep" placeholder="00000-000" maxlength="9"></div>
+      <div class="grid2">
+        <div class="field"><label>Cidade</label><input id="f-cidade" required></div>
+        <div class="field"><label>Bairro</label><input id="f-bairro" required></div>
+      </div>
+      <div class="field"><label>Endereço completo</label><input id="f-end"></div>
+      <div class="grid2">
+        <div class="field"><label>Tipo de imóvel</label>
+          <select id="f-tipo-imovel"><option>Apartamento</option><option>Casa</option><option>Casa de condomínio</option><option>Cobertura</option><option>Studio/Kitnet</option><option>Terreno</option><option>Sala comercial</option><option>Galpão</option></select>
+        </div>
+        <div class="field"><label>Finalidade</label><select id="f-finalidade"><option>Venda</option><option>Locação</option><option>Venda e Locação</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Área construída (m²)</label><input id="f-area-construida" type="number" min="0"></div>
+        <div class="field"><label>Área do terreno (m²)</label><input id="f-area-terreno" type="number" min="0"></div>
+      </div>
+      <div class="grid4">
+        <div class="field"><label>Dormitórios</label><input id="f-dormitorios" type="number" min="0"></div>
+        <div class="field"><label>Suítes</label><input id="f-suites" type="number" min="0"></div>
+        <div class="field"><label>Banheiros</label><input id="f-banheiros" type="number" min="0"></div>
+        <div class="field"><label>Vagas</label><input id="f-vagas" type="number" min="0"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Valor pretendido (R$)</label><input id="f-valor" type="number" min="0"></div>
+        <div class="field"><label>Condomínio (R$)</label><input id="f-condominio" type="number" min="0"></div>
+      </div>
+      <div class="field">
+        <label>Comodidades</label>
+        <div class="checkgrid" id="f-comodidades">
+          <label><input type="checkbox" value="Cozinha americana/planejada"> Cozinha americana/planejada</label>
+          <label><input type="checkbox" value="Área de serviço"> Área de serviço</label>
+          <label><input type="checkbox" value="Varanda/Sacada"> Varanda/Sacada</label>
+          <label><input type="checkbox" value="Mobiliado"> Mobiliado</label>
+          <label><input type="checkbox" value="Aceita pet"> Aceita pet</label>
+          <label><input type="checkbox" value="Piscina"> Piscina</label>
+          <label><input type="checkbox" value="Academia"> Academia</label>
+          <label><input type="checkbox" value="Salão de festas"> Salão de festas</label>
+          <label><input type="checkbox" value="Churrasqueira"> Churrasqueira</label>
+          <label><input type="checkbox" value="Playground"> Playground</label>
+          <label><input type="checkbox" value="Portaria 24h"> Portaria 24h</label>
+          <label><input type="checkbox" value="Elevador"> Elevador</label>
+        </div>
+      </div>
+      <div class="field"><label>Observações</label><textarea id="f-obs" rows="3"></textarea></div>
+      <button type="submit" class="btn btn-solid" style="margin-top:18px;">Enviar cadastro</button>
+      <div class="form-msg hidden" id="form-msg"></div>
+    </form>
+  </section>
 
-Me diz dois ou três horários que funcionam pra você essa semana que eu já reservo o fotógrafo.</div>
-      <button class="copy-btn" onclick="copiar('txt-3', this)">Copiar texto</button>
-    </div>
-    <div class="stage">
-      <span class="tag">Etapa 4 · Antes da assinatura</span>
-      <h3>Reta final</h3>
-      <div class="texto" id="txt-4">[Nome], chegamos na reta final — a assinatura do contrato. Qualquer dúvida sobre cláusula, prazo ou documentação, me chama direto, eu resolvo com o setor responsável na QuintoAndar.</div>
-      <button class="copy-btn" onclick="copiar('txt-4', this)">Copiar texto</button>
+  <footer>ALIANÇA JFC NEGÓCIOS — CINTIA ODAS · CRECI-PF 122.970 · SÃO PAULO / SP</footer>
+</main>
+
+<main id="view-anuncios" class="hidden">
+  <section>
+    <div class="catalogo">
+      <h2 class="section-title">Anúncios</h2>
+      <p style="color:#3d3d33;">Imóveis do portfólio próprio da Aliança JFC Negócios.</p>
+      <div class="filtros">
+        <div class="field"><label>Cidade</label><input id="ac-cidade" placeholder="Todas"></div>
+        <div class="field"><label>Tipo</label><select id="ac-tipo"><option value="">Todos</option><option>Apartamento</option><option>Casa</option><option>Casa de condomínio</option><option>Cobertura</option><option>Studio/Kitnet</option><option>Terreno</option><option>Sala comercial</option><option>Galpão</option></select></div>
+        <div class="field"><label>Finalidade</label><select id="ac-finalidade"><option value="">Todas</option><option>Venda</option><option>Locação</option><option>Venda e Locação</option></select></div>
+        <div class="field"><label>Dormitórios (mín.)</label><input id="ac-dorm" type="number" min="0" placeholder="Qualquer"></div>
+        <button class="btn btn-solid btn-sm" id="btn-filtrar">Filtrar</button>
+      </div>
+      <div class="grid-anuncios" id="grid-anuncios"></div>
+      <div class="empty-catalogo hidden" id="empty-catalogo">Nenhum imóvel publicado no momento.</div>
     </div>
   </section>
 </main>
@@ -175,13 +200,12 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
   const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3IBxF9xG8xPhiffYv0sunED-KvOQ/exec";
-  let TOKEN = sessionStorage.getItem('jfc-token') || '';
 
   // JSONP: contorna o bloqueio de CORS do Apps Script fazendo a chamada via <script>.
-  function jsonp(url, timeoutMs) {
+  function jsonp(url) {
     return new Promise((resolve, reject) => {
       const cbName = 'jfc_cb_' + Math.random().toString(36).slice(2);
-      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado ao contatar o backend.')); }, timeoutMs || 60000);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado ao contatar o backend.')); }, 15000);
       function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
       window[cbName] = (data) => { cleanup(); resolve(data); };
       const script = document.createElement('script');
@@ -191,167 +215,123 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
     });
   }
 
-  document.getElementById('gate-btn').addEventListener('click', tryLogin);
-  document.getElementById('gate-token').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+  const tabs = {
+    site: { btn: document.getElementById('tab-site'), view: document.getElementById('view-site') },
+    anuncios: { btn: document.getElementById('tab-anuncios'), view: document.getElementById('view-anuncios') }
+  };
+  function showTab(name) {
+    Object.entries(tabs).forEach(([k, t]) => { t.btn.classList.toggle('active', k === name); t.view.classList.toggle('hidden', k !== name); });
+    if (name === 'anuncios') loadCatalogo();
+  }
+  tabs.site.btn.addEventListener('click', () => showTab('site'));
+  tabs.anuncios.btn.addEventListener('click', () => showTab('anuncios'));
 
-  async function tryLogin() {
-    TOKEN = document.getElementById('gate-token').value.trim();
+  // ---------- CEP AUTOMÁTICO (ViaCEP) ----------
+  const cepInputPublico = document.getElementById('f-cep');
+  cepInputPublico.addEventListener('input', () => {
+    let v = cepInputPublico.value.replace(/\D/g, '').slice(0, 8);
+    cepInputPublico.value = v.length > 5 ? v.slice(0, 5) + '-' + v.slice(5) : v;
+  });
+  cepInputPublico.addEventListener('blur', async () => {
+    const cep = cepInputPublico.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
     try {
-      const data = await jsonp(`${API_URL}?action=list&token=${encodeURIComponent(TOKEN)}`);
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        document.getElementById('f-cidade').value = data.localidade || '';
+        document.getElementById('f-bairro').value = data.bairro || '';
+        const ruaAtual = document.getElementById('f-end').value.trim();
+        if (!ruaAtual && data.logradouro) document.getElementById('f-end').value = data.logradouro;
+      }
+    } catch (err) { /* CEP não encontrado — a pessoa preenche manualmente */ }
+  });
+
+  document.getElementById('lead-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const comodidades = Array.from(document.querySelectorAll('#f-comodidades input:checked')).map(el => el.value);
+    const lead = {
+      nome: document.getElementById('f-nome').value.trim(),
+      telefone: document.getElementById('f-tel').value.trim(),
+      cep: document.getElementById('f-cep').value.trim(),
+      cidade: document.getElementById('f-cidade').value.trim(),
+      bairro: document.getElementById('f-bairro').value.trim(),
+      endereco: document.getElementById('f-end').value.trim(),
+      tipoImovel: document.getElementById('f-tipo-imovel').value,
+      finalidade: document.getElementById('f-finalidade').value,
+      areaConstruida: document.getElementById('f-area-construida').value,
+      areaTerreno: document.getElementById('f-area-terreno').value,
+      dormitorios: document.getElementById('f-dormitorios').value,
+      suites: document.getElementById('f-suites').value,
+      banheiros: document.getElementById('f-banheiros').value,
+      vagas: document.getElementById('f-vagas').value,
+      valor: document.getElementById('f-valor').value,
+      condominio: document.getElementById('f-condominio').value,
+      comodidades,
+      obs: document.getElementById('f-obs').value.trim()
+    };
+    const msg = document.getElementById('form-msg');
+    try {
+      const data = await jsonp(`${API_URL}?action=addPublic&lead=${encodeURIComponent(JSON.stringify(lead))}`);
       if (data.ok) {
-        sessionStorage.setItem('jfc-token', TOKEN);
-        document.getElementById('gate').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
+        msg.textContent = 'Cadastro recebido — vou entrar em contato em breve.';
+        e.target.reset();
       } else {
-        showGateError(data.error || 'Senha incorreta.');
+        msg.textContent = 'Não consegui salvar agora: ' + (data.error || 'tente novamente.');
       }
     } catch (err) {
-      showGateError('Erro de conexão: ' + err.message + '. Verifique se API_URL foi preenchida.');
+      msg.textContent = 'Erro de conexão. Verifique se API_URL foi preenchida corretamente.';
     }
-  }
-  function showGateError(msg) {
-    const el = document.getElementById('gate-error');
-    el.textContent = msg;
-    el.classList.remove('hidden');
-  }
-  if (TOKEN) tryLogin();
-
-  const tabBusca = document.getElementById('tab-busca');
-  const tabAbordagem = document.getElementById('tab-abordagem');
-  tabBusca.addEventListener('click', () => {
-    tabBusca.classList.add('active'); tabAbordagem.classList.remove('active');
-    document.getElementById('view-busca').classList.remove('hidden');
-    document.getElementById('view-abordagem').classList.add('hidden');
-  });
-  tabAbordagem.addEventListener('click', () => {
-    tabAbordagem.classList.add('active'); tabBusca.classList.remove('active');
-    document.getElementById('view-abordagem').classList.remove('hidden');
-    document.getElementById('view-busca').classList.add('hidden');
+    msg.classList.remove('hidden');
   });
 
-  function copiar(id, btn) {
-    navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
-      const original = btn.textContent;
-      btn.textContent = 'Copiado!';
-      setTimeout(() => btn.textContent = original, 1500);
-    });
-  }
-
-  const btnBuscar = document.getElementById('btn-buscar');
-  const statusLine = document.getElementById('status-line');
-  const resultsEl = document.getElementById('results');
-
-  // ---------- SELETOR DE ESTADOS ----------
-  const UFS = [
-    ['AC','Acre'],['AL','Alagoas'],['AP','Amapá'],['AM','Amazonas'],['BA','Bahia'],['CE','Ceará'],
-    ['DF','Distrito Federal'],['ES','Espírito Santo'],['GO','Goiás'],['MA','Maranhão'],['MT','Mato Grosso'],
-    ['MS','Mato Grosso do Sul'],['MG','Minas Gerais'],['PA','Pará'],['PB','Paraíba'],['PR','Paraná'],
-    ['PE','Pernambuco'],['PI','Piauí'],['RJ','Rio de Janeiro'],['RN','Rio Grande do Norte'],
-    ['RS','Rio Grande do Sul'],['RO','Rondônia'],['RR','Roraima'],['SC','Santa Catarina'],
-    ['SP','São Paulo'],['SE','Sergipe'],['TO','Tocantins']
-  ];
-  let selectedUFs = new Set(UFS.map(u => u[0])); // todos marcados por padrão
-
-  const ufToggle = document.getElementById('uf-toggle');
-  const ufPanel = document.getElementById('uf-panel');
-  const ufGrid = document.getElementById('uf-grid');
-  const ufSummary = document.getElementById('uf-summary');
-
-  ufGrid.innerHTML = UFS.map(([sigla, nome]) => `
-    <label><input type="checkbox" value="${sigla}" checked class="uf-check"> ${sigla}</label>
-  `).join('');
-
-  ufGrid.querySelectorAll('.uf-check').forEach(cb => {
-    cb.addEventListener('change', () => {
-      if (cb.checked) selectedUFs.add(cb.value); else selectedUFs.delete(cb.value);
-      updateUfSummary();
-    });
-  });
-
-  document.getElementById('uf-all').addEventListener('click', () => {
-    selectedUFs = new Set(UFS.map(u => u[0]));
-    ufGrid.querySelectorAll('.uf-check').forEach(cb => cb.checked = true);
-    updateUfSummary();
-  });
-  document.getElementById('uf-none').addEventListener('click', () => {
-    selectedUFs.clear();
-    ufGrid.querySelectorAll('.uf-check').forEach(cb => cb.checked = false);
-    updateUfSummary();
-  });
-
-  function updateUfSummary() {
-    if (selectedUFs.size === UFS.length) ufSummary.textContent = 'Todos os estados';
-    else if (selectedUFs.size === 0) ufSummary.textContent = 'Nenhum estado (selecione ao menos 1)';
-    else if (selectedUFs.size === 1) ufSummary.textContent = UFS.find(u => u[0] === [...selectedUFs][0])[1];
-    else ufSummary.textContent = `${selectedUFs.size} estados selecionados`;
-  }
-
-  ufToggle.addEventListener('click', (e) => { e.stopPropagation(); ufPanel.classList.toggle('hidden'); });
-  document.addEventListener('click', (e) => {
-    if (!ufPanel.contains(e.target) && e.target !== ufToggle) ufPanel.classList.add('hidden');
-  });
-
-  btnBuscar.addEventListener('click', async () => {
-    if (selectedUFs.size === 0) { statusLine.classList.remove('hidden'); statusLine.textContent = 'Selecione ao menos um estado.'; return; }
-    const bairroInput = document.getElementById('bairro').value.trim();
-    const todosSelecionados = selectedUFs.size === UFS.length;
-    let abrangencia;
-    if (todosSelecionados) {
-      abrangencia = 'em todo o território brasileiro (todos os estados), variando as regiões pesquisadas';
-    } else if (selectedUFs.size === 1) {
-      const nomeEstado = UFS.find(u => u[0] === [...selectedUFs][0])[1];
-      abrangencia = `no estado de ${nomeEstado} (${[...selectedUFs][0]}), Brasil${bairroInput ? ', região/bairro ' + bairroInput : ''}`;
-    } else {
-      const nomes = [...selectedUFs].map(sigla => UFS.find(u => u[0] === sigla)[1]).join(', ');
-      abrangencia = `nos estados: ${nomes}, Brasil`;
-    }
-    const tipo = document.getElementById('tipo').value;
-    const imovel = document.getElementById('imovel').value;
-    const filtrosExtra = [
-      document.getElementById('dorm-min').value ? `pelo menos ${document.getElementById('dorm-min').value} dormitório(s)` : '',
-      document.getElementById('vagas-min').value ? `pelo menos ${document.getElementById('vagas-min').value} vaga(s)` : '',
-      document.getElementById('area-min').value ? `área mínima de ${document.getElementById('area-min').value} m²` : '',
-      document.getElementById('preco-min').value ? `preço mínimo R$ ${document.getElementById('preco-min').value}` : '',
-      document.getElementById('preco-max').value ? `preço máximo R$ ${document.getElementById('preco-max').value}` : ''
-    ].filter(Boolean).join(', ');
-
-    btnBuscar.disabled = true;
-    statusLine.classList.remove('hidden');
-    statusLine.textContent = 'Buscando anúncios de proprietários particulares agora (pode levar até 1 minuto)...';
-    resultsEl.innerHTML = '';
-
-    const prompt = `Busque agora na web anúncios ATUAIS de imóveis para ${tipo}, tipo "${imovel === 'qualquer' ? 'imóvel' : imovel}", publicados DIRETAMENTE POR PROPRIETÁRIOS PARTICULARES (sem imobiliária) ${abrangencia}. Procure em OLX, ZAP Imóveis, VivaReal, Imovelweb, Chaves na Mão, Facebook Marketplace e Mercado Livre. Priorize anúncios "particular" ou "direto com o proprietário". ${filtrosExtra ? 'Filtrar por: ' + filtrosExtra + '.' : ''} ${todosSelecionados ? 'Como a busca é nacional, diversifique entre pelo menos 5 estados diferentes nos resultados.' : ''}
-Responda APENAS com JSON válido: [{"titulo":"...","local":"...","preco":"...","tipo":"venda ou locação","plataforma":"...","link":"URL real","telefone":"se visível no anúncio, senão vazio"}]
-Máximo ${todosSelecionados ? 15 : 10} resultados reais. Se não encontrar, responda [].`;
-
+  async function loadCatalogo() {
+    const grid = document.getElementById('grid-anuncios');
+    const empty = document.getElementById('empty-catalogo');
+    grid.innerHTML = '<div class="empty-catalogo">Carregando…</div>';
     try {
-      const data = await jsonp(`${API_URL}?action=search&token=${encodeURIComponent(TOKEN)}&prompt=${encodeURIComponent(prompt)}`, 100000);
-      if (!data.ok) { statusLine.textContent = 'Erro: ' + data.error; return; }
+      const data = await jsonp(`${API_URL}?action=listPublic`);
+      let items = data.ok ? data.data : [];
 
-      const cleaned = (data.text || '').replace(/```json|```/g, '').trim();
-      let listings = [];
-      try { listings = JSON.parse(cleaned); } catch (e) {
-        const match = cleaned.match(/\[[\s\S]*\]/);
-        if (match) { try { listings = JSON.parse(match[0]); } catch (e2) {} }
-      }
+      const cidadeF = document.getElementById('ac-cidade').value.trim().toLowerCase();
+      const tipoF = document.getElementById('ac-tipo').value;
+      const finalidadeF = document.getElementById('ac-finalidade').value;
+      const dormF = document.getElementById('ac-dorm').value;
+      if (cidadeF) items = items.filter(l => (l.cidade || '').toLowerCase().includes(cidadeF));
+      if (tipoF) items = items.filter(l => l.tipoImovel === tipoF);
+      if (finalidadeF) items = items.filter(l => l.finalidade === finalidadeF);
+      if (dormF) items = items.filter(l => Number(l.dormitorios || 0) >= Number(dormF));
 
-      if (!listings.length) {
-        statusLine.textContent = 'Nenhum anúncio encontrado agora — tente ampliar a região ou os filtros.';
-      } else {
-        statusLine.textContent = `${listings.length} anúncio(s) encontrado(s).`;
-        resultsEl.innerHTML = listings.map(l => `
-          <div class="lead-item">
-            <div class="top"><h4>${escapeHtml(l.titulo || 'Anúncio')}</h4><span class="plataforma">${escapeHtml(l.plataforma || '—')}</span></div>
-            <div class="meta">${escapeHtml(l.local || '')} · ${escapeHtml(l.preco || '')} · ${escapeHtml(l.tipo || '')}${l.telefone ? ' · Tel: ' + escapeHtml(l.telefone) : ''}</div>
-            ${l.link ? `<a class="btn-link" href="${escapeAttr(l.link)}" target="_blank" rel="noopener">Abrir anúncio →</a>` : ''}
-          </div>`).join('');
-      }
+      if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      grid.innerHTML = items.map(l => {
+        const fotos = (l.fotoUrl || '').split(';').filter(Boolean);
+        const capa = fotos[0];
+        return `
+        <div class="imovel-card">
+          <div class="imovel-foto" style="${capa ? `background-image:url('${escapeAttr(capa)}')` : ''}">
+            ${capa ? (fotos.length > 1 ? `<span style="position:absolute; bottom:8px; right:8px; background:rgba(38,38,32,.75); color:#fff; font-family:var(--mono); font-size:.66rem; padding:2px 8px; border-radius:999px;">+${fotos.length - 1} fotos</span>` : '') : 'Sem foto'}
+          </div>
+          <div class="imovel-body">
+            <span class="imovel-badge">${escapeHtml(l.finalidade || '—')}</span>
+            <div class="imovel-titulo">${escapeHtml(l.tipoImovel || 'Imóvel')}</div>
+            <div class="imovel-local">${escapeHtml([l.bairro, l.cidade].filter(Boolean).join(', ') || l.endereco || '')}</div>
+            <div class="imovel-specs">
+              ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
+              ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
+              ${l.vagas ? `<span>${escapeHtml(l.vagas)} vaga(s)</span>` : ''}
+            </div>
+            <div class="imovel-valor">${l.valor ? 'R$ ' + Number(l.valor).toLocaleString('pt-BR') : 'Consulte valor'}</div>
+            <button class="btn btn-solid btn-sm" onclick="document.getElementById('tab-site').click(); setTimeout(() => document.getElementById('contato').scrollIntoView(), 50);">Falar com a corretora</button>
+          </div>
+        </div>`;
+      }).join('');
     } catch (err) {
-      statusLine.textContent = 'Erro ao buscar: ' + err.message;
-    } finally {
-      btnBuscar.disabled = false;
+      grid.innerHTML = '';
+      empty.textContent = 'Erro ao carregar anúncios. Verifique se API_URL foi preenchida.';
+      empty.classList.remove('hidden');
     }
-  });
+  }
 
   function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
   function escapeAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
