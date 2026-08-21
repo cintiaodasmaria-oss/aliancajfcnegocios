@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultoria QuintoAndar — Cintia Odas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --verde-profundo:#3D4A34; --verde-musgo:#5C6B4F; --pergaminho:#F1EDE2;
+    --pergaminho-escuro:#E4DDC9; --latao:#A87A45; --grafite:#262620; --selo:#8B3A2F;
+    --serif:'Fraunces', Georgia, serif; --sans:'Inter', sans-serif; --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--pergaminho); color:var(--grafite); font-family:var(--sans); line-height:1.55;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px clamp(20px,5vw,56px); border-bottom:1px solid var(--pergaminho-escuro);}
+  .brand{font-family:var(--serif); font-weight:600; font-size:1.1rem; color:var(--verde-profundo);}
+  .brand small{display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; color:var(--verde-musgo); font-weight:400;}
+  .navtabs{display:flex; gap:6px; background:var(--pergaminho-escuro); padding:4px; border-radius:999px;}
+  .navtabs button{border:none; background:transparent; cursor:pointer; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; padding:9px 16px; border-radius:999px; color:var(--verde-musgo);}
+  .navtabs button.active{background:var(--verde-profundo); color:var(--pergaminho);}
+  main{max-width:1080px; margin:0 auto; padding:36px clamp(20px,5vw,56px) 80px;}
+  h2{font-family:var(--serif); color:var(--verde-profundo); font-size:1.5rem; margin-top:0;}
+  .disclaimer{background:#fff8ea; border:1px solid var(--latao); border-radius:6px; padding:14px 18px; font-size:.84rem; margin-bottom:28px;}
+  .disclaimer b{color:var(--selo);}
+  .search-box{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:24px; display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-family:var(--mono); font-size:.66rem; text-transform:uppercase; color:var(--verde-musgo);}
+  .field input, .field select{font-family:var(--sans); padding:10px 12px; border:1.4px solid var(--pergaminho-escuro); border-radius:4px; background:var(--pergaminho); min-width:160px;}
+  .btn{font-family:var(--mono); font-size:.78rem; text-transform:uppercase; padding:12px 22px; border-radius:4px; border:1.4px solid var(--verde-profundo); background:var(--verde-profundo); color:var(--pergaminho); cursor:pointer;}
+  .btn:hover{background:var(--verde-musgo);}
+  .btn:disabled{opacity:.6;}
+  .status-line{margin-top:18px; font-family:var(--mono); font-size:.8rem; color:var(--verde-musgo);}
+  .results{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
+  .lead-item{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:18px;}
+  .lead-item .top{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .lead-item h4{margin:0; font-family:var(--serif); color:var(--verde-profundo); font-size:1.05rem;}
+  .lead-item .plataforma{font-family:var(--mono); font-size:.66rem; text-transform:uppercase; background:var(--pergaminho-escuro); color:var(--verde-musgo); padding:3px 9px; border-radius:999px;}
+  .lead-item .meta{font-size:.84rem; color:#4a4a3e; margin-top:4px;}
+  .lead-item a.btn-link{font-family:var(--mono); font-size:.72rem; color:var(--verde-profundo); border-bottom:1px solid var(--latao); text-decoration:none;}
+  .stage{background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px; padding:24px; margin-bottom:20px;}
+  .stage .tag{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--latao);}
+  .stage h3{font-family:var(--serif); color:var(--verde-profundo); margin:.3em 0 .6em; font-size:1.2rem;}
+  .stage .texto{white-space:pre-wrap; font-size:.92rem; background:var(--pergaminho); border:1px dashed var(--pergaminho-escuro); border-radius:4px; padding:14px; line-height:1.6;}
+  .copy-btn{margin-top:10px; font-family:var(--mono); font-size:.7rem; background:none; border:1px solid var(--verde-profundo); color:var(--verde-profundo); padding:6px 12px; border-radius:4px; cursor:pointer;}
+  .gate{max-width:420px; margin:80px auto; text-align:center;}
+  .gate input{width:100%; text-align:center; padding:14px; font-family:var(--mono); border:1.4px solid var(--pergaminho-escuro); border-radius:4px; margin-bottom:12px;}
+  .error-msg{color:var(--selo); font-family:var(--mono); font-size:.8rem; margin-top:10px;}
+  .hidden{display:none !important;}
+
+  /* seletor de estados */
+  .uf-field{position:relative;}
+  .uf-toggle{
+    font-family:var(--sans); font-size:.9rem; padding:10px 12px; border:1.4px solid var(--pergaminho-escuro);
+    border-radius:4px; background:var(--pergaminho); min-width:220px; cursor:pointer;
+    display:flex; align-items:center; gap:8px; text-align:left; color:var(--grafite);
+  }
+  .uf-toggle:hover{border-color:var(--verde-musgo);}
+  .uf-icon{font-size:1rem;}
+  .uf-panel{
+    position:absolute; top:calc(100% + 6px); left:0; z-index:30; width:340px;
+    background:#fffdf8; border:1.4px solid var(--pergaminho-escuro); border-radius:6px;
+    box-shadow:0 14px 30px -14px rgba(38,38,32,0.35); padding:14px;
+  }
+  .uf-panel-actions{display:flex; gap:8px; margin-bottom:10px;}
+  .uf-panel-actions button{
+    font-family:var(--mono); font-size:.66rem; text-transform:uppercase; background:none;
+    border:1px solid var(--verde-profundo); color:var(--verde-profundo); padding:5px 10px; border-radius:4px; cursor:pointer;
+  }
+  .uf-panel-actions button:hover{background:var(--pergaminho-escuro);}
+  .uf-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px 10px; max-height:260px; overflow-y:auto;}
+  .uf-grid label{display:flex; align-items:center; gap:6px; font-size:.78rem; cursor:pointer;}
+  .uf-grid input{width:auto;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">Consultoria QuintoAndar<small>CINTIA ODAS · CRECI-PF 122.970</small></div>
+</nav>
+
+<div class="gate" id="gate">
+  <h2>Acesso da equipe</h2>
+  <p style="color:#5b5b4e; font-size:.9rem;">Digite a senha de acesso (a mesma do Painel).</p>
+  <input type="password" id="gate-token" placeholder="Senha de acesso">
+  <button class="btn" id="gate-btn" style="width:100%;">Entrar</button>
+  <div class="error-msg hidden" id="gate-error"></div>
+</div>
+
+<main id="app" class="hidden">
+  <div class="navtabs" style="margin-bottom:24px; display:inline-flex;">
+    <button id="tab-busca" class="active">Buscar anúncios</button>
+    <button id="tab-abordagem">Roteiro de abordagem</button>
+  </div>
+
+  <section id="view-busca">
+    <h2>Buscar anúncios de proprietários particulares</h2>
+    <div class="disclaimer">
+      <b>Como isso funciona:</b> a busca cobre plataformas onde qualquer pessoa pode anunciar (pago ou gratuito) — OLX, ZAP Imóveis, VivaReal, Imovelweb, Chaves na Mão, Facebook Marketplace, Mercado Livre — priorizando anúncios "particular" ou "direto com o proprietário". Não usa CPF, IPTU ou dado privado.
+    </div>
+    <div class="search-box">
+      <div class="field uf-field">
+        <label>Estados</label>
+        <button type="button" class="uf-toggle" id="uf-toggle"><span class="uf-icon">📍</span><span id="uf-summary">Todos os estados</span></button>
+        <div class="uf-panel hidden" id="uf-panel">
+          <div class="uf-panel-actions">
+            <button type="button" id="uf-all">Marcar todos</button>
+            <button type="button" id="uf-none">Limpar</button>
+          </div>
+          <div class="uf-grid" id="uf-grid"></div>
+        </div>
+      </div>
+      <div class="field"><label>Bairro / Cidade</label><input id="bairro" placeholder="Opcional"></div>
+      <div class="field"><label>Tipo</label><select id="tipo"><option value="venda ou locação" selected>Venda e Locação</option><option value="venda">Só venda</option><option value="locação">Só locação</option></select></div>
+      <div class="field"><label>Tipo de imóvel</label><select id="imovel"><option value="qualquer">Qualquer</option><option value="apartamento">Apartamento</option><option value="casa">Casa</option><option value="cobertura">Cobertura</option><option value="terreno">Terreno</option></select></div>
+      <div class="field"><label>Dorm. (mín.)</label><input id="dorm-min" type="number" min="0"></div>
+      <div class="field"><label>Vagas (mín.)</label><input id="vagas-min" type="number" min="0"></div>
+      <div class="field"><label>Área mín. (m²)</label><input id="area-min" type="number" min="0"></div>
+      <div class="field"><label>Preço mín.</label><input id="preco-min" type="number" min="0"></div>
+      <div class="field"><label>Preço máx.</label><input id="preco-max" type="number" min="0"></div>
+      <button class="btn" id="btn-buscar">Buscar agora</button>
+    </div>
+    <div class="status-line hidden" id="status-line"></div>
+    <div class="results" id="results"></div>
+  </section>
+
+  <section id="view-abordagem" class="hidden">
+    <h2>Roteiro de abordagem — etapa por etapa</h2>
+    <div class="stage">
+      <span class="tag">Etapa 1 · Primeiro contato</span>
+      <h3>Quando você acabou de ver o anúncio particular</h3>
+      <div class="texto" id="txt-1">Bom dia [Nome], como vai? Sou a Cintia, corretora com CRECI 122.970, consultora parceira da QuintoAndar. Vi seu anúncio de aluguel do imóvel na [Rua/Bairro].
+
+Você sabia que o QuintoAndar registrou em outubro seu maior volume mensal da história? Foram 16,3 mil contratos de aluguel e 2,6 mil operações de compra e venda concluídas.
+
+Temos uma grande demanda de pessoas procurando imóvel no QuintoAndar: são cerca de 400 mil visitas agendadas por mês — ou seja, uma nova visita a cada 7 segundos.
+
+Com o auxílio da nossa equipe, os imóveis são alugados de 35% a 50% mais rápido, e todo o processo, da busca à assinatura do contrato, leva em média 30 dias.
+
+E além de agilidade, você também tem mais tranquilidade:
+*Análise jurídica: o contrato é por nossa conta, levantamos todas as certidões, fazemos aprovação de crédito e acompanhamos até a assinatura;
+*Pagamento garantido: o aluguel cai na sua conta todo dia 12, mesmo se o inquilino atrasar;
+*Proteção contra danos: se houver danos de responsabilidade do inquilino ao final do contrato e ele não pagar, o QuintoAndar cobre para você. Consulte condições.
+
+Que tal anunciar seu imóvel comigo? É simples, rápido e gratuito! Serei seu canal direto, sem robôs.
+
+[link do anúncio dela]</div>
+      <button class="copy-btn" onclick="copiar('txt-1', this)">Copiar texto</button>
+    </div>
+    <div class="stage">
+      <span class="tag">Etapa 2 · Convencer a aprovar o cadastro</span>
+      <h3>Depois que o proprietário topou</h3>
+      <div class="texto" id="txt-2">[Nome], tudo certo! Já preenchi o pré-cadastro do seu imóvel na QuintoAndar. Agora falta só uma etapa, que é sua: a QuintoAndar vai te mandar um link oficial, direto do domínio quintoandar.com.br, pra você revisar e aprovar os dados.
+
+Esse link é gerado pela própria plataforma — é 100% seguro clicar. Assim que você aprovar, eu já entro em contato pra agendar a sessão de fotos.</div>
+      <button class="copy-btn" onclick="copiar('txt-2', this)">Copiar texto</button>
+    </div>
+    <div class="stage">
+      <span class="tag">Etapa 3 · Agendamento de fotos</span>
+      <h3>Depois do cadastro aprovado</h3>
+      <div class="texto" id="txt-3">Boa notícia, [Nome]! Seu cadastro foi aprovado. Agora é hora de agendar a sessão de fotos profissionais — sem custo pra você.
+
+Me diz dois ou três horários que funcionam pra você essa semana que eu já reservo o fotógrafo.</div>
+      <button class="copy-btn" onclick="copiar('txt-3', this)">Copiar texto</button>
+    </div>
+    <div class="stage">
+      <span class="tag">Etapa 4 · Antes da assinatura</span>
+      <h3>Reta final</h3>
+      <div class="texto" id="txt-4">[Nome], chegamos na reta final — a assinatura do contrato. Qualquer dúvida sobre cláusula, prazo ou documentação, me chama direto, eu resolvo com o setor responsável na QuintoAndar.</div>
+      <button class="copy-btn" onclick="copiar('txt-4', this)">Copiar texto</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
+  const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3IBxF9xG8xPhiffYv0sunED-KvOQ/exec";
+  let TOKEN = sessionStorage.getItem('jfc-token') || '';
+
+  // JSONP: contorna o bloqueio de CORS do Apps Script fazendo a chamada via <script>.
+  function jsonp(url, timeoutMs) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'jfc_cb_' + Math.random().toString(36).slice(2);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado ao contatar o backend.')); }, timeoutMs || 60000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = (data) => { cleanup(); resolve(data); };
+      const script = document.createElement('script');
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('Falha ao carregar o backend. Verifique a API_URL.')); };
+      document.body.appendChild(script);
+    });
+  }
+
+  document.getElementById('gate-btn').addEventListener('click', tryLogin);
+  document.getElementById('gate-token').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  async function tryLogin() {
+    TOKEN = document.getElementById('gate-token').value.trim();
+    try {
+      const data = await jsonp(`${API_URL}?action=list&token=${encodeURIComponent(TOKEN)}`);
+      if (data.ok) {
+        sessionStorage.setItem('jfc-token', TOKEN);
+        document.getElementById('gate').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+      } else {
+        showGateError(data.error || 'Senha incorreta.');
+      }
+    } catch (err) {
+      showGateError('Erro de conexão: ' + err.message + '. Verifique se API_URL foi preenchida.');
+    }
+  }
+  function showGateError(msg) {
+    const el = document.getElementById('gate-error');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+  if (TOKEN) tryLogin();
+
+  const tabBusca = document.getElementById('tab-busca');
+  const tabAbordagem = document.getElementById('tab-abordagem');
+  tabBusca.addEventListener('click', () => {
+    tabBusca.classList.add('active'); tabAbordagem.classList.remove('active');
+    document.getElementById('view-busca').classList.remove('hidden');
+    document.getElementById('view-abordagem').classList.add('hidden');
+  });
+  tabAbordagem.addEventListener('click', () => {
+    tabAbordagem.classList.add('active'); tabBusca.classList.remove('active');
+    document.getElementById('view-abordagem').classList.remove('hidden');
+    document.getElementById('view-busca').classList.add('hidden');
+  });
+
+  function copiar(id, btn) {
+    navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'Copiado!';
+      setTimeout(() => btn.textContent = original, 1500);
+    });
+  }
+
+  const btnBuscar = document.getElementById('btn-buscar');
+  const statusLine = document.getElementById('status-line');
+  const resultsEl = document.getElementById('results');
+
+  // ---------- SELETOR DE ESTADOS ----------
+  const UFS = [
+    ['AC','Acre'],['AL','Alagoas'],['AP','Amapá'],['AM','Amazonas'],['BA','Bahia'],['CE','Ceará'],
+    ['DF','Distrito Federal'],['ES','Espírito Santo'],['GO','Goiás'],['MA','Maranhão'],['MT','Mato Grosso'],
+    ['MS','Mato Grosso do Sul'],['MG','Minas Gerais'],['PA','Pará'],['PB','Paraíba'],['PR','Paraná'],
+    ['PE','Pernambuco'],['PI','Piauí'],['RJ','Rio de Janeiro'],['RN','Rio Grande do Norte'],
+    ['RS','Rio Grande do Sul'],['RO','Rondônia'],['RR','Roraima'],['SC','Santa Catarina'],
+    ['SP','São Paulo'],['SE','Sergipe'],['TO','Tocantins']
+  ];
+  let selectedUFs = new Set(UFS.map(u => u[0])); // todos marcados por padrão
+
+  const ufToggle = document.getElementById('uf-toggle');
+  const ufPanel = document.getElementById('uf-panel');
+  const ufGrid = document.getElementById('uf-grid');
+  const ufSummary = document.getElementById('uf-summary');
+
+  ufGrid.innerHTML = UFS.map(([sigla, nome]) => `
+    <label><input type="checkbox" value="${sigla}" checked class="uf-check"> ${sigla}</label>
+  `).join('');
+
+  ufGrid.querySelectorAll('.uf-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedUFs.add(cb.value); else selectedUFs.delete(cb.value);
+      updateUfSummary();
+    });
+  });
+
+  document.getElementById('uf-all').addEventListener('click', () => {
+    selectedUFs = new Set(UFS.map(u => u[0]));
+    ufGrid.querySelectorAll('.uf-check').forEach(cb => cb.checked = true);
+    updateUfSummary();
+  });
+  document.getElementById('uf-none').addEventListener('click', () => {
+    selectedUFs.clear();
+    ufGrid.querySelectorAll('.uf-check').forEach(cb => cb.checked = false);
+    updateUfSummary();
+  });
+
+  function updateUfSummary() {
+    if (selectedUFs.size === UFS.length) ufSummary.textContent = 'Todos os estados';
+    else if (selectedUFs.size === 0) ufSummary.textContent = 'Nenhum estado (selecione ao menos 1)';
+    else if (selectedUFs.size === 1) ufSummary.textContent = UFS.find(u => u[0] === [...selectedUFs][0])[1];
+    else ufSummary.textContent = `${selectedUFs.size} estados selecionados`;
+  }
+
+  ufToggle.addEventListener('click', (e) => { e.stopPropagation(); ufPanel.classList.toggle('hidden'); });
+  document.addEventListener('click', (e) => {
+    if (!ufPanel.contains(e.target) && e.target !== ufToggle) ufPanel.classList.add('hidden');
+  });
+
+  btnBuscar.addEventListener('click', async () => {
+    if (selectedUFs.size === 0) { statusLine.classList.remove('hidden'); statusLine.textContent = 'Selecione ao menos um estado.'; return; }
+    const bairroInput = document.getElementById('bairro').value.trim();
+    const todosSelecionados = selectedUFs.size === UFS.length;
+    let abrangencia;
+    if (todosSelecionados) {
+      abrangencia = 'em todo o território brasileiro (todos os estados), variando as regiões pesquisadas';
+    } else if (selectedUFs.size === 1) {
+      const nomeEstado = UFS.find(u => u[0] === [...selectedUFs][0])[1];
+      abrangencia = `no estado de ${nomeEstado} (${[...selectedUFs][0]}), Brasil${bairroInput ? ', região/bairro ' + bairroInput : ''}`;
+    } else {
+      const nomes = [...selectedUFs].map(sigla => UFS.find(u => u[0] === sigla)[1]).join(', ');
+      abrangencia = `nos estados: ${nomes}, Brasil`;
+    }
+    const tipo = document.getElementById('tipo').value;
+    const imovel = document.getElementById('imovel').value;
+    const filtrosExtra = [
+      document.getElementById('dorm-min').value ? `pelo menos ${document.getElementById('dorm-min').value} dormitório(s)` : '',
+      document.getElementById('vagas-min').value ? `pelo menos ${document.getElementById('vagas-min').value} vaga(s)` : '',
+      document.getElementById('area-min').value ? `área mínima de ${document.getElementById('area-min').value} m²` : '',
+      document.getElementById('preco-min').value ? `preço mínimo R$ ${document.getElementById('preco-min').value}` : '',
+      document.getElementById('preco-max').value ? `preço máximo R$ ${document.getElementById('preco-max').value}` : ''
+    ].filter(Boolean).join(', ');
+
+    btnBuscar.disabled = true;
+    statusLine.classList.remove('hidden');
+    statusLine.textContent = 'Buscando anúncios de proprietários particulares agora (pode levar até 1 minuto)...';
+    resultsEl.innerHTML = '';
+
+    const prompt = `Busque agora na web anúncios ATUAIS de imóveis para ${tipo}, tipo "${imovel === 'qualquer' ? 'imóvel' : imovel}", publicados DIRETAMENTE POR PROPRIETÁRIOS PARTICULARES (sem imobiliária) ${abrangencia}. Procure em OLX, ZAP Imóveis, VivaReal, Imovelweb, Chaves na Mão, Facebook Marketplace e Mercado Livre. Priorize anúncios "particular" ou "direto com o proprietário". ${filtrosExtra ? 'Filtrar por: ' + filtrosExtra + '.' : ''} ${todosSelecionados ? 'Como a busca é nacional, diversifique entre pelo menos 5 estados diferentes nos resultados.' : ''}
+Responda APENAS com JSON válido: [{"titulo":"...","local":"...","preco":"...","tipo":"venda ou locação","plataforma":"...","link":"URL real","telefone":"se visível no anúncio, senão vazio"}]
+Máximo ${todosSelecionados ? 15 : 10} resultados reais. Se não encontrar, responda [].`;
+
+    try {
+      const data = await jsonp(`${API_URL}?action=search&token=${encodeURIComponent(TOKEN)}&prompt=${encodeURIComponent(prompt)}`, 100000);
+      if (!data.ok) { statusLine.textContent = 'Erro: ' + data.error; return; }
+
+      const cleaned = (data.text || '').replace(/```json|```/g, '').trim();
+      let listings = [];
+      try { listings = JSON.parse(cleaned); } catch (e) {
+        const match = cleaned.match(/\[[\s\S]*\]/);
+        if (match) { try { listings = JSON.parse(match[0]); } catch (e2) {} }
+      }
+
+      if (!listings.length) {
+        statusLine.textContent = 'Nenhum anúncio encontrado agora — tente ampliar a região ou os filtros.';
+      } else {
+        statusLine.textContent = `${listings.length} anúncio(s) encontrado(s).`;
+        resultsEl.innerHTML = listings.map(l => `
+          <div class="lead-item">
+            <div class="top"><h4>${escapeHtml(l.titulo || 'Anúncio')}</h4><span class="plataforma">${escapeHtml(l.plataforma || '—')}</span></div>
+            <div class="meta">${escapeHtml(l.local || '')} · ${escapeHtml(l.preco || '')} · ${escapeHtml(l.tipo || '')}${l.telefone ? ' · Tel: ' + escapeHtml(l.telefone) : ''}</div>
+            ${l.link ? `<a class="btn-link" href="${escapeAttr(l.link)}" target="_blank" rel="noopener">Abrir anúncio →</a>` : ''}
+          </div>`).join('');
+      }
+    } catch (err) {
+      statusLine.textContent = 'Erro ao buscar: ' + err.message;
+    } finally {
+      btnBuscar.disabled = false;
+    }
+  });
+
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
+  function escapeAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
+</script>
+</body>
+</html>
