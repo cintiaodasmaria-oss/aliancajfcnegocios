@@ -174,7 +174,7 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (a mesma usada no Painel)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3IBxF9xG8xPhiffYv0sunED-KvOQ/exec";
   let TOKEN = sessionStorage.getItem('jfc-token') || '';
 
   // JSONP: contorna o bloqueio de CORS do Apps Script fazendo a chamada via <script>.
@@ -283,4 +283,78 @@ Me diz dois ou três horários que funcionam pra você essa semana que eu já re
     if (selectedUFs.size === UFS.length) ufSummary.textContent = 'Todos os estados';
     else if (selectedUFs.size === 0) ufSummary.textContent = 'Nenhum estado (selecione ao menos 1)';
     else if (selectedUFs.size === 1) ufSummary.textContent = UFS.find(u => u[0] === [...selectedUFs][0])[1];
-    else ufSummary.textContent = `${selected
+    else ufSummary.textContent = `${selectedUFs.size} estados selecionados`;
+  }
+
+  ufToggle.addEventListener('click', (e) => { e.stopPropagation(); ufPanel.classList.toggle('hidden'); });
+  document.addEventListener('click', (e) => {
+    if (!ufPanel.contains(e.target) && e.target !== ufToggle) ufPanel.classList.add('hidden');
+  });
+
+  btnBuscar.addEventListener('click', async () => {
+    if (selectedUFs.size === 0) { statusLine.classList.remove('hidden'); statusLine.textContent = 'Selecione ao menos um estado.'; return; }
+    const bairroInput = document.getElementById('bairro').value.trim();
+    const todosSelecionados = selectedUFs.size === UFS.length;
+    let abrangencia;
+    if (todosSelecionados) {
+      abrangencia = 'em todo o território brasileiro (todos os estados), variando as regiões pesquisadas';
+    } else if (selectedUFs.size === 1) {
+      const nomeEstado = UFS.find(u => u[0] === [...selectedUFs][0])[1];
+      abrangencia = `no estado de ${nomeEstado} (${[...selectedUFs][0]}), Brasil${bairroInput ? ', região/bairro ' + bairroInput : ''}`;
+    } else {
+      const nomes = [...selectedUFs].map(sigla => UFS.find(u => u[0] === sigla)[1]).join(', ');
+      abrangencia = `nos estados: ${nomes}, Brasil`;
+    }
+    const tipo = document.getElementById('tipo').value;
+    const imovel = document.getElementById('imovel').value;
+    const filtrosExtra = [
+      document.getElementById('dorm-min').value ? `pelo menos ${document.getElementById('dorm-min').value} dormitório(s)` : '',
+      document.getElementById('vagas-min').value ? `pelo menos ${document.getElementById('vagas-min').value} vaga(s)` : '',
+      document.getElementById('area-min').value ? `área mínima de ${document.getElementById('area-min').value} m²` : '',
+      document.getElementById('preco-min').value ? `preço mínimo R$ ${document.getElementById('preco-min').value}` : '',
+      document.getElementById('preco-max').value ? `preço máximo R$ ${document.getElementById('preco-max').value}` : ''
+    ].filter(Boolean).join(', ');
+
+    btnBuscar.disabled = true;
+    statusLine.classList.remove('hidden');
+    statusLine.textContent = 'Buscando anúncios de proprietários particulares agora (pode levar até 1 minuto)...';
+    resultsEl.innerHTML = '';
+
+    const prompt = `Busque agora na web anúncios ATUAIS de imóveis para ${tipo}, tipo "${imovel === 'qualquer' ? 'imóvel' : imovel}", publicados DIRETAMENTE POR PROPRIETÁRIOS PARTICULARES (sem imobiliária) ${abrangencia}. Procure em OLX, ZAP Imóveis, VivaReal, Imovelweb, Chaves na Mão, Facebook Marketplace e Mercado Livre. Priorize anúncios "particular" ou "direto com o proprietário". ${filtrosExtra ? 'Filtrar por: ' + filtrosExtra + '.' : ''} ${todosSelecionados ? 'Como a busca é nacional, diversifique entre pelo menos 5 estados diferentes nos resultados.' : ''}
+Responda APENAS com JSON válido: [{"titulo":"...","local":"...","preco":"...","tipo":"venda ou locação","plataforma":"...","link":"URL real","telefone":"se visível no anúncio, senão vazio"}]
+Máximo ${todosSelecionados ? 15 : 10} resultados reais. Se não encontrar, responda [].`;
+
+    try {
+      const data = await jsonp(`${API_URL}?action=search&token=${encodeURIComponent(TOKEN)}&prompt=${encodeURIComponent(prompt)}`, 100000);
+      if (!data.ok) { statusLine.textContent = 'Erro: ' + data.error; return; }
+
+      const cleaned = (data.text || '').replace(/```json|```/g, '').trim();
+      let listings = [];
+      try { listings = JSON.parse(cleaned); } catch (e) {
+        const match = cleaned.match(/\[[\s\S]*\]/);
+        if (match) { try { listings = JSON.parse(match[0]); } catch (e2) {} }
+      }
+
+      if (!listings.length) {
+        statusLine.textContent = 'Nenhum anúncio encontrado agora — tente ampliar a região ou os filtros.';
+      } else {
+        statusLine.textContent = `${listings.length} anúncio(s) encontrado(s).`;
+        resultsEl.innerHTML = listings.map(l => `
+          <div class="lead-item">
+            <div class="top"><h4>${escapeHtml(l.titulo || 'Anúncio')}</h4><span class="plataforma">${escapeHtml(l.plataforma || '—')}</span></div>
+            <div class="meta">${escapeHtml(l.local || '')} · ${escapeHtml(l.preco || '')} · ${escapeHtml(l.tipo || '')}${l.telefone ? ' · Tel: ' + escapeHtml(l.telefone) : ''}</div>
+            ${l.link ? `<a class="btn-link" href="${escapeAttr(l.link)}" target="_blank" rel="noopener">Abrir anúncio →</a>` : ''}
+          </div>`).join('');
+      }
+    } catch (err) {
+      statusLine.textContent = 'Erro ao buscar: ' + err.message;
+    } finally {
+      btnBuscar.disabled = false;
+    }
+  });
+
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
+  function escapeAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
+</script>
+</body>
+</html>
