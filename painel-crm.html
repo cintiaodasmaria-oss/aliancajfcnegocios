@@ -87,11 +87,12 @@
       <div class="field"><label>Nome</label><input id="c-nome" required></div>
       <div class="field"><label>Telefone</label><input id="c-tel"></div>
     </div>
+    <div class="field"><label>CEP</label><input id="c-cep" placeholder="00000-000" maxlength="9"></div>
     <div class="grid2">
       <div class="field"><label>Cidade</label><input id="c-cidade" required></div>
       <div class="field"><label>Bairro</label><input id="c-bairro" required></div>
     </div>
-    <div class="field"><label>Endereço completo</label><input id="c-end" required></div>
+    <div class="field"><label>Endereço completo (rua, número, complemento)</label><input id="c-end" required></div>
     <div class="grid2">
       <div class="field"><label>Tipo de imóvel</label>
         <select id="c-tipo-imovel"><option>Apartamento</option><option>Casa</option><option>Casa de condomínio</option><option>Cobertura</option><option>Studio/Kitnet</option><option>Terreno</option><option>Sala comercial</option><option>Galpão</option></select>
@@ -131,8 +132,13 @@
         <label><input type="checkbox" value="Elevador"> Elevador</label>
       </div>
     </div>
-    <div class="field"><label>URL de uma foto (opcional)</label><input id="c-foto" placeholder="https://..."></div>
+    <div class="field">
+      <label>Fotos do imóvel</label>
+      <input type="file" id="c-fotos" accept="image/*" multiple>
+      <div id="c-fotos-preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>
+    </div>
     <label class="checkline"><input type="checkbox" id="c-publicar"> Publicar este imóvel no site público</label>
+    <div id="c-save-status" style="margin-top:8px; font-family:var(--mono); font-size:.78rem; color:var(--verde-musgo);"></div>
     <div style="margin-top:16px; display:flex; gap:10px;">
       <button type="submit" class="btn">Salvar</button>
       <button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button>
@@ -151,7 +157,7 @@
 
 <script>
   // ⚠️ COLE AQUI A URL DO SEU APPS SCRIPT (depois de implantar como Web App)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyCX-5OgOUKY5YOvnvTAB2kjjvXKcIIrj4ELJMOAk3lBxF9xG8xPhiffYv0sunED-KvOQ/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyRhaloKemSaOFRkYHXNI56unz3uOamxa470fTm9327bcwbwJeDGc-NNRLKWWuHsrp1Dg/exec";
 
   let TOKEN = sessionStorage.getItem('jfc-token') || '';
 
@@ -208,17 +214,51 @@
 
   if (TOKEN) tryLogin();
 
+  // ---------- CEP AUTOMÁTICO (ViaCEP) ----------
+  const cepInput = document.getElementById('c-cep');
+  cepInput.addEventListener('input', () => {
+    let v = cepInput.value.replace(/\D/g, '').slice(0, 8);
+    cepInput.value = v.length > 5 ? v.slice(0, 5) + '-' + v.slice(5) : v;
+  });
+  cepInput.addEventListener('blur', async () => {
+    const cep = cepInput.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        document.getElementById('c-cidade').value = data.localidade || '';
+        document.getElementById('c-bairro').value = data.bairro || '';
+        const ruaAtual = document.getElementById('c-end').value.trim();
+        if (!ruaAtual && data.logradouro) document.getElementById('c-end').value = data.logradouro;
+      }
+    } catch (err) { /* CEP não encontrado ou sem internet — deixa a pessoa preencher manualmente */ }
+  });
+
+  // ---------- PREVIEW DE FOTOS ----------
+  const fotosInput = document.getElementById('c-fotos');
+  const fotosPreview = document.getElementById('c-fotos-preview');
+  fotosInput.addEventListener('change', () => {
+    fotosPreview.innerHTML = '';
+    Array.from(fotosInput.files).forEach(file => {
+      const img = document.createElement('img');
+      img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid var(--pergaminho-escuro);';
+      img.src = URL.createObjectURL(file);
+      fotosPreview.appendChild(img);
+    });
+  });
+
   // ---------- FORM ----------
   const crmForm = document.getElementById('crm-form');
   document.getElementById('btn-new-lead').addEventListener('click', () => crmForm.classList.remove('hidden'));
   document.getElementById('btn-cancel').addEventListener('click', () => crmForm.classList.add('hidden'));
 
-  crmForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  function coletarLead() {
     const comodidades = Array.from(document.querySelectorAll('#c-comodidades input:checked')).map(el => el.value);
-    const lead = {
+    return {
       nome: document.getElementById('c-nome').value.trim(),
       telefone: document.getElementById('c-tel').value.trim(),
+      cep: document.getElementById('c-cep').value.trim(),
       cidade: document.getElementById('c-cidade').value.trim(),
       bairro: document.getElementById('c-bairro').value.trim(),
       endereco: document.getElementById('c-end').value.trim(),
@@ -232,12 +272,76 @@
       vagas: document.getElementById('c-vagas').value,
       valor: document.getElementById('c-valor').value,
       comodidades,
-      fotoUrl: document.getElementById('c-foto').value.trim(),
       publicarSite: document.getElementById('c-publicar').checked,
       status: document.getElementById('c-status').value
     };
-    await apiPost({ action: 'add', lead });
+  }
+
+  // Envia o cadastro. Se houver fotos, usa um formulário real (POST via iframe oculto,
+  // pois o Apps Script não deixa a gente LER a resposta de um POST comum vindo de outro site —
+  // mas ele recebe e processa perfeitamente. Sem fotos, usamos a via JSONP normal (mais rápida).
+  function enviarComFotos(lead, files) {
+    return new Promise((resolve) => {
+      const iframeName = 'jfc_upload_' + Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = API_URL;
+      form.target = iframeName;
+      form.enctype = 'multipart/form-data';
+      form.style.display = 'none';
+
+      const addField = (name, value) => {
+        const input = document.createElement('input');
+        input.name = name; input.value = value;
+        form.appendChild(input);
+      };
+      addField('action', 'add');
+      addField('token', TOKEN);
+      addField('lead', JSON.stringify(lead));
+
+      // move os arquivos selecionados para inputs de arquivo dentro do form real
+      files.forEach(file => {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.name = 'fotos';
+        fileInput.files = dt.files;
+        form.appendChild(fileInput);
+      });
+
+      document.body.appendChild(form);
+      let resolved = false;
+      iframe.addEventListener('load', () => {
+        if (resolved) return; // ignora o primeiro "load" (about:blank inicial)
+        resolved = true;
+        setTimeout(() => { form.remove(); iframe.remove(); resolve(); }, 300);
+      });
+      form.submit();
+    });
+  }
+
+  crmForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const lead = coletarLead();
+    const files = Array.from(fotosInput.files || []);
+    const statusEl = document.getElementById('c-save-status');
+    statusEl.textContent = files.length ? 'Enviando cadastro e fotos...' : 'Salvando...';
+
+    if (files.length) {
+      await enviarComFotos(lead, files);
+    } else {
+      await apiPost({ action: 'add', lead });
+    }
+
+    statusEl.textContent = '';
     e.target.reset();
+    fotosPreview.innerHTML = '';
     crmForm.classList.add('hidden');
     loadLeads();
   });
