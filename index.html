@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script type="text/javascript">
+  // Restaura a URL "bonita" (ex: /imovel/15-sobrado-vila-rui-barbosa) depois do
+  // redirecionamento feito pelo 404.html do GitHub Pages. Ver spa-github-pages.
+  (function(l) {
+    if (l.search[1] === '/') {
+      var decoded = l.search.slice(1).split('&').map(function(s) {
+        return s.replace(/~and~/g, '&');
+      }).join('?');
+      window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+    }
+  }(window.location));
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aliança JFC Negócios — Consultoria Imobiliária</title>
+<meta name="description" content="Consultoria imobiliária residencial, comercial e para incorporação, com atendimento direto e documentação organizada. CRECI 50.130J — Aliança JFC Negócios.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green: #2E9A52;
+    --green-dark: #1B5E4A;
+    --green-darker: #123F32;
+    --ink: #16211C;
+    --paper: #FAF9F5;
+    --paper-2: #F1F0EA;
+    --line: #E1DED3;
+    --muted: #5B655F;
+    --white: #FFFFFF;
+    --gold: #C79A44;
+    --gold-ink: #2B2107;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --maxw: 1200px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Poppins',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  h1,h2,h3{font-weight:700; line-height:1.08; margin:0;}
+  p{margin:0;}
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 26px; border-radius:999px; font-weight:600; font-size:15px;
+    text-decoration:none; border:1.5px solid transparent; white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--green-dark); color:var(--white);}
+  .btn-primary:hover{background:var(--green-darker); box-shadow:0 8px 20px -8px rgba(18,63,50,.5);}
+  .btn-ghost{background:transparent; color:var(--green-darker); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--green-dark); background:var(--paper-2);}
+  .btn-onphoto{background:var(--white); color:var(--green-darker);}
+  .btn-onphoto:hover{background:var(--paper-2);}
+  .eyebrow{
+    text-transform:uppercase; letter-spacing:.12em; font-size:12.5px; font-weight:600;
+    color:var(--green-dark);
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(250,249,245,.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0;}
+  .brand{display:flex; align-items:center; gap:12px; text-decoration:none;}
+  .brand img{width:38px; height:38px; border-radius:9px; object-fit:cover;}
+  .brand-text{display:flex; flex-direction:column; line-height:1.15;}
+  .brand-text strong{font-size:15px; font-weight:700; color:var(--green-darker);}
+  .brand-text span{font-size:11px; color:var(--muted); letter-spacing:.04em;}
+  .nav-links{display:flex; align-items:center; gap:34px; list-style:none; margin:0; padding:0;}
+  .nav-links a{text-decoration:none; font-size:14.5px; font-weight:500; color:var(--ink); opacity:.8;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{display:flex; align-items:center; gap:18px;}
+  .nav-phone{font-size:14px; font-weight:600; color:var(--green-darker); text-decoration:none; display:flex; align-items:center; gap:7px;}
+  .menu-toggle{display:none; background:none; border:none; cursor:pointer; padding:6px;}
+  .menu-toggle svg{width:26px; height:26px;}
+  .mobile-drawer{
+    display:none; flex-direction:column; gap:2px; background:var(--paper); border-top:1px solid var(--line);
+    padding:10px 0 18px;
+  }
+  .mobile-drawer.open{display:flex;}
+  .mobile-drawer a{
+    text-decoration:none; font-size:15px; font-weight:500; color:var(--ink); padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .mobile-drawer .btn{margin-top:14px; justify-content:center;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:76px 0 88px;}
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(34px, 4.6vw, 54px); letter-spacing:-.02em; color:var(--green-darker);
+    margin-top:16px;
+  }
+  .hero h1 em{font-style:normal; color:var(--green);}
+  .hero-sub{
+    font-size:17px; line-height:1.65; color:var(--muted); max-width:46ch;
+    margin-top:20px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:32px; flex-wrap:wrap;}
+  .hero-meta{
+    display:flex; gap:28px; margin-top:44px; padding-top:28px; border-top:1px solid var(--line);
+  }
+  .hero-meta div strong{display:block; font-size:22px; color:var(--green-darker); font-weight:700;}
+  .hero-meta div span{font-size:12.5px; color:var(--muted);}
+  .hero-photo-wrap{position:relative; justify-self:end;}
+  .hero-photo-card{
+    background:var(--green-darker); overflow:hidden;
+    border-radius:28px; padding:0; width:320px; position:relative;
+    box-shadow:0 30px 60px -24px rgba(18,63,50,.45);
+  }
+  .hero-photo-card img{
+    width:100%; aspect-ratio:4/5; object-fit:cover; border-radius:28px;
+    display:block; box-shadow:none; border:none;
+  }
+  .hero-photo-caption{margin-top:20px; text-align:center;}
+  .hero-photo-caption strong{display:block; color:var(--white); font-size:16px; font-weight:700;}
+  .hero-photo-caption span{display:block; color:rgba(255,255,255,.82); font-size:12.5px; margin-top:3px; letter-spacing:.03em;}
+  .hero-badge{
+    position:absolute; left:-30px; top:22px; background:var(--white); border-radius:14px;
+    padding:12px 16px; box-shadow:0 16px 34px -14px rgba(18,63,50,.35); display:flex; gap:10px; align-items:center;
+    border:1px solid var(--line); max-width:190px;
+  }
+  .hero-badge .dot{width:9px; height:9px; border-radius:50%; background:var(--green); flex:none;}
+  .hero-badge span{font-size:12.5px; font-weight:600; color:var(--green-darker); line-height:1.3;}
+
+  /* ---------- Busca / Anunciar (hero) ---------- */
+  .search-bar-wrap{margin-top:-56px; position:relative; z-index:5;}
+  .search-bar{
+    background:var(--green-darker); border-radius:var(--radius); padding:22px 26px 26px;
+    box-shadow:0 24px 48px -20px rgba(18,63,50,.45);
+  }
+  .search-tabs{display:flex; gap:22px; margin-bottom:16px;}
+  .search-tab{
+    background:transparent; border:none; cursor:pointer; padding:6px 2px;
+    font-size:13.5px; font-weight:600; color:rgba(255,255,255,.55);
+    border-bottom:2px solid transparent; font-family:inherit;
+  }
+  .search-tab.active{color:#fff; border-bottom-color:var(--gold);}
+  .search-panel{display:flex; align-items:end; gap:14px; flex-wrap:wrap;}
+  .search-panel p{color:rgba(255,255,255,.85); font-size:14px; margin:0 0 4px; flex-basis:100%;}
+  .search-field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:150px;}
+  .search-field label{font-size:11px; font-weight:600; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.06em;}
+  .search-field select, .search-field input{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:8px;
+    color:#fff; padding:11px 12px; font-size:14px; font-family:inherit;
+  }
+  .search-field select option{color:var(--ink);}
+  .search-field input::placeholder{color:rgba(255,255,255,.4);}
+  .btn-gold{background:var(--gold); color:var(--gold-ink); border-color:transparent; flex:none; cursor:pointer; font-family:inherit;}
+  .btn-gold:hover{background:#d6ac57;}
+
+  /* ---- Mais filtros (dentro da busca do hero) ---- */
+  .hero-more-toggle{
+    display:inline-flex; align-items:center; gap:8px; background:transparent; border:none; cursor:pointer;
+    color:rgba(255,255,255,.85); font-size:13px; font-weight:600; font-family:inherit; padding:2px 0;
+    flex-basis:100%; width:100%; margin-top:2px;
+  }
+  .hero-more-toggle svg{width:15px; height:15px; transition:transform .15s ease;}
+  .hero-more-toggle.open svg{transform:rotate(180deg);}
+  .hero-more-toggle .count-dot{
+    display:none; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--gold);
+    color:var(--gold-ink); font-size:11px; font-weight:700; align-items:center; justify-content:center;
+  }
+  .hero-more-toggle .count-dot.show{display:inline-flex;}
+  .hero-adv-filters{
+    display:none; flex-basis:100%; width:100%; margin-top:16px; padding-top:18px;
+    border-top:1px solid rgba(255,255,255,.15);
+  }
+  .hero-adv-filters.open{display:block;}
+  .hero-adv-filters-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px 20px;}
+  .hero-adv-field{display:flex; flex-direction:column; gap:6px;}
+  .hero-adv-field label{font-size:11px; font-weight:600; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.06em;}
+  .hero-adv-range{display:flex; align-items:center; gap:8px;}
+  .hero-adv-range input{
+    width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:8px;
+    color:#fff; padding:10px 11px; font-size:13.5px; font-family:inherit;
+  }
+  .hero-adv-range input::placeholder{color:rgba(255,255,255,.4);}
+  .hero-adv-range span{color:rgba(255,255,255,.5); font-size:12.5px; flex:none;}
+  .hero-chip-group{display:flex; gap:7px; flex-wrap:wrap;}
+  .hero-chip-group .mini-chip{
+    padding:7px 13px; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06);
+    font-size:12.5px; font-weight:600; color:#fff; cursor:pointer; font-family:inherit;
+  }
+  .hero-chip-group .mini-chip.active{background:var(--gold); border-color:var(--gold); color:var(--gold-ink);}
+  .hero-adv-amenities{grid-column:1 / -1;}
+  .hero-amenity-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:9px 16px; margin-top:4px;}
+  .hero-amenity-check{display:flex; align-items:center; gap:8px; font-size:12.5px; color:rgba(255,255,255,.85); cursor:pointer;}
+  .hero-amenity-check input{width:15px; height:15px; accent-color:var(--gold); cursor:pointer;}
+  .hero-adv-footer{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,.12);
+  }
+  .hero-adv-results{font-size:13px; color:rgba(255,255,255,.75);}
+  .hero-adv-results strong{color:#fff;}
+  .hero-adv-clear{
+    background:transparent; border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:999px;
+    padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .hero-adv-clear:hover{background:rgba(255,255,255,.08);}
+
+  /* ---------- Trust strip ---------- */
+  .trust{background:var(--green-darker); padding:30px 0;}
+  .trust-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
+  .trust-item{display:flex; align-items:center; gap:12px; color:var(--white);}
+  .trust-item svg{width:22px; height:22px; flex:none; opacity:.9;}
+  .trust-item span{font-size:13.5px; font-weight:500; color:rgba(255,255,255,.92);}
+
+  /* ---------- Section base ---------- */
+  section{padding:96px 0;}
+  .section-head{max-width:640px; margin-bottom:52px;}
+  .section-head h2{font-size:clamp(26px,3vw,36px); color:var(--green-darker); margin-top:14px; letter-spacing:-.01em;}
+  .section-head p{margin-top:16px; color:var(--muted); font-size:16px; line-height:1.6;}
+
+  /* ---------- Sobre / Expertise (asymmetric 2-col) ---------- */
+  .about{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:64px; align-items:start;}
+  .about-list{display:flex; flex-direction:column; gap:0;}
+  .about-item{display:flex; gap:18px; padding:24px 0; border-top:1px solid var(--line);}
+  .about-item:last-child{border-bottom:1px solid var(--line);}
+  .about-item .num{font-size:13px; font-weight:700; color:var(--green); padding-top:3px; flex:none; width:28px;}
+  .about-item h3{font-size:17px; color:var(--green-darker);}
+  .about-item p{margin-top:8px; font-size:14.5px; color:var(--muted); line-height:1.6;}
+  .about-panel{
+    background:var(--paper-2); border-radius:var(--radius); padding:40px; border:1px solid var(--line);
+    position:sticky; top:104px;
+  }
+  .about-panel .eyebrow{color:var(--green-dark);}
+  .about-panel blockquote{
+    font-size:19px; line-height:1.5; color:var(--green-darker); font-weight:500; margin:18px 0 0;
+  }
+  .about-panel .quote-by{margin-top:22px; display:flex; align-items:center; gap:12px;}
+  .about-panel .quote-by img{width:44px; height:44px; border-radius:50%; object-fit:cover;}
+  .about-panel .quote-by strong{display:block; font-size:14px; color:var(--ink);}
+  .about-panel .quote-by span{font-size:12px; color:var(--muted);}
+
+/* ---------- Quem somos ---------- */
+  .quem-somos{background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding-bottom:0;}
+  .quem-somos-hero{position:relative; min-height:560px; display:flex; align-items:center; overflow:hidden;}
+  .quem-somos-hero img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .quem-somos-hero-overlay{position:absolute; inset:0; background:linear-gradient(90deg, rgba(11,31,23,.94) 0%, rgba(11,31,23,.78) 45%, rgba(11,31,23,.3) 100%);}
+  .quem-somos-hero-content{position:relative; z-index:2; max-width:620px; padding:80px 0;}
+  .quem-somos-hero-content .eyebrow{color:#bfe3c8;}
+  .quem-somos-hero-content h2{color:#fff; margin-top:14px; margin-bottom:20px; font-size:clamp(26px,3vw,36px);}
+  .quem-somos-hero-content p{color:rgba(255,255,255,.88); font-size:14.5px; line-height:1.7; margin-bottom:14px;}
+  .pilares{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding:56px 0;}
+  .pilar{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:28px;}
+  .pilar h3{font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--green-dark); margin-bottom:12px;}
+  .pilar p{font-size:14.5px; color:var(--muted); line-height:1.65;}
+  
+  /* ---------- Cadastro (form) ---------- */
+  .cadastro{background:var(--paper);}
+  .cadastro-grid{display:grid; grid-template-columns:.85fr 1.15fr; gap:56px;}
+  .cadastro-side .section-head{margin-bottom:26px;}
+  .cadastro-points{display:flex; flex-direction:column; gap:20px; margin-top:8px;}
+  .cadastro-point{display:flex; gap:14px; align-items:flex-start;}
+  .cadastro-point svg{width:20px; height:20px; flex:none; margin-top:2px; color:var(--green-dark);}
+  .cadastro-point span{font-size:14.5px; color:var(--muted); line-height:1.55;}
+  form.property-form{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius); padding:36px;
+  }
+  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;}
+  .form-row.single{grid-template-columns:1fr;}
+  .field{display:flex; flex-direction:column; gap:7px;}
+  .field label{font-size:13px; font-weight:600; color:var(--ink);}
+  .field input, .field select, .field textarea{
+    font-family:inherit; font-size:14.5px; padding:11px 13px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--line); background:var(--paper); color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--green); background:var(--white);
+  }
+  .field textarea{resize:vertical; min-height:88px;}
+  .check-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;}
+  .check-item{display:flex; align-items:center; gap:9px; font-size:14px; color:var(--muted);}
+  .check-item input{width:16px; height:16px; accent-color:var(--green-dark);}
+  .file-drop{
+    border:1.5px dashed var(--line); border-radius:var(--radius-sm); padding:22px; text-align:center;
+    color:var(--muted); font-size:13.5px; background:var(--paper);
+  }
+  .form-submit{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:8px; flex-wrap:wrap;}
+  .form-note{font-size:12.5px; color:var(--muted); max-width:34ch;}
+
+  /* ---------- Anúncios (listings + filters) ---------- */
+  .listings{background:var(--white); border-top:1px solid var(--line);}
+  .listings-head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; margin-bottom:36px;}
+  .filters{display:flex; gap:10px; flex-wrap:wrap;}
+  .filter-chip{
+    padding:9px 18px; border-radius:999px; border:1.5px solid var(--line); font-size:13.5px; font-weight:500;
+    background:var(--paper); cursor:pointer;
+  }
+  .filter-chip.active{background:var(--green-dark); border-color:var(--green-dark); color:var(--white);}
+  .filters-toggle-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:9px 16px 9px 14px; border-radius:999px;
+    border:1.5px solid var(--green-dark); background:var(--white); color:var(--green-dark);
+    font-size:13.5px; font-weight:600; cursor:pointer;
+  }
+  .filters-toggle-btn svg{width:16px; height:16px;}
+  .filters-toggle-btn.active{background:var(--green-dark); color:var(--white);}
+  .filters-toggle-btn .count-dot{
+    display:none; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--gold);
+    color:var(--gold-ink); font-size:11px; font-weight:700; align-items:center; justify-content:center;
+  }
+  .filters-toggle-btn .count-dot.show{display:inline-flex;}
+  .adv-filters{
+    display:none; background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px 26px; margin-bottom:28px;
+  }
+  .adv-filters.open{display:block;}
+  .adv-filters-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:20px 24px;}
+  .adv-field{display:flex; flex-direction:column; gap:8px;}
+  .adv-field label{font-size:11.5px; font-weight:700; color:var(--green-darker); text-transform:uppercase; letter-spacing:.05em;}
+  .adv-field select{
+    padding:11px 12px; border-radius:var(--radius-sm); border:1.5px solid var(--line); background:var(--white);
+    font-family:inherit; font-size:14px; color:var(--ink);
+  }
+  .adv-range{display:flex; align-items:center; gap:8px;}
+  .adv-range input{
+    width:100%; padding:11px 12px; border-radius:var(--radius-sm); border:1.5px solid var(--line);
+    background:var(--white); font-family:inherit; font-size:14px; color:var(--ink);
+  }
+  .adv-range span{color:var(--muted); font-size:13px; flex:none;}
+  .chip-group{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip-group .mini-chip{
+    padding:8px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--white);
+    font-size:13px; font-weight:600; color:var(--ink); cursor:pointer;
+  }
+  .chip-group .mini-chip.active{background:var(--green); border-color:var(--green); color:var(--white);}
+  .adv-amenities{grid-column:1 / -1;}
+  .amenity-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px 18px; margin-top:6px;}
+  .amenity-check{display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--ink); cursor:pointer;}
+  .amenity-check input{width:16px; height:16px; accent-color:var(--green-dark); cursor:pointer;}
+  .adv-actions{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-top:24px; padding-top:20px; border-top:1px solid var(--line);
+  }
+  .adv-actions-btns{display:flex; gap:12px; flex-wrap:wrap;}
+  .adv-results-count{font-size:13.5px; color:var(--muted);}
+  .adv-results-count strong{color:var(--green-darker);}
+  .btn-sm{padding:10px 20px; font-size:14px;}
+  .empty-state{
+    border:1.5px dashed var(--line); border-radius:var(--radius); padding:72px 40px; text-align:center;
+    background:var(--paper-2);
+  }
+  .empty-state .icon-wrap{
+    width:64px; height:64px; border-radius:50%; background:var(--white); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 22px;
+  }
+  .empty-state .icon-wrap svg{width:28px; height:28px; color:var(--green-dark);}
+  .empty-state h3{font-size:19px; color:var(--green-darker);}
+  .empty-state p{margin-top:10px; color:var(--muted); font-size:14.5px; max-width:44ch; margin-left:auto; margin-right:auto; line-height:1.6;}
+  .empty-state .btn{margin-top:22px;}
+
+  /* ---------- Listing cards ---------- */
+  .listing-card{
+    background:var(--paper); border:1.5px solid var(--line); border-radius:var(--radius); overflow:hidden;
+    display:flex; flex-direction:column; transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .listing-card:hover{box-shadow:0 14px 34px -18px rgba(18,63,50,.35); transform:translateY(-2px);}
+  .listing-card .thumb{
+    aspect-ratio:4/3; background:var(--paper-2) center/cover no-repeat; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); position:relative;
+  }
+  .listing-card .thumb svg{width:32px; height:32px; opacity:.4;}
+  .listing-card .thumb .tag{
+    position:absolute; top:12px; left:12px; background:var(--green-dark); color:#fff; font-size:11.5px; font-weight:600;
+    padding:5px 12px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .listing-card .body{padding:18px 20px 20px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .listing-card .price{font-size:19px; font-weight:700; color:var(--green-darker);}
+  .listing-card .loc{font-size:13.5px; color:var(--muted);}
+  .listing-card .type{font-size:12.5px; color:var(--green-dark); font-weight:600; text-transform:uppercase; letter-spacing:.03em;}
+  .listing-card .meta{display:flex; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--muted); margin-top:4px; border-top:1px solid var(--line); padding-top:12px;}
+  .listing-card .meta span{display:flex; align-items:center; gap:4px;}
+  .listing-card{cursor:pointer;}
+
+  /* ---------- Listing detail page (full page, estilo QuintoAndar) ---------- */
+  .listing-page-overlay{
+    position:fixed; inset:0; background:var(--paper); z-index:300; display:none;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .listing-page-overlay.open{display:block;}
+  .listing-page-topbar{
+    position:sticky; top:0; z-index:6; background:var(--white); border-bottom:1px solid var(--line);
+    padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .listing-page-back{
+    display:flex; align-items:center; gap:8px; background:none; border:none; cursor:pointer;
+    color:var(--green-darker); font-weight:600; font-size:14px; padding:6px 4px;
+  }
+  .listing-page-back svg{width:18px; height:18px;}
+  .listing-page-topbar .btn{padding:10px 18px; font-size:13.5px;}
+  .listing-page-topbar .topbar-actions{display:flex; align-items:center; gap:10px;}
+  .listing-page-copy-btn{
+    display:flex; align-items:center; gap:6px; background:var(--paper-2); border:1.5px solid var(--line);
+    color:var(--green-darker); font-weight:600; font-size:13.5px; padding:9px 16px; border-radius:999px;
+    cursor:pointer; white-space:nowrap; transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .listing-page-copy-btn:hover{background:#fff; border-color:var(--green-dark);}
+  .listing-page-copy-btn svg{width:15px; height:15px; flex:none;}
+  .listing-page-copy-btn.copied{background:var(--green-dark); border-color:var(--green-dark); color:#fff;}
+  .listing-page-gallery{position:relative; background:var(--green-darker);}
+  .listing-page-gallery-main{width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--paper-2);}
+  .listing-page-gallery .nav-btn{
+    position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:none;
+    background:rgba(255,255,255,.92); color:var(--green-darker); font-size:20px; cursor:pointer; display:flex;
+    align-items:center; justify-content:center; z-index:2;
+  }
+  .listing-page-gallery .nav-prev{left:16px;}
+  .listing-page-gallery .nav-next{right:16px;}
+  .listing-page-gallery .photo-count{
+    position:absolute; bottom:16px; right:16px; background:rgba(18,63,50,.78); color:#fff; font-size:12.5px;
+    padding:5px 12px; border-radius:999px; z-index:2;
+  }
+  .listing-page-thumbs{display:flex; gap:8px; padding:12px 24px; overflow-x:auto; background:var(--white); border-bottom:1px solid var(--line);}
+  .listing-page-thumbs img{
+    width:92px; height:66px; object-fit:cover; border-radius:8px; cursor:pointer; opacity:.55; flex:none;
+    border:2px solid transparent; transition:opacity .15s ease, border-color .15s ease;
+  }
+  .listing-page-thumbs img:hover{opacity:.85;}
+  .listing-page-thumbs img.active{opacity:1; border-color:var(--green-dark);}
+  .listing-page-content{
+    max-width:1080px; margin:0 auto; padding:36px 24px 90px; display:grid;
+    grid-template-columns:1.6fr 1fr; gap:44px; align-items:start;
+  }
+  @media (max-width:860px){ .listing-page-content{grid-template-columns:1fr;} }
+  .listing-page-main .tag{
+    display:inline-block; background:var(--green-dark); color:#fff; font-size:11.5px; font-weight:600;
+    padding:5px 12px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px;
+  }
+  .listing-page-main .type{font-size:13px; color:var(--green-dark); font-weight:600; text-transform:uppercase; letter-spacing:.03em;}
+  .listing-page-main .price{font-size:32px; font-weight:700; color:var(--green-darker); margin-top:6px;}
+  .listing-page-main .loc{font-size:15px; color:var(--muted); margin-top:8px;}
+  .listing-page-main .spec-row{
+    display:flex; flex-wrap:wrap; gap:28px; margin:26px 0; padding:20px 0;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .listing-page-main .spec-item{display:flex; flex-direction:column; gap:3px;}
+  .listing-page-main .spec-item strong{font-size:18px; color:var(--green-darker);}
+  .listing-page-main .spec-item span{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  .listing-page-main .section-title{font-size:17px; font-weight:700; color:var(--green-darker); margin:30px 0 12px;}
+  .listing-page-main .desc{font-size:14.5px; line-height:1.75; color:var(--green-darker); white-space:pre-line;}
+  .listing-page-main .amenities{display:flex; flex-wrap:wrap; gap:10px;}
+  .listing-page-main .amenities span{
+    background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:7px 15px;
+    font-size:13px; color:var(--green-darker);
+  }
+  .listing-page-side{
+    position:sticky; top:88px; background:var(--white); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:24px; display:flex; flex-direction:column; gap:16px; box-shadow:0 14px 34px -18px rgba(18,63,50,.18);
+  }
+  .listing-page-side .agent{display:flex; gap:12px; align-items:center;}
+  .listing-page-side .agent img{width:46px; height:46px; border-radius:50%; object-fit:cover; flex:none;}
+  .listing-page-side .agent strong{display:block; font-size:14.5px; color:var(--green-darker);}
+  .listing-page-side .agent span{font-size:12.5px; color:var(--muted);}
+  .listing-page-side .side-price{font-size:22px; font-weight:700; color:var(--green-darker);}
+  .listing-page-side .btn{width:100%; text-align:center; justify-content:center;}
+  .listing-page-side p{font-size:12.5px; color:var(--muted); line-height:1.5;}
+
+  /* ---------- CTA band ---------- */
+  .cta-band{
+    background:linear-gradient(135deg, var(--green-dark) 0%, var(--green-darker) 100%);
+    border-radius:24px; padding:56px 48px; display:flex; align-items:center; justify-content:space-between;
+    gap:32px; flex-wrap:wrap; margin:0 28px;
+  }
+  .cta-band h2{color:var(--white); font-size:clamp(22px,2.6vw,30px); max-width:26ch;}
+  .cta-band p{color:rgba(255,255,255,.82); margin-top:10px; font-size:14.5px;}
+  .cta-band-actions{display:flex; gap:14px; flex-wrap:wrap;}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--green-darker); color:rgba(255,255,255,.85); padding:64px 0 28px; margin-top:96px;}
+  .footer-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:48px;}
+  .footer-brand .brand-text strong{color:var(--white);}
+  .footer-brand .brand-text span{color:rgba(255,255,255,.6);}
+  .footer-brand p{margin-top:18px; font-size:13.5px; line-height:1.6; color:rgba(255,255,255,.65); max-width:34ch;}
+  .foot-col h4{font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.55); font-weight:600; margin-bottom:16px;}
+  .foot-col ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px;}
+  .foot-col a{text-decoration:none; font-size:14px; color:rgba(255,255,255,.85);}
+  .foot-col a:hover{color:var(--white);}
+  .foot-contact{display:flex; align-items:center; gap:10px;}
+  .foot-contact svg{width:16px; height:16px; flex:none; opacity:.8;}
+  .social-row{display:flex; gap:10px; margin-top:20px;}
+  .social-pill{
+    width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.08); display:flex;
+    align-items:center; justify-content:center; text-decoration:none; border:1px solid rgba(255,255,255,.15);
+  }
+  .social-pill svg{width:16px; height:16px; color:var(--white);}
+  .foot-bottom{
+    border-top:1px solid rgba(255,255,255,.14); margin-top:52px; padding-top:24px; display:flex;
+    justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:12.5px; color:rgba(255,255,255,.5);
+  }
+
+/* ---------- WhatsApp flutuante ---------- */
+  .whatsapp-float{
+        position:fixed; right:24px; bottom:24px; width:60px; height:60px; border-radius:50%;
+        background:#25D366; display:flex; align-items:center; justify-content:center;
+        box-shadow:0 12px 28px -8px rgba(0,0,0,.4); z-index:80; text-decoration:none;
+        transition:transform .15s ease;
+  }
+    .whatsapp-float:hover{transform:scale(1.06);}
+    .whatsapp-float svg{width:30px; height:30px; color:#fff;}
+  
+    /* ---------- Responsive ---------- */
+  @media (max-width:980px){
+    .hero-grid, .about-grid, .cadastro-grid{grid-template-columns:1fr;}
+    .hero-photo-wrap{justify-self:start;}
+    .about-panel{position:static;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .footer-brand{grid-column:1/-1;}
+        .quem-somos-hero-content{max-width:100%;}
+        .pilares{grid-template-columns:1fr;}
+  }
+  @media (max-width:760px){
+    .nav-links, .nav-phone, .nav-cta .btn{display:none;}
+    .menu-toggle{display:block;}
+    .brand-text span{display:none;}
+    .brand img{width:34px; height:34px;}
+    .hero{padding:44px 0 64px;}
+    section{padding:64px 0;}
+    .form-row, .check-grid{grid-template-columns:1fr;}
+    .cta-band{flex-direction:column; align-items:flex-start; margin:0 16px; padding:40px 28px;}
+    .footer-grid{grid-template-columns:1fr;}
+    .wrap{padding:0 20px;}
+    .trust-row{justify-content:flex-start; gap:26px;}
+        .quem-somos-hero{min-height:420px;}
+        .quem-somos-hero-content{padding:48px 0;}
+        .search-bar-wrap{margin-top:-28px;}
+        .search-bar{padding:18px 18px 20px;}
+        .search-panel{flex-direction:column; align-items:stretch;}
+        .search-field{min-width:0;}
+        .btn-gold{width:100%; justify-content:center;}
+        .adv-filters{padding:20px 18px;}
+        .adv-filters-grid{grid-template-columns:1fr 1fr;}
+        .adv-actions{flex-direction:column; align-items:stretch;}
+        .adv-actions-btns{flex-direction:column;}
+        .adv-actions-btns .btn{width:100%; justify-content:center;}
+        .hero-adv-filters-grid{grid-template-columns:1fr 1fr;}
+        .hero-adv-footer{flex-direction:column; align-items:stretch;}
+        .hero-adv-clear{width:100%; justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#topo">
+      <img src="assets/logo-mark.png" alt="Aliança JFC Negócios">
+      <span class="brand-text">
+        <strong>Aliança JFC Negócios</strong>
+        <span>Consultoria Imobiliária</span>
+      </span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#imoveis">Anúncios</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#cadastro">Cadastrar Imóvel</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a class="nav-phone" href="tel:+5511984556597">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (11) 98455-6597
+      </a>
+      <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
+      <a href="painel-crm.html" title="Acesso da equipe" style="font-size:11px; color:var(--muted); opacity:.55; text-decoration:none; margin-left:4px;">Equipe</a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileDrawer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="mobile-drawer wrap" id="mobileDrawer">
+    <a href="#imoveis">Anúncios</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#cadastro">Cadastrar Imóvel</a>
+    <a href="#contato">Contato</a>
+    <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
+    <a href="painel-crm.html" style="font-size:12px; color:var(--muted); opacity:.6;">Acesso da equipe</a>
+  </nav>
+</header>
+
+<main id="topo">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Consultoria imobiliária em São Paulo</span>
+        <h1>Assessoria completa em cada <em>negociação imobiliária.</em></h1>
+        <p class="hero-sub">
+          Atuação em imóveis residenciais (venda e locação, para proprietários ou compradores), comerciais, galpões e áreas para incorporação ou loteamento. Documentação organizada e acompanhamento direto, do primeiro contato à assinatura.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#cadastro">Cadastrar meu imóvel</a>
+          <a class="btn btn-ghost" href="#imoveis">Ver anúncios</a>
+        </div>
+        <div class="hero-meta">
+          <div>
+            <strong>14+ anos</strong>
+            <span>de atuação no mercado</span>
+          </div>
+          <div>
+            <strong>CRECI 50.130J</strong>
+            <span>registro ativo</span>
+          </div>
+          <div>
+            <strong>100%</strong>
+            <span>atendimento consultivo</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-card">
+          <img src="https://images.unsplash.com/photo-1758565811176-ccd94357a844?fm=jpg&q=80&w=900&auto=format&fit=crop" alt="Ambiente residencial amplo, com janelas para o exterior">
+        </div>
+        <div class="hero-badge">
+          <span class="dot"></span>
+          <span>Atendimento consultivo<br>personalizado</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUSCA / ANUNCIAR -->
+  <div class="search-bar-wrap wrap">
+    <div class="search-bar">
+      <div class="search-tabs">
+        <button class="search-tab active" type="button" data-tab="buscar">Buscar imóvel</button>
+        <button class="search-tab" type="button" data-tab="anunciar">Sou proprietário</button>
+      </div>
+      <div class="search-panel" id="panelBuscar">
+        <div class="search-field">
+          <label for="s-finalidade">O que deseja?</label>
+          <select id="s-finalidade">
+            <option value="todos">Comprar ou alugar</option>
+            <option value="venda">Comprar</option>
+            <option value="locacao">Alugar</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label for="s-tipo">Tipo</label>
+          <select id="s-tipo">
+            <option value="">Todos os tipos</option>
+            <option value="Casa">Casa</option>
+            <option value="Apartamento">Apartamento</option>
+            <option value="Comercial">Comercial</option>
+            <option value="Terreno">Terreno</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label for="s-cidade">Cidade</label>
+          <input id="s-cidade" type="text" placeholder="Ex: São Paulo">
+        </div>
+        <div class="search-field">
+          <label for="s-bairro">Bairro</label>
+          <input id="s-bairro" type="text" placeholder="Ex: Moema">
+        </div>
+        <button class="btn btn-gold" type="button" id="btnBuscarHero">Buscar</button>
+
+        <button class="hero-more-toggle" type="button" id="btnToggleFilters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Mais filtros
+          <span class="count-dot" id="filtersCountDot">0</span>
+        </button>
+
+        <div class="hero-adv-filters" id="advFilters">
+          <div class="hero-adv-filters-grid">
+            <div class="hero-adv-field">
+              <label>Valor (R$)</label>
+              <div class="hero-adv-range">
+                <input id="af-valor-min" type="number" min="0" step="1000" placeholder="Mínimo">
+                <span>até</span>
+                <input id="af-valor-max" type="number" min="0" step="1000" placeholder="Máximo">
+              </div>
+            </div>
+            <div class="hero-adv-field">
+              <label>Área útil (m²)</label>
+              <div class="hero-adv-range">
+                <input id="af-area-min" type="number" min="0" step="5" placeholder="Mínima">
+                <span>até</span>
+                <input id="af-area-max" type="number" min="0" step="5" placeholder="Máxima">
+              </div>
+            </div>
+            <div class="hero-adv-field">
+              <label>Quartos</label>
+              <div class="hero-chip-group chip-group" id="af-quartos" data-target="quartos">
+                <button class="mini-chip active" type="button" data-value="0">Tanto faz</button>
+                <button class="mini-chip" type="button" data-value="1">1+</button>
+                <button class="mini-chip" type="button" data-value="2">2+</button>
+                <button class="mini-chip" type="button" data-value="3">3+</button>
+                <button class="mini-chip" type="button" data-value="4">4+</button>
+              </div>
+            </div>
+            <div class="hero-adv-field">
+              <label>Suítes</label>
+              <div class="hero-chip-group chip-group" id="af-suites" data-target="suites">
+                <button class="mini-chip active" type="button" data-value="0">Tanto faz</button>
+                <button class="mini-chip" type="button" data-value="1">1+</button>
+                <button class="mini-chip" type="button" data-value="2">2+</button>
+                <button class="mini-chip" type="button" data-value="3">3+</button>
+              </div>
+            </div>
+            <div class="hero-adv-field">
+              <label>Banheiros</label>
+              <div class="hero-chip-group chip-group" id="af-banheiros" data-target="banheiros">
+                <button class="mini-chip active" type="button" data-value="0">Tanto faz</button>
+                <button class="mini-chip" type="button" data-value="1">1+</button>
+                <button class="mini-chip" type="button" data-value="2">2+</button>
+                <button class="mini-chip" type="button" data-value="3">3+</button>
+              </div>
+            </div>
+            <div class="hero-adv-field">
+              <label>Vagas de garagem</label>
+              <div class="hero-chip-group chip-group" id="af-vagas" data-target="vagas">
+                <button class="mini-chip active" type="button" data-value="0">Tanto faz</button>
+                <button class="mini-chip" type="button" data-value="1">1+</button>
+                <button class="mini-chip" type="button" data-value="2">2+</button>
+                <button class="mini-chip" type="button" data-value="4">4+</button>
+              </div>
+            </div>
+            <div class="hero-adv-field hero-adv-amenities">
+              <label>Comodidades</label>
+              <div class="hero-amenity-grid" id="af-comodidades">
+                <label class="hero-amenity-check"><input type="checkbox" value="piscina"> Piscina</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="academia"> Academia</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="elevador"> Elevador</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="mobiliado"> Mobiliado</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="portaria"> Portaria 24h</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="ar condicionado"> Ar-condicionado</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="churrasqueira"> Churrasqueira</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="salao de festas"> Salão de festas</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="sauna"> Sauna</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="garagem"> Garagem</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="varanda"> Varanda</label>
+                <label class="hero-amenity-check"><input type="checkbox" value="segurança"> Segurança 24h</label>
+              </div>
+            </div>
+          </div>
+          <div class="hero-adv-footer">
+            <span class="hero-adv-results" id="advResultsCount"></span>
+            <button class="hero-adv-clear" type="button" id="btnClearFilters">Limpar filtros</button>
+          </div>
+        </div>
+      </div>
+      <div class="search-panel" id="panelAnunciar" style="display:none;">
+        <p>Proprietário? Cadastre seu imóvel com assessoria completa — do anúncio à assinatura do contrato.</p>
+        <a class="btn btn-gold" href="#cadastro">Cadastrar meu imóvel</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div class="trust">
+    <div class="wrap trust-row">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5z"/></svg>
+        <span>Residencial, comercial, galpões e incorporação</span>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Acompanhamento em todas as etapas</span>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>Relacionamento de confiança, não de pressa</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOBRE / EXPERTISE -->
+  <section class="about" id="sobre">
+    <div class="wrap about-grid">
+      <div class="about-list-wrap">
+        <div class="section-head">
+          <span class="eyebrow">Como eu trabalho</span>
+          <h2>Cada negociação passa por uma análise antes de virar proposta.</h2>
+        </div>
+        <div class="about-list">
+          <div class="about-item">
+            <span class="num">01</span>
+            <div>
+              <h3>Atuação diversificada</h3>
+              <p>Imóveis residenciais (venda e locação, para proprietários ou compradores), comerciais, galpões e áreas para incorporação ou loteamento.</p>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="num">02</span>
+            <div>
+              <h3>Diligência documental</h3>
+              <p>Levantamento e conferência da documentação do imóvel e das partes, identificando pontos de atenção antes de qualquer decisão.</p>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="num">03</span>
+            <div>
+              <h3>Acompanhamento próximo</h3>
+              <p>Atendimento direto do início ao registro, com clareza sobre cada etapa do processo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about-panel">
+        <span class="eyebrow">Nossa filosofia</span>
+        <blockquote>"O trabalho começa antes da negociação: é entender a fundo o imóvel e a situação de quem confia na assessoria para decidir com segurança."</blockquote>
+        <div class="quote-by">
+          
+          <div>
+            
+            <span>CRECI 50.130J</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUEM SOMOS -->
+  <section class="quem-somos" id="quem-somos">
+<div class="quem-somos-hero">
+    <img src="https://images.unsplash.com/photo-1757359056339-22968344cce6?fm=jpg&q=80&w=1800&auto=format&fit=crop" alt="Fachada residencial moderna ao entardecer">
+    <div class="quem-somos-hero-overlay"></div>
+    <div class="quem-somos-hero-content wrap">
+    <span class="eyebrow">Quem somos</span>
+    <h2>Sobre a Aliança JFC Negócios</h2>
+    <p>A atualização dos imóveis é, e sempre será, um dos maiores diferenciais da Aliança JFC Negócios. Trabalhamos para que quem busca um novo imóvel — para morar ou investir — tenha uma experiência clara, segura e sem surpresas.</p>
+    <p>Mantemos contato direto e constante com os proprietários, o que garante informações sempre atualizadas: valores, condições, documentação e fotos de qualidade. Essa proximidade é o que permite oferecer aos nossos clientes uma visão real do imóvel, facilitando cada decisão.</p>
+    <p>Do primeiro contato à assinatura, cuidamos dos detalhes que fazem diferença — com transparência em cada etapa e um atendimento que vai além da simples intermediação.</p>
+    </div>
+    </div>
+    <div class="wrap">
+    <div class="pilares">
+  <div class="pilar">
+    <h3>Missão</h3>
+    <p>Oferecer soluções imobiliárias completas e personalizadas, com informações precisas, diligência documental e relacionamento de confiança do início ao fim de cada negociação.</p>
+    </div>
+    <div class="pilar">
+    <h3>Visão</h3>
+    <p>Ser referência em atualização de imóveis e atendimento diferenciado, à frente das tendências do mercado e comprometida com a satisfação de quem confia em nosso trabalho.</p>
+    </div>
+    <div class="pilar">
+    <h3>Valores</h3>
+    <p>Transparência, ética profissional, excelência no atendimento e compromisso com resultado em cada negociação.</p>
+    </div>
+    </div>
+    </div>
+  </section>
+  
+  <!-- CADASTRO -->
+  <section class="cadastro" id="cadastro">
+    <div class="wrap cadastro-grid">
+      <div class="cadastro-side">
+        <div class="section-head">
+          <span class="eyebrow">Cadastre seu imóvel</span>
+          <h2>Conte um pouco sobre o imóvel e retornamos com uma análise.</h2>
+          <p>Preencha as informações abaixo. Toda solicitação passa por uma avaliação inicial antes da publicação do anúncio.</p>
+        </div>
+        <div class="cadastro-points">
+          <div class="cadastro-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Resposta com retorno consultivo, não automático</span>
+          </div>
+          <div class="cadastro-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Dados tratados com confidencialidade</span>
+          </div>
+          <div class="cadastro-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Sem compromisso de exclusividade para o primeiro contato</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="property-form" id="propertyForm">
+        <div class="form-row">
+          <div class="field">
+            <label for="f-nome">Nome completo</label>
+            <input id="f-nome" name="nome" type="text" placeholder="Seu nome" required>
+          </div>
+          <div class="field">
+            <label for="f-telefone">Telefone / WhatsApp</label>
+            <input id="f-telefone" name="telefone" type="tel" placeholder="(11) 90000-0000" required>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="field">
+            <label for="f-endereco">Endereço do imóvel</label>
+            <input id="f-endereco" name="endereco" type="text" placeholder="Rua, número, bairro, cidade">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="f-tipo">Tipo de imóvel</label>
+            <select id="f-tipo" name="tipo">
+              <option value="">Selecione</option>
+              <option>Casa</option>
+              <option>Apartamento</option>
+              <option>Terreno</option>
+              <option>Comercial</option>
+              <option>Rural</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-finalidade">Finalidade</label>
+            <select id="f-finalidade" name="finalidade">
+              <option value="">Selecione</option>
+              <option>Venda</option>
+              <option>Locação</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="f-area">Área (m²)</label>
+            <input id="f-area" name="area" type="text" placeholder="Ex: 120">
+          </div>
+          <div class="field">
+            <label for="f-quartos">Quartos</label>
+            <input id="f-quartos" name="quartos" type="text" placeholder="Ex: 3">
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="field">
+            <label>Comodidades</label>
+            <div class="check-grid">
+              <label class="check-item"><input type="checkbox" name="comodidades" value="garagem"> Garagem</label>
+              <label class="check-item"><input type="checkbox" name="comodidades" value="quintal"> Quintal / área externa</label>
+              <label class="check-item"><input type="checkbox" name="comodidades" value="mobiliado"> Mobiliado</label>
+              <label class="check-item"><input type="checkbox" name="comodidades" value="condominio"> Em condomínio</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="field">
+            <label for="f-obs">Observações</label>
+            <textarea id="f-obs" name="observacoes" placeholder="Detalhes adicionais sobre o imóvel"></textarea>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="field">
+            <label for="f-fotos">Fotos do imóvel</label>
+            <div class="file-drop">Arraste as fotos aqui ou clique para selecionar</div>
+            <input id="f-fotos" name="fotos" type="file" multiple accept="image/*" style="margin-top:8px;">
+          </div>
+        </div>
+        <div class="form-submit">
+          <button class="btn btn-primary" type="submit">Enviar cadastro</button>
+          <span class="form-note">Ao enviar, você concorda em ser contatado pela Aliança JFC Negócios sobre este imóvel.</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ANÚNCIOS -->
+  <section class="listings" id="imoveis">
+    <div class="wrap">
+      <div class="listings-head">
+        <div class="section-head" style="margin-bottom:0;">
+          <span class="eyebrow">Anúncios</span>
+          <h2>Imóveis disponíveis</h2>
+        </div>
+        <div class="filters">
+          <button class="filter-chip active" type="button" data-filter="todos">Todos</button>
+          <button class="filter-chip" type="button" data-filter="venda">Venda</button>
+          <button class="filter-chip" type="button" data-filter="locacao">Locação</button>
+          <button class="filter-chip" type="button" data-filter="comercial">Comercial</button>
+        </div>
+      </div>
+
+      <div class="listings-grid" id="listingsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; margin-top:32px;"></div>
+      <div class="empty-state" id="listingsEmpty">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
+        </div>
+        <h3>Novos anúncios em breve</h3>
+        <p>No momento não há imóveis publicados nesta categoria. Cadastre o seu imóvel ou entre em contato para consultar oportunidades ainda não divulgadas.</p>
+        <a class="btn btn-primary" href="#cadastro">Cadastrar meu imóvel</a>
+      </div>
+      <div class="empty-state" id="listingsLoadError" style="display:none;">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+        </div>
+        <h3>Não foi possível carregar os anúncios agora</h3>
+        <p>Pode ter sido uma instabilidade rápida de conexão. Toque no botão abaixo para tentar de novo.</p>
+        <button class="btn btn-primary" id="listingsRetryBtn" type="button">Tentar novamente</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section style="padding:0 0 96px;">
+    <div class="cta-band">
+      <div>
+        <h2>Pronta para conversar sobre o seu próximo passo imobiliário?</h2>
+        <p>Atendimento direto, sem intermediários, com retorno em até 24h úteis.</p>
+      </div>
+      <div class="cta-band-actions">
+        <a class="btn btn-onphoto" href="https://wa.me/5511984556597" target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <a class="btn btn-ghost" style="border-color:rgba(255,255,255,.4); color:#fff;" href="#contato">Ver contatos</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contato">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="#topo" style="text-decoration:none;">
+        <img src="assets/logo-mark.png" alt="Aliança JFC Negócios">
+        <span class="brand-text">
+          <strong>Aliança JFC Negócios</strong>
+          <span>Consultoria Imobiliária</span>
+        </span>
+      </a>
+      <p>Consultoria imobiliária residencial, comercial e para incorporação, com atendimento direto e documentação organizada. CRECI 50.130J.</p>
+      <div class="social-row">
+        <a class="social-pill" href="https://wa.me/5511984556597" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.01a7.94 7.94 0 0 0 5.54-13.58zM12.06 18.4h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.58 6.58 0 0 1 10.2-8.2 6.53 6.53 0 0 1 1.93 4.65 6.6 6.6 0 0 1-6.53 6.64zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.14-.43.05a5.4 5.4 0 0 1-1.6-.98 6 6 0 0 1-1.1-1.37c-.12-.2 0-.3.09-.4.09-.1.2-.24.3-.36.1-.12.13-.2.2-.34.06-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.38-.33-.33-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.66 0 .98.72 1.93.82 2.06.1.13 1.4 2.15 3.4 3.01.48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.17-.46.17-.86.12-.94-.05-.09-.18-.14-.38-.24z"/></svg>
+        </a>
+        <a class="social-pill" href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.5-3H13.5V8.5c0-.87.24-1.46 1.5-1.46H16.5V4.34c-.26-.03-1.15-.11-2.19-.11-2.17 0-3.66 1.32-3.66 3.76v2.51H8.5v3H10.65V21h2.85z"/></svg>
+        </a>
+        <a class="social-pill" href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.4 8.75h3.09V20.5H3.4V8.75zM9.3 8.75h2.96v1.6h.04c.41-.78 1.42-1.6 2.93-1.6 3.13 0 3.71 2.06 3.71 4.74v6.01h-3.09v-5.33c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.81v5.42H9.3V8.75z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Navegação</h4>
+      <ul>
+        <li><a href="#imoveis">Anúncios</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#cadastro">Cadastrar imóvel</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Contato</h4>
+      <ul>
+        <li class="foot-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <a href="tel:+5511984556597">(11) 98455-6597</a>
+        </li>
+        <li class="foot-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg>
+          <a href="mailto:cintiaodasmaria@gmail.com">cintiaodasmaria@gmail.com</a>
+        </li>
+        <li class="foot-contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>
+          <a href="https://aliancajfcnegocios.com.br" target="_blank" rel="noopener">aliancajfcnegocios.com.br</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>&copy; <span id="year"></span> Aliança JFC Negócios. Todos os direitos reservados.</span>
+    <span>CRECI 50.130J</span>
+  </div>
+</footer>
+
+  <div class="listing-page-overlay" id="listingModalOverlay" role="dialog" aria-modal="true">
+    <div class="listing-page-topbar">
+      <button class="listing-page-back" id="listingModalClose" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Voltar aos anúncios
+      </button>
+      <div class="topbar-actions">
+        <button class="listing-page-copy-btn" id="listingModalCopyLinkTop" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span class="copy-btn-label">Copiar link</span>
+        </button>
+        <a class="btn btn-primary" id="listingModalWhatsTop" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="listing-page-gallery" id="listingModalPhotos">
+      <img class="listing-page-gallery-main" id="listingModalPhotoImg" src="" alt="">
+      <button class="nav-btn nav-prev" id="listingModalPrev" type="button" aria-label="Foto anterior">&#8249;</button>
+      <button class="nav-btn nav-next" id="listingModalNext" type="button" aria-label="Próxima foto">&#8250;</button>
+      <span class="photo-count" id="listingModalCount"></span>
+    </div>
+    <div class="listing-page-thumbs" id="listingModalThumbs"></div>
+
+    <div class="listing-page-content">
+      <div class="listing-page-main">
+        <span class="tag" id="listingModalTag"></span>
+        <div class="type" id="listingModalType"></div>
+        <div class="price" id="listingModalPrice"></div>
+        <div class="loc" id="listingModalLoc"></div>
+        <div class="spec-row" id="listingModalMeta"></div>
+        <div class="section-title">Sobre o imóvel</div>
+        <div class="desc" id="listingModalDesc"></div>
+        <div id="listingModalAmenitiesWrap">
+          <div class="section-title">Comodidades do imóvel</div>
+          <div class="amenities" id="listingModalAmenities"></div>
+        </div>
+        <div id="listingModalLazerWrap">
+          <div class="section-title">Lazer do condomínio</div>
+          <div class="amenities" id="listingModalLazer"></div>
+        </div>
+      </div>
+      <div class="listing-page-side">
+        <div class="agent">
+          <img src="assets/signature-photo.png" alt="Cintia Odas Maria">
+          <div>
+            <strong>Cintia Odas Maria</strong>
+            <span>Aliança JFC Negócios · CRECI 122.970</span>
+          </div>
+        </div>
+        <div class="side-price" id="listingModalSidePrice"></div>
+        <a class="btn btn-primary" id="listingModalWhats" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <a class="btn btn-ghost" href="tel:+5511984556597">Ligar (11) 98455-6597</a>
+        <button class="listing-page-copy-btn" id="listingModalCopyLink" type="button" style="justify-content:center; width:100%;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span class="copy-btn-label">Copiar link do anúncio</span>
+        </button>
+        <p>Atendimento humano e consultivo, sem robôs. Resposta rápida por WhatsApp.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileDrawer = document.getElementById('mobileDrawer');
+  if (menuToggle && mobileDrawer) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mobileDrawer.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    mobileDrawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileDrawer.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // =============== ANÚNCIOS PÚBLICOS (Apps Script) ===============
+  const API_URL = "https://script.google.com/macros/s/AKfycbx0psS6MZFW7E6o_aimSzdgbwhBSNT70tvFtQtxEGCKDC-Qt8y4GpbSCJKNj2DY_QeUaw/exec";
+
+  function jsonp(url, timeoutMs) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'jfc_pub_' + Math.random().toString(36).slice(2);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado.')); }, timeoutMs || 30000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = (data) => { cleanup(); resolve(data); };
+      const script = document.createElement('script');
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('Falha ao carregar anúncios.')); };
+      document.body.appendChild(script);
+    });
+  }
+
+  let ALL_LISTINGS = [];
+  let currentFilter = 'todos';
+  let currentSearch = {
+    tipo: '', cidade: '', bairro: '',
+    valorMin: null, valorMax: null,
+    areaMin: null, areaMax: null,
+    quartos: 0, suites: 0, banheiros: 0, vagas: 0,
+    comodidades: []
+  };
+
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
+  function formatPrice(l) {
+    if (!l.valor) return 'Consulte';
+    const v = 'R$ ' + Number(l.valor).toLocaleString('pt-BR');
+    return (l.finalidade || '').toLowerCase().includes('loca') && !(l.finalidade || '').toLowerCase().includes('venda') ? v + '/mês' : v;
+  }
+  function firstPhoto(l) { return (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean)[0] || ''; }
+  function slugify(str) {
+    return String(str || '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'imovel';
+  }
+  function buildListingPath(l) {
+    const parts = [l.tipoImovel, l.bairro, l.cidade].filter(Boolean).join(' ');
+    const numero = l.numero || '0';
+    return `/imovel/${numero}-${slugify(parts)}`;
+  }
+  function parseListingRefFromLocation() {
+    const m = /^\/imovel\/(\d+)/.exec(location.pathname);
+    if (m) return { numero: m[1] };
+    if ((location.hash || '').indexOf('#imovel-') === 0) return { id: location.hash.slice(8) };
+    return null;
+  }
+  function findListingByRef(ref) {
+    if (!ref) return null;
+    if (ref.numero != null) return ALL_LISTINGS.find(l => String(l.numero) === String(ref.numero));
+    if (ref.id != null) return ALL_LISTINGS.find(l => String(l.id) === String(ref.id));
+    return null;
+  }
+  function fallbackCopyText(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* ignora */ }
+    document.body.removeChild(ta);
+    if (cb) cb();
+  }
+  function copyListingLink(l, btn) {
+    const url = location.origin + buildListingPath(l);
+    const showCopied = () => {
+      if (!btn) return;
+      const labelEl = btn.querySelector('.copy-btn-label');
+      const original = labelEl ? labelEl.textContent : null;
+      btn.classList.add('copied');
+      if (labelEl) labelEl.textContent = 'Link copiado!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        if (labelEl && original) labelEl.textContent = original;
+      }, 2200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(showCopied).catch(() => fallbackCopyText(url, showCopied));
+    } else {
+      fallbackCopyText(url, showCopied);
+    }
+  }
+  function matchesFilter(l, f) {
+    if (f === 'todos') return true;
+    const tipo = (l.tipoImovel || '').toLowerCase();
+    const fin = (l.finalidade || '').toLowerCase();
+    if (f === 'comercial') return tipo.includes('sala comercial') || tipo.includes('galpão') || tipo.includes('galpao');
+    if (f === 'venda') return fin.includes('venda');
+    if (f === 'locacao') return fin.includes('loca');
+    return true;
+  }
+  function normalizeStr(str) {
+    return String(str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  }
+  function matchesSearch(l) {
+    const tipo = (l.tipoImovel || '').toLowerCase();
+    const cidade = (l.cidade || '').toLowerCase();
+    const bairro = (l.bairro || '').toLowerCase();
+    if (currentSearch.tipo && !tipo.includes(currentSearch.tipo.toLowerCase())) return false;
+    if (currentSearch.cidade && !cidade.includes(currentSearch.cidade.toLowerCase())) return false;
+    if (currentSearch.bairro && !bairro.includes(currentSearch.bairro.toLowerCase())) return false;
+
+    const valor = Number(l.valor) || 0;
+    if (currentSearch.valorMin != null && valor > 0 && valor < currentSearch.valorMin) return false;
+    if (currentSearch.valorMax != null && valor > 0 && valor > currentSearch.valorMax) return false;
+
+    const area = Number(l.areaConstruida) || 0;
+    if (currentSearch.areaMin != null && area > 0 && area < currentSearch.areaMin) return false;
+    if (currentSearch.areaMax != null && area > 0 && area > currentSearch.areaMax) return false;
+
+    if (currentSearch.quartos > 0 && (Number(l.dormitorios) || 0) < currentSearch.quartos) return false;
+    if (currentSearch.suites > 0 && (Number(l.suites) || 0) < currentSearch.suites) return false;
+    if (currentSearch.banheiros > 0 && (Number(l.banheiros) || 0) < currentSearch.banheiros) return false;
+    if (currentSearch.vagas > 0 && (Number(l.vagas) || 0) < currentSearch.vagas) return false;
+
+    if (currentSearch.comodidades.length) {
+      const listComod = (Array.isArray(l.comodidades) ? l.comodidades : []).map(normalizeStr);
+      const listText = normalizeStr((Array.isArray(l.comodidades) ? l.comodidades.join(' ') : '') + ' ' + (l.obs || ''));
+      const okAll = currentSearch.comodidades.every(want => {
+        const w = normalizeStr(want);
+        return listComod.some(c => c.includes(w)) || listText.includes(w);
+      });
+      if (!okAll) return false;
+    }
+    return true;
+  }
+
+  function cardHtml(l) {
+    const photo = firstPhoto(l);
+    const thumbStyle = photo ? `style="background-image:url('${photo}')"` : '';
+    const localidade = [l.bairro, l.cidade].filter(Boolean).join(', ');
+    return `<div class="listing-card" data-lid="${escapeHtml(l.id || '')}">
+      <div class="thumb" ${thumbStyle}>
+        <span class="tag">${escapeHtml(l.finalidade || '')}</span>
+        ${photo ? '' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/></svg>'}
+      </div>
+      <div class="body">
+        <div class="type">${escapeHtml(l.tipoImovel || 'Imóvel')}</div>
+        <div class="price">${formatPrice(l)}</div>
+        <div class="loc">${escapeHtml(localidade || 'Localização a consultar')}</div>
+        <div class="meta">
+          ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
+          ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
+          ${l.vagas ? `<span>${escapeHtml(l.vagas)} vaga(s)</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function countActiveFilters() {
+    let n = 0;
+    if (currentSearch.tipo) n++;
+    if (currentSearch.cidade) n++;
+    if (currentSearch.bairro) n++;
+    if (currentSearch.valorMin != null) n++;
+    if (currentSearch.valorMax != null) n++;
+    if (currentSearch.areaMin != null) n++;
+    if (currentSearch.areaMax != null) n++;
+    if (currentSearch.quartos > 0) n++;
+    if (currentSearch.suites > 0) n++;
+    if (currentSearch.banheiros > 0) n++;
+    if (currentSearch.vagas > 0) n++;
+    n += currentSearch.comodidades.length;
+    return n;
+  }
+  function updateFiltersCountBadge() {
+    const dot = document.getElementById('filtersCountDot');
+    if (!dot) return;
+    const n = countActiveFilters();
+    dot.textContent = String(n);
+    dot.classList.toggle('show', n > 0);
+  }
+  function renderListings() {
+    const grid = document.getElementById('listingsGrid');
+    const empty = document.getElementById('listingsEmpty');
+    const loadError = document.getElementById('listingsLoadError');
+    if (loadError) loadError.style.display = 'none';
+    const list = ALL_LISTINGS.filter(l => matchesFilter(l, currentFilter) && matchesSearch(l));
+    const countEl = document.getElementById('advResultsCount');
+    if (countEl) countEl.innerHTML = `<strong>${list.length}</strong> imóvel${list.length === 1 ? '' : 'is'} encontrado${list.length === 1 ? '' : 's'}`;
+    updateFiltersCountBadge();
+    if (!list.length) {
+      grid.innerHTML = '';
+      empty.style.display = '';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = list.map(cardHtml).join('');
+  }
+
+  function showListingsLoadError() {
+    const grid = document.getElementById('listingsGrid');
+    const empty = document.getElementById('listingsEmpty');
+    const loadError = document.getElementById('listingsLoadError');
+    if (grid) grid.innerHTML = '';
+    if (empty) empty.style.display = 'none';
+    if (loadError) loadError.style.display = '';
+  }
+
+  // Até 3 tentativas (a chamada ao Apps Script pode falhar ou demorar por
+  // instabilidade momentânea / cold start), com uma pequena espera crescente
+  // entre elas. Só mostra o estado de erro (com botão "Tentar novamente") se
+  // todas falharem — importante porque um link de anúncio compartilhado
+  // depende desta chamada terminar para poder abrir o imóvel certo.
+  async function loadListings(attempt) {
+    attempt = attempt || 0;
+    try {
+      const result = await jsonp(`${API_URL}?action=listPublic`);
+      if (result.ok) {
+        ALL_LISTINGS = result.data || [];
+        renderListings();
+        tryOpenPendingListing();
+      } else if (attempt < 2) {
+        await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
+        return loadListings(attempt + 1);
+      } else {
+        showListingsLoadError();
+      }
+    } catch (err) {
+      if (attempt < 2) {
+        await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
+        return loadListings(attempt + 1);
+      }
+      showListingsLoadError();
+    }
+  }
+  loadListings();
+  const listingsRetryBtn = document.getElementById('listingsRetryBtn');
+  if (listingsRetryBtn) {
+    listingsRetryBtn.addEventListener('click', () => {
+      const loadError = document.getElementById('listingsLoadError');
+      if (loadError) loadError.style.display = 'none';
+      loadListings();
+    });
+  }
+
+  // =============== PÁGINA DE DETALHES DO IMÓVEL (estilo QuintoAndar) ===============
+  const listingModalOverlay = document.getElementById('listingModalOverlay');
+  const listingModalPhotoImg = document.getElementById('listingModalPhotoImg');
+  const listingModalPrev = document.getElementById('listingModalPrev');
+  const listingModalNext = document.getElementById('listingModalNext');
+  const listingModalCount = document.getElementById('listingModalCount');
+  const listingModalThumbs = document.getElementById('listingModalThumbs');
+  const listingModalTag = document.getElementById('listingModalTag');
+  const listingModalPrice = document.getElementById('listingModalPrice');
+  const listingModalSidePrice = document.getElementById('listingModalSidePrice');
+  const listingModalType = document.getElementById('listingModalType');
+  const listingModalLoc = document.getElementById('listingModalLoc');
+  const listingModalMeta = document.getElementById('listingModalMeta');
+  const listingModalDesc = document.getElementById('listingModalDesc');
+  const listingModalAmenitiesWrap = document.getElementById('listingModalAmenitiesWrap');
+  const listingModalAmenities = document.getElementById('listingModalAmenities');
+  const listingModalLazerWrap = document.getElementById('listingModalLazerWrap');
+  const listingModalLazer = document.getElementById('listingModalLazer');
+  // Itens que, quando presentes em "comodidades", são tratados como lazer do
+  // condomínio (igual ao QuintoAndar, que separa "Itens do imóvel" de "Condomínio").
+  const LAZER_CONDOMINIO_KEYWORDS = [
+    'piscina', 'playground', 'churrasqueira', 'quadra', 'academia', 'salao de festas',
+    'salão de festas', 'sauna', 'brinquedoteca', 'salao de jogos', 'salão de jogos',
+    'area verde', 'área verde', 'espaco gourmet', 'espaço gourmet', 'portaria',
+    'elevador', 'lavanderia', 'spa', 'pet place', 'petplace', 'coworking', 'cinema',
+    'espaco pet', 'espaço pet', 'jardim', 'gourmet'
+  ];
+  function isLazerCondominio(item) {
+    const norm = String(item || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    return LAZER_CONDOMINIO_KEYWORDS.some(k => norm.includes(k.normalize('NFD').replace(/[̀-ͯ]/g, '')));
+  }
+  const listingModalWhats = document.getElementById('listingModalWhats');
+  const listingModalWhatsTop = document.getElementById('listingModalWhatsTop');
+  const listingModalClose = document.getElementById('listingModalClose');
+  let modalPhotos = [];
+  let modalPhotoIdx = 0;
+  let currentListingId = null;
+  let pendingListingRef = parseListingRefFromLocation();
+
+  function renderModalPhoto() {
+    if (!modalPhotos.length) {
+      listingModalPhotoImg.src = '';
+      listingModalCount.textContent = '';
+    } else {
+      listingModalPhotoImg.src = modalPhotos[modalPhotoIdx];
+      listingModalCount.textContent = `${modalPhotoIdx + 1} / ${modalPhotos.length}`;
+    }
+    listingModalThumbs.querySelectorAll('img').forEach((img, i) => {
+      img.classList.toggle('active', i === modalPhotoIdx);
+    });
+  }
+
+  function openListingModal(l, opts) {
+    currentListingId = l.id;
+    modalPhotos = (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean);
+    modalPhotoIdx = 0;
+    listingModalThumbs.innerHTML = modalPhotos.map((src, i) =>
+      `<img src="${escapeHtml(src)}" data-idx="${i}" alt="Foto ${i + 1}">`
+    ).join('');
+    renderModalPhoto();
+    listingModalTag.textContent = l.finalidade || '';
+    const priceText = formatPrice(l);
+    listingModalPrice.textContent = priceText;
+    listingModalSidePrice.textContent = priceText;
+    listingModalType.textContent = l.tipoImovel || 'Imóvel';
+    const localidade = [l.bairro, l.cidade].filter(Boolean).join(', ');
+    listingModalLoc.textContent = localidade || 'Localização a consultar';
+    const metaParts = [];
+    if (l.areaConstruida) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.areaConstruida)} m²</strong><span>Área</span></div>`);
+    if (l.dormitorios) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.dormitorios)}</strong><span>Dormitório(s)</span></div>`);
+    if (l.suites) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.suites)}</strong><span>Suíte(s)</span></div>`);
+    if (l.banheiros) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.banheiros)}</strong><span>Banheiro(s)</span></div>`);
+    if (l.vagas) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.vagas)}</strong><span>Vaga(s)</span></div>`);
+    listingModalMeta.innerHTML = metaParts.join('');
+    listingModalDesc.textContent = l.obs || 'Consulte mais detalhes com a corretora.';
+    const amenities = Array.isArray(l.comodidades) ? l.comodidades.filter(Boolean) : [];
+    const itemAmenities = amenities.filter(a => !isLazerCondominio(a));
+    const lazerAmenities = amenities.filter(a => isLazerCondominio(a));
+    if (itemAmenities.length) {
+      listingModalAmenitiesWrap.style.display = '';
+      listingModalAmenities.innerHTML = itemAmenities.map(a => `<span>${escapeHtml(a)}</span>`).join('');
+    } else {
+      listingModalAmenitiesWrap.style.display = 'none';
+    }
+    if (lazerAmenities.length) {
+      listingModalLazerWrap.style.display = '';
+      listingModalLazer.innerHTML = lazerAmenities.map(a => `<span>${escapeHtml(a)}</span>`).join('');
+    } else {
+      listingModalLazerWrap.style.display = 'none';
+    }
+    const msg = encodeURIComponent(`Olá! Tenho interesse no imóvel: ${l.tipoImovel || 'imóvel'} em ${localidade || 'São Paulo'} - ${priceText}.`);
+    const whatsHref = `https://wa.me/5511984556597?text=${msg}`;
+    listingModalWhats.href = whatsHref;
+    listingModalWhatsTop.href = whatsHref;
+    listingModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    listingModalOverlay.scrollTop = 0;
+    if (!opts || !opts.skipHistory) {
+      history.pushState({ listingId: l.id }, '', buildListingPath(l));
+    }
+  }
+
+  function closeListingModal(opts) {
+    listingModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    currentListingId = null;
+    if (!opts || !opts.skipHistory) {
+      if (/^\/imovel\//.test(location.pathname) || (location.hash || '').indexOf('#imovel-') === 0) {
+        history.pushState({}, '', '/#imoveis');
+      }
+    }
+  }
+
+  function tryOpenPendingListing() {
+    if (!pendingListingRef || !ALL_LISTINGS.length) return;
+    const listing = findListingByRef(pendingListingRef);
+    if (listing) openListingModal(listing, { skipHistory: true });
+    pendingListingRef = null;
+  }
+
+  const listingsGridEl = document.getElementById('listingsGrid');
+  if (listingsGridEl) {
+    listingsGridEl.addEventListener('click', (e) => {
+      const card = e.target.closest('.listing-card');
+      if (!card) return;
+      const lid = card.dataset.lid;
+      const listing = ALL_LISTINGS.find(l => String(l.id) === String(lid));
+      if (listing) openListingModal(listing);
+    });
+  }
+  if (listingModalClose) listingModalClose.addEventListener('click', () => closeListingModal());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && listingModalOverlay.classList.contains('open')) closeListingModal();
+  });
+  window.addEventListener('popstate', () => {
+    const ref = parseListingRefFromLocation();
+    const listing = ref ? findListingByRef(ref) : null;
+    if (listing) {
+      openListingModal(listing, { skipHistory: true });
+    } else if (listingModalOverlay.classList.contains('open')) {
+      closeListingModal({ skipHistory: true });
+    }
+  });
+  const listingModalCopyLinkTop = document.getElementById('listingModalCopyLinkTop');
+  const listingModalCopyLink = document.getElementById('listingModalCopyLink');
+  function currentOpenListing() {
+    return ALL_LISTINGS.find(l => String(l.id) === String(currentListingId)) || null;
+  }
+  if (listingModalCopyLinkTop) {
+    listingModalCopyLinkTop.addEventListener('click', () => {
+      const listing = currentOpenListing();
+      if (listing) copyListingLink(listing, listingModalCopyLinkTop);
+    });
+  }
+  if (listingModalCopyLink) {
+    listingModalCopyLink.addEventListener('click', () => {
+      const listing = currentOpenListing();
+      if (listing) copyListingLink(listing, listingModalCopyLink);
+    });
+  }
+  if (listingModalPrev) {
+    listingModalPrev.addEventListener('click', () => {
+      if (!modalPhotos.length) return;
+      modalPhotoIdx = (modalPhotoIdx - 1 + modalPhotos.length) % modalPhotos.length;
+      renderModalPhoto();
+    });
+  }
+  if (listingModalNext) {
+    listingModalNext.addEventListener('click', () => {
+      if (!modalPhotos.length) return;
+      modalPhotoIdx = (modalPhotoIdx + 1) % modalPhotos.length;
+      renderModalPhoto();
+    });
+  }
+  if (listingModalThumbs) {
+    listingModalThumbs.addEventListener('click', (e) => {
+      const img = e.target.closest('img[data-idx]');
+      if (!img) return;
+      modalPhotoIdx = Number(img.dataset.idx) || 0;
+      renderModalPhoto();
+    });
+  }
+
+  const filterChips = document.querySelectorAll('.filter-chip');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.filter || 'todos';
+      renderListings();
+    });
+  });
+
+  // =============== PAINEL "MAIS FILTROS" (dentro da busca do hero) ===============
+  const btnToggleFilters = document.getElementById('btnToggleFilters');
+  const advFilters = document.getElementById('advFilters');
+  if (btnToggleFilters && advFilters) {
+    btnToggleFilters.addEventListener('click', () => {
+      const isOpen = advFilters.classList.toggle('open');
+      btnToggleFilters.classList.toggle('open', isOpen);
+    });
+  }
+
+  // Grupos de chips (Quartos, Suítes, Banheiros, Vagas)
+  document.querySelectorAll('.chip-group').forEach(group => {
+    const target = group.dataset.target;
+    if (!target) return;
+    group.querySelectorAll('.mini-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.mini-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentSearch[target] = Number(chip.dataset.value) || 0;
+        renderListings();
+      });
+    });
+  });
+
+  // Faixas de valor
+  const afValorMin = document.getElementById('af-valor-min');
+  const afValorMax = document.getElementById('af-valor-max');
+  function readValorRange() {
+    currentSearch.valorMin = afValorMin && afValorMin.value !== '' ? Number(afValorMin.value) : null;
+    currentSearch.valorMax = afValorMax && afValorMax.value !== '' ? Number(afValorMax.value) : null;
+    renderListings();
+  }
+  if (afValorMin) afValorMin.addEventListener('input', readValorRange);
+  if (afValorMax) afValorMax.addEventListener('input', readValorRange);
+
+  // Faixas de área
+  const afAreaMin = document.getElementById('af-area-min');
+  const afAreaMax = document.getElementById('af-area-max');
+  function readAreaRange() {
+    currentSearch.areaMin = afAreaMin && afAreaMin.value !== '' ? Number(afAreaMin.value) : null;
+    currentSearch.areaMax = afAreaMax && afAreaMax.value !== '' ? Number(afAreaMax.value) : null;
+    renderListings();
+  }
+  if (afAreaMin) afAreaMin.addEventListener('input', readAreaRange);
+  if (afAreaMax) afAreaMax.addEventListener('input', readAreaRange);
+
+  // Comodidades (checkboxes)
+  const afComodidades = document.getElementById('af-comodidades');
+  if (afComodidades) {
+    afComodidades.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        currentSearch.comodidades = Array.from(
+          afComodidades.querySelectorAll('input[type="checkbox"]:checked')
+        ).map(c => c.value);
+        renderListings();
+      });
+    });
+  }
+
+  // Limpar filtros
+  const btnClearFilters = document.getElementById('btnClearFilters');
+  if (btnClearFilters) {
+    btnClearFilters.addEventListener('click', () => {
+      currentSearch.tipo = '';
+      currentSearch.cidade = '';
+      currentSearch.bairro = '';
+      currentSearch.valorMin = null;
+      currentSearch.valorMax = null;
+      currentSearch.areaMin = null;
+      currentSearch.areaMax = null;
+      currentSearch.quartos = 0;
+      currentSearch.suites = 0;
+      currentSearch.banheiros = 0;
+      currentSearch.vagas = 0;
+      currentSearch.comodidades = [];
+
+      const sTipo = document.getElementById('s-tipo');
+      const sCidade = document.getElementById('s-cidade');
+      const sBairro = document.getElementById('s-bairro');
+      if (sTipo) sTipo.value = '';
+      if (sCidade) sCidade.value = '';
+      if (sBairro) sBairro.value = '';
+      if (afValorMin) afValorMin.value = '';
+      if (afValorMax) afValorMax.value = '';
+      if (afAreaMin) afAreaMin.value = '';
+      if (afAreaMax) afAreaMax.value = '';
+      document.querySelectorAll('.chip-group').forEach(group => {
+        group.querySelectorAll('.mini-chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+      });
+      if (afComodidades) afComodidades.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+      renderListings();
+    });
+  }
+
+  // =============== BUSCA / ANUNCIAR (hero) ===============
+  const searchTabs = document.querySelectorAll('.search-tab');
+  const panelBuscar = document.getElementById('panelBuscar');
+  const panelAnunciar = document.getElementById('panelAnunciar');
+  searchTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      searchTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const isBuscar = tab.dataset.tab === 'buscar';
+      if (panelBuscar) panelBuscar.style.display = isBuscar ? '' : 'none';
+      if (panelAnunciar) panelAnunciar.style.display = isBuscar ? 'none' : '';
+    });
+  });
+  const btnBuscarHero = document.getElementById('btnBuscarHero');
+  if (btnBuscarHero) {
+    btnBuscarHero.addEventListener('click', () => {
+      const finalidade = document.getElementById('s-finalidade').value || 'todos';
+      currentFilter = finalidade;
+      filterChips.forEach(c => c.classList.toggle('active', (c.dataset.filter || 'todos') === currentFilter));
+      currentSearch.tipo = document.getElementById('s-tipo').value;
+      currentSearch.cidade = document.getElementById('s-cidade').value.trim();
+      currentSearch.bairro = document.getElementById('s-bairro').value.trim();
+      renderListings();
+      const target = document.getElementById('imoveis');
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // =============== FORMULÁRIO PÚBLICO DE CADASTRO ===============
+  const propertyForm = document.getElementById('propertyForm');
+  if (propertyForm) {
+    propertyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = propertyForm.querySelector('button[type="submit"], .btn-primary');
+      const lead = {
+        nome: document.getElementById('f-nome').value.trim(),
+        telefone: document.getElementById('f-telefone').value.trim(),
+        endereco: document.getElementById('f-endereco').value.trim(),
+        tipoImovel: document.getElementById('f-tipo').value,
+        finalidade: document.getElementById('f-finalidade').value,
+        areaConstruida: document.getElementById('f-area').value.trim(),
+        dormitorios: document.getElementById('f-quartos').value.trim(),
+        comodidades: Array.from(propertyForm.querySelectorAll('input[name="comodidades"]:checked')).map(el => el.value),
+        obs: document.getElementById('f-obs').value.trim()
+      };
+      if (!lead.nome || !lead.telefone) { alert('Preencha ao menos nome e telefone.'); return; }
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Enviando...'; }
+      try {
+        const params = new URLSearchParams({ action: 'addPublic', lead: JSON.stringify(lead) });
+        const result = await jsonp(`${API_URL}?${params.toString()}`);
+        if (result.ok) {
+          alert('Cadastro recebido! Em breve entraremos em contato. Se quiser, envie as fotos do imóvel pelo WhatsApp.');
+          propertyForm.reset();
+        } else {
+          alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+        }
+      } catch (err) {
+        alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Enviar cadastro'; }
+      }
+    });
+  }
+</script>
+
+  <a class="whatsapp-float" href="https://wa.me/5511984556597" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.01a7.94 7.94 0 0 0 5.54-13.58zM12.06 18.4h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.58 6.58 0 0 1 10.2-8.2 6.53 6.53 0 0 1 1.93 4.65 6.6 6.6 0 0 1-6.53 6.64zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.14-.43.05a5.4 5.4 0 0 1-1.6-.98 6 6 0 0 1-1.1-1.37c-.12-.2 0-.3.09-.4.09-.1.2-.24.3-.36.1-.12.13-.2.2-.34.06-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.38-.33-.33-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.66 0 .98.72 1.93.82 2.06.1.13 1.4 2.15 3.4 3.01.48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.17-.46.17-.86.12-.94-.05-.09-.18-.14-.38-.24z"></path></svg>
+  </a>
+
+</body>
+</html>
