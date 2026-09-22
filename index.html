@@ -230,6 +230,28 @@
   .empty-state p{margin-top:10px; color:var(--muted); font-size:14.5px; max-width:44ch; margin-left:auto; margin-right:auto; line-height:1.6;}
   .empty-state .btn{margin-top:22px;}
 
+  /* ---------- Listing cards ---------- */
+  .listing-card{
+    background:var(--paper); border:1.5px solid var(--line); border-radius:var(--radius); overflow:hidden;
+    display:flex; flex-direction:column; transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .listing-card:hover{box-shadow:0 14px 34px -18px rgba(18,63,50,.35); transform:translateY(-2px);}
+  .listing-card .thumb{
+    aspect-ratio:4/3; background:var(--paper-2) center/cover no-repeat; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); position:relative;
+  }
+  .listing-card .thumb svg{width:32px; height:32px; opacity:.4;}
+  .listing-card .thumb .tag{
+    position:absolute; top:12px; left:12px; background:var(--green-dark); color:#fff; font-size:11.5px; font-weight:600;
+    padding:5px 12px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .listing-card .body{padding:18px 20px 20px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .listing-card .price{font-size:19px; font-weight:700; color:var(--green-darker);}
+  .listing-card .loc{font-size:13.5px; color:var(--muted);}
+  .listing-card .type{font-size:12.5px; color:var(--green-dark); font-weight:600; text-transform:uppercase; letter-spacing:.03em;}
+  .listing-card .meta{display:flex; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--muted); margin-top:4px; border-top:1px solid var(--line); padding-top:12px;}
+  .listing-card .meta span{display:flex; align-items:center; gap:4px;}
+
   /* ---------- CTA band ---------- */
   .cta-band{
     background:linear-gradient(135deg, var(--green-dark) 0%, var(--green-darker) 100%);
@@ -323,6 +345,7 @@
         (11) 98455-6597
       </a>
       <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
+      <a href="painel-crm.html" title="Acesso da equipe" style="font-size:11px; color:var(--muted); opacity:.55; text-decoration:none; margin-left:4px;">Equipe</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileDrawer">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -334,6 +357,7 @@
     <a href="#cadastro">Cadastrar Imóvel</a>
     <a href="#contato">Contato</a>
     <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
+    <a href="painel-crm.html" style="font-size:12px; color:var(--muted); opacity:.6;">Acesso da equipe</a>
   </nav>
 </header>
 
@@ -588,13 +612,14 @@
           <h2>Imóveis disponíveis</h2>
         </div>
         <div class="filters">
-          <button class="filter-chip active" type="button">Todos</button>
-          <button class="filter-chip" type="button">Venda</button>
-          <button class="filter-chip" type="button">Locação</button>
-          <button class="filter-chip" type="button">Comercial</button>
+          <button class="filter-chip active" type="button" data-filter="todos">Todos</button>
+          <button class="filter-chip" type="button" data-filter="venda">Venda</button>
+          <button class="filter-chip" type="button" data-filter="locacao">Locação</button>
+          <button class="filter-chip" type="button" data-filter="comercial">Comercial</button>
         </div>
       </div>
-      <div class="empty-state">
+      <div class="listings-grid" id="listingsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; margin-top:32px;"></div>
+      <div class="empty-state" id="listingsEmpty">
         <div class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
         </div>
@@ -694,19 +719,128 @@
     });
   }
 
+  // =============== ANÚNCIOS PÚBLICOS (Apps Script) ===============
+  const API_URL = "https://script.google.com/macros/s/AKfycbx0psS6MZFW7E6o_aimSzdgbwhBSNT70tvFtQtxEGCKDC-Qt8y4GpbSCJKNj2DY_QeUaw/exec";
+
+  function jsonp(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'jfc_pub_' + Math.random().toString(36).slice(2);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Tempo esgotado.')); }, 15000);
+      function cleanup() { delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timeout); }
+      window[cbName] = (data) => { cleanup(); resolve(data); };
+      const script = document.createElement('script');
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('Falha ao carregar anúncios.')); };
+      document.body.appendChild(script);
+    });
+  }
+
+  let ALL_LISTINGS = [];
+  let currentFilter = 'todos';
+
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
+  function formatPrice(l) {
+    if (!l.valor) return 'Consulte';
+    const v = 'R$ ' + Number(l.valor).toLocaleString('pt-BR');
+    return (l.finalidade || '').toLowerCase().includes('loca') && !(l.finalidade || '').toLowerCase().includes('venda') ? v + '/mês' : v;
+  }
+  function firstPhoto(l) { return (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean)[0] || ''; }
+  function matchesFilter(l, f) {
+    if (f === 'todos') return true;
+    const tipo = (l.tipoImovel || '').toLowerCase();
+    const fin = (l.finalidade || '').toLowerCase();
+    if (f === 'comercial') return tipo.includes('sala comercial') || tipo.includes('galpão') || tipo.includes('galpao');
+    if (f === 'venda') return fin.includes('venda');
+    if (f === 'locacao') return fin.includes('loca');
+    return true;
+  }
+
+  function cardHtml(l) {
+    const photo = firstPhoto(l);
+    const thumbStyle = photo ? `style="background-image:url('${photo}')"` : '';
+    const localidade = [l.bairro, l.cidade].filter(Boolean).join(', ');
+    return `<div class="listing-card">
+      <div class="thumb" ${thumbStyle}>
+        <span class="tag">${escapeHtml(l.finalidade || '')}</span>
+        ${photo ? '' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/></svg>'}
+      </div>
+      <div class="body">
+        <div class="type">${escapeHtml(l.tipoImovel || 'Imóvel')}</div>
+        <div class="price">${formatPrice(l)}</div>
+        <div class="loc">${escapeHtml(localidade || 'Localização a consultar')}</div>
+        <div class="meta">
+          ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
+          ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
+          ${l.vagas ? `<span>${escapeHtml(l.vagas)} vaga(s)</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderListings() {
+    const grid = document.getElementById('listingsGrid');
+    const empty = document.getElementById('listingsEmpty');
+    const list = ALL_LISTINGS.filter(l => matchesFilter(l, currentFilter));
+    if (!list.length) {
+      grid.innerHTML = '';
+      empty.style.display = '';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = list.map(cardHtml).join('');
+  }
+
+  async function loadListings() {
+    try {
+      const result = await jsonp(`${API_URL}?action=listPublic`);
+      if (result.ok) { ALL_LISTINGS = result.data || []; renderListings(); }
+    } catch (err) { /* mantém o estado "novos anúncios em breve" */ }
+  }
+  loadListings();
+
   const filterChips = document.querySelectorAll('.filter-chip');
   filterChips.forEach(chip => {
     chip.addEventListener('click', () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
+      currentFilter = chip.dataset.filter || 'todos';
+      renderListings();
     });
   });
 
+  // =============== FORMULÁRIO PÚBLICO DE CADASTRO ===============
   const propertyForm = document.getElementById('propertyForm');
   if (propertyForm) {
-    propertyForm.addEventListener('submit', (e) => {
+    propertyForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      alert('Formulário de exemplo: conecte esta ação ao seu sistema de cadastro antes de publicar.');
+      const submitBtn = propertyForm.querySelector('button[type="submit"], .btn-primary');
+      const lead = {
+        nome: document.getElementById('f-nome').value.trim(),
+        telefone: document.getElementById('f-telefone').value.trim(),
+        endereco: document.getElementById('f-endereco').value.trim(),
+        tipoImovel: document.getElementById('f-tipo').value,
+        finalidade: document.getElementById('f-finalidade').value,
+        areaConstruida: document.getElementById('f-area').value.trim(),
+        dormitorios: document.getElementById('f-quartos').value.trim(),
+        comodidades: Array.from(propertyForm.querySelectorAll('input[name="comodidades"]:checked')).map(el => el.value),
+        obs: document.getElementById('f-obs').value.trim()
+      };
+      if (!lead.nome || !lead.telefone) { alert('Preencha ao menos nome e telefone.'); return; }
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Enviando...'; }
+      try {
+        const params = new URLSearchParams({ action: 'addPublic', lead: JSON.stringify(lead) });
+        const result = await jsonp(`${API_URL}?${params.toString()}`);
+        if (result.ok) {
+          alert('Cadastro recebido! Em breve entraremos em contato. Se quiser, envie as fotos do imóvel pelo WhatsApp.');
+          propertyForm.reset();
+        } else {
+          alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+        }
+      } catch (err) {
+        alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Enviar cadastro'; }
+      }
     });
   }
 </script>
