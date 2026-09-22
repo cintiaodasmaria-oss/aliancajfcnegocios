@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aliança JFC Negócios — Consultoria Imobiliária</title>
-<meta name="description" content="Consultoria imobiliária com segurança jurídica e análise de viabilidade. CRECI 50.130J — Aliança JFC Negócios.">
+<meta name="description" content="Consultoria imobiliária residencial, comercial e para incorporação, com atendimento direto e documentação organizada. CRECI 50.130J — Aliança JFC Negócios.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
@@ -161,6 +161,20 @@
   .about-panel .quote-by strong{display:block; font-size:14px; color:var(--ink);}
   .about-panel .quote-by span{font-size:12px; color:var(--muted);}
 
+/* ---------- Quem somos ---------- */
+  .quem-somos{background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding-bottom:0;}
+  .quem-somos-hero{position:relative; min-height:560px; display:flex; align-items:center; overflow:hidden;}
+  .quem-somos-hero img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .quem-somos-hero-overlay{position:absolute; inset:0; background:linear-gradient(90deg, rgba(11,31,23,.94) 0%, rgba(11,31,23,.78) 45%, rgba(11,31,23,.3) 100%);}
+  .quem-somos-hero-content{position:relative; z-index:2; max-width:620px; padding:80px 0;}
+  .quem-somos-hero-content .eyebrow{color:#bfe3c8;}
+  .quem-somos-hero-content h2{color:#fff; margin-top:14px; margin-bottom:20px; font-size:clamp(26px,3vw,36px);}
+  .quem-somos-hero-content p{color:rgba(255,255,255,.88); font-size:14.5px; line-height:1.7; margin-bottom:14px;}
+  .pilares{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; padding:56px 0;}
+  .pilar{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:28px;}
+  .pilar h3{font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--green-dark); margin-bottom:12px;}
+  .pilar p{font-size:14.5px; color:var(--muted); line-height:1.65;}
+  
   /* ---------- Cadastro (form) ---------- */
   .cadastro{background:var(--paper);}
   .cadastro-grid{display:grid; grid-template-columns:.85fr 1.15fr; gap:56px;}
@@ -249,13 +263,25 @@
     justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:12.5px; color:rgba(255,255,255,.5);
   }
 
-  /* ---------- Responsive ---------- */
+/* ---------- WhatsApp flutuante ---------- */
+  .whatsapp-float{
+        position:fixed; right:24px; bottom:24px; width:60px; height:60px; border-radius:50%;
+        background:#25D366; display:flex; align-items:center; justify-content:center;
+        box-shadow:0 12px 28px -8px rgba(0,0,0,.4); z-index:80; text-decoration:none;
+        transition:transform .15s ease;
+  }
+    .whatsapp-float:hover{transform:scale(1.06);}
+    .whatsapp-float svg{width:30px; height:30px; color:#fff;}
+  
+    /* ---------- Responsive ---------- */
   @media (max-width:980px){
     .hero-grid, .about-grid, .cadastro-grid{grid-template-columns:1fr;}
     .hero-photo-wrap{justify-self:start;}
     .about-panel{position:static;}
     .footer-grid{grid-template-columns:1fr 1fr;}
     .footer-brand{grid-column:1/-1;}
+        .quem-somos-hero-content{max-width:100%;}
+        .pilares{grid-template-columns:1fr;}
   }
   @media (max-width:760px){
     .nav-links, .nav-phone, .nav-cta .btn{display:none;}
@@ -269,6 +295,8 @@
     .footer-grid{grid-template-columns:1fr;}
     .wrap{padding:0 20px;}
     .trust-row{justify-content:flex-start; gap:26px;}
+        .quem-somos-hero{min-height:420px;}
+        .quem-somos-hero-content{padding:48px 0;}
   }
 </style>
 </head>
@@ -316,9 +344,9 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <span class="eyebrow">Consultoria imobiliária em São Paulo</span>
-        <h1>Segurança jurídica em cada <em>negociação imobiliária.</em></h1>
+        <h1>Assessoria completa em cada <em>negociação imobiliária.</em></h1>
         <p class="hero-sub">
-          Análise de viabilidade, documentação e acompanhamento completo para quem compra, vende ou aluga com tranquilidade. Consultoria próxima, direta e sem letras miúdas.
+          Atuação em imóveis residenciais (venda e locação, para proprietários ou compradores), comerciais, galpões e áreas para incorporação ou loteamento. Documentação organizada e acompanhamento direto, do primeiro contato à assinatura.
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#cadastro">Cadastrar meu imóvel</a>
@@ -356,7 +384,7 @@
     <div class="wrap trust-row">
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5z"/></svg>
-        <span>Análise de viabilidade e segurança jurídica</span>
+        <span>Residencial, comercial, galpões e incorporação</span>
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
@@ -381,15 +409,15 @@
           <div class="about-item">
             <span class="num">01</span>
             <div>
-              <h3>Análise de viabilidade</h3>
-              <p>Avaliação de documentação, ônus e situação registral antes de qualquer decisão ser tomada.</p>
+              <h3>Atuação diversificada</h3>
+              <p>Imóveis residenciais (venda e locação, para proprietários ou compradores), comerciais, galpões e áreas para incorporação ou loteamento.</p>
             </div>
           </div>
           <div class="about-item">
             <span class="num">02</span>
             <div>
-              <h3>Segurança jurídica</h3>
-              <p>Contratos e negociações conduzidos com atenção aos detalhes que evitam problemas futuros.</p>
+              <h3>Diligência documental</h3>
+              <p>Levantamento e conferência da documentação do imóvel e das partes, identificando pontos de atenção antes de qualquer decisão.</p>
             </div>
           </div>
           <div class="about-item">
@@ -417,32 +445,33 @@
 
   <!-- QUEM SOMOS -->
   <section class="quem-somos" id="quem-somos">
-  <div class="wrap">
-  <div class="section-head">
-  <span class="eyebrow">Quem somos</span>
-  <h2>Sobre a Aliança JFC Negócios</h2>
-  <p>A atualização dos imóveis é, e sempre será, um dos maiores diferenciais da Aliança JFC Negócios. Trabalhamos para que quem busca um novo imóvel — para morar ou investir — tenha uma experiência clara, segura e sem surpresas.</p>
-  <p>Mantemos contato direto e constante com os proprietários, o que garante informações sempre atualizadas: valores, condições, documentação e fotos de qualidade. Essa proximidade é o que permite oferecer aos nossos clientes uma visão real do imóvel, facilitando cada decisão.</p>
-  <p>Do primeiro contato à assinatura, cuidamos dos detalhes que fazem diferença — com transparência em cada etapa e um atendimento que vai além da simples intermediação.</p>
-  </div>
-  <div class="pilares">
+<div class="quem-somos-hero">
+    <img src="https://images.unsplash.com/photo-1757359056339-22968344cce6?fm=jpg&q=80&w=1800&auto=format&fit=crop" alt="Fachada residencial moderna ao entardecer">
+    <div class="quem-somos-hero-overlay"></div>
+    <div class="quem-somos-hero-content wrap">
+    <span class="eyebrow">Quem somos</span>
+    <h2>Sobre a Aliança JFC Negócios</h2>
+    <p>A atualização dos imóveis é, e sempre será, um dos maiores diferenciais da Aliança JFC Negócios. Trabalhamos para que quem busca um novo imóvel — para morar ou investir — tenha uma experiência clara, segura e sem surpresas.</p>
+    <p>Mantemos contato direto e constante com os proprietários, o que garante informações sempre atualizadas: valores, condições, documentação e fotos de qualidade. Essa proximidade é o que permite oferecer aos nossos clientes uma visão real do imóvel, facilitando cada decisão.</p>
+    <p>Do primeiro contato à assinatura, cuidamos dos detalhes que fazem diferença — com transparência em cada etapa e um atendimento que vai além da simples intermediação.</p>
+    </div>
+    </div>
+    <div class="wrap">
+    <div class="pilares">
   <div class="pilar">
-  <h3>Missão</h3>
-  <p>Oferecer soluções imobiliárias completas e personalizadas, com informações precisas, segurança jurídica e relacionamento de confiança do início ao fim de cada negociação.</p>
-  </div>
-  <div class="pilar">
-  <h3>Visão</h3>
-  <p>Ser referência em atualização de imóveis e atendimento diferenciado, à frente das tendências do mercado e comprometida com a satisfação de quem confia em nosso trabalho.</p>
-  </div>
-  <div class="pilar">
-  <h3>Valores</h3>
-  <p>Transparência, ética profissional, excelência no atendimento e compromisso com resultado em cada negociação.</p>
-  </div>
-  </div>
-  <div class="quem-somos-photo">
-  <img src="https://images.unsplash.com/photo-1757359056339-22968344cce6?fm=jpg&q=80&w=1600&auto=format&fit=crop" alt="Fachada residencial moderna ao entardecer">
-  </div>
-  </div>
+    <h3>Missão</h3>
+    <p>Oferecer soluções imobiliárias completas e personalizadas, com informações precisas, diligência documental e relacionamento de confiança do início ao fim de cada negociação.</p>
+    </div>
+    <div class="pilar">
+    <h3>Visão</h3>
+    <p>Ser referência em atualização de imóveis e atendimento diferenciado, à frente das tendências do mercado e comprometida com a satisfação de quem confia em nosso trabalho.</p>
+    </div>
+    <div class="pilar">
+    <h3>Valores</h3>
+    <p>Transparência, ética profissional, excelência no atendimento e compromisso com resultado em cada negociação.</p>
+    </div>
+    </div>
+    </div>
   </section>
   
   <!-- CADASTRO -->
@@ -602,9 +631,9 @@
           <span>Consultoria Imobiliária</span>
         </span>
       </a>
-      <p>Consultoria imobiliária com foco em segurança jurídica e análise de viabilidade. CRECI 50.130J.</p>
+      <p>Consultoria imobiliária residencial, comercial e para incorporação, com atendimento direto e documentação organizada. CRECI 50.130J.</p>
       <div class="social-row">
-        <a class="social-pill" href="#" aria-label="WhatsApp">
+        <a class="social-pill" href="https://wa.me/5511984556597" target="_blank" rel="noopener" aria-label="WhatsApp">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.01a7.94 7.94 0 0 0 5.54-13.58zM12.06 18.4h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.58 6.58 0 0 1 10.2-8.2 6.53 6.53 0 0 1 1.93 4.65 6.6 6.6 0 0 1-6.53 6.64zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.14-.43.05a5.4 5.4 0 0 1-1.6-.98 6 6 0 0 1-1.1-1.37c-.12-.2 0-.3.09-.4.09-.1.2-.24.3-.36.1-.12.13-.2.2-.34.06-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.38-.33-.33-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.66 0 .98.72 1.93.82 2.06.1.13 1.4 2.15 3.4 3.01.48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.17-.46.17-.86.12-.94-.05-.09-.18-.14-.38-.24z"/></svg>
         </a>
         <a class="social-pill" href="#" aria-label="Facebook">
@@ -681,6 +710,10 @@
     });
   }
 </script>
+
+  <a class="whatsapp-float" href="https://wa.me/5511984556597" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.85 1h.01a7.94 7.94 0 0 0 5.54-13.58zM12.06 18.4h-.01a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.66.67-2.44-.16-.25a6.58 6.58 0 0 1 10.2-8.2 6.53 6.53 0 0 1 1.93 4.65 6.6 6.6 0 0 1-6.53 6.64zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.32-.1-.45.1-.13.2-.51.64-.63.77-.11.13-.23.14-.43.05a5.4 5.4 0 0 1-1.6-.98 6 6 0 0 1-1.1-1.37c-.12-.2 0-.3.09-.4.09-.1.2-.24.3-.36.1-.12.13-.2.2-.34.06-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.48-.16-.38-.33-.33-.45-.34h-.38c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.66 0 .98.72 1.93.82 2.06.1.13 1.4 2.15 3.4 3.01.48.2.85.33 1.14.42.48.15.91.13 1.26.08.38-.06 1.17-.48 1.34-.94.17-.46.17-.86.12-.94-.05-.09-.18-.14-.38-.24z"></path></svg>
+  </a>
 
 </body>
 </html>
