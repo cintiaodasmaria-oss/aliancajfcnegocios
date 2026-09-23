@@ -383,6 +383,9 @@
       </div>
       <div class="grid-anuncios" id="grid-anuncios"></div>
       <div class="empty-catalogo hidden" id="empty-catalogo">Nenhum imóvel publicado no momento.</div>
+      <div style="display:flex; justify-content:center; margin-top:24px;">
+        <button class="btn btn-ghost hidden" id="btn-ver-mais">Ver mais imóveis</button>
+      </div>
       <div id="view-mapa" class="hidden"></div>
     </div>
   </section>
@@ -619,39 +622,63 @@
         initMap(); plotMarkers(CATALOGO_ITEMS);
       }
 
-      if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      if (!items.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); document.getElementById('btn-ver-mais').classList.add('hidden'); return; }
       empty.classList.add('hidden');
-      grid.innerHTML = items.map((l, idx) => {
-        const fotos = (l.fotoUrl || '').split(';').filter(Boolean);
-        const capa = fotos[0];
-        return `
-        <div class="imovel-card">
-          <div class="imovel-foto" onclick="abrirDetalhe(${idx})" style="${capa ? `background-image:url('${escapeAttr(capa)}')` : ''}">
-            ${capa ? (fotos.length > 1 ? `<span style="position:absolute; bottom:8px; right:8px; background:rgba(38,38,32,.75); color:#fff; font-family:var(--mono); font-size:.66rem; padding:2px 8px; border-radius:999px;">+${fotos.length - 1} fotos</span>` : '') : 'Sem foto'}
-          </div>
-          <div class="imovel-body">
-            <span class="imovel-badge">${escapeHtml(l.finalidade || '—')}</span>
-            <div class="imovel-titulo" onclick="abrirDetalhe(${idx})">${escapeHtml(l.tipoImovel || 'Imóvel')}</div>
-            <div class="imovel-local">${escapeHtml([l.bairro, l.cidade].filter(Boolean).join(', ') || '')}</div>
-            <div class="imovel-specs">
-              ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
-              ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
-              <span>${l.vagas ? escapeHtml(l.vagas) + ' vaga(s)' : 'Sem vaga'}</span>
-            </div>
-            <div class="imovel-valor">${l.valor ? 'R$ ' + Number(l.valor).toLocaleString('pt-BR') : 'Consulte valor'}</div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${idx})">Ver detalhes</button>
-              <button class="btn btn-solid btn-sm" onclick="document.getElementById('nav-cadastro').click()">Falar com a corretora</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
+      catalogoVisibleCount = CATALOGO_PAGE_SIZE;
+      renderCatalogoGrid();
     } catch (err) {
       grid.innerHTML = '';
       empty.textContent = 'Erro ao carregar anúncios. Verifique se API_URL foi preenchida.';
       empty.classList.remove('hidden');
+      document.getElementById('btn-ver-mais').classList.add('hidden');
     }
   }
+
+  const CATALOGO_PAGE_SIZE = 12;
+  let catalogoVisibleCount = CATALOGO_PAGE_SIZE;
+
+  function renderCatalogoGrid() {
+    const grid = document.getElementById('grid-anuncios');
+    const btnVerMais = document.getElementById('btn-ver-mais');
+    const items = CATALOGO_ITEMS.slice(0, catalogoVisibleCount);
+    grid.innerHTML = items.map((l, idx) => {
+      const fotos = (l.fotoUrl || '').split(';').filter(Boolean);
+      const capa = fotos[0];
+      return `
+      <div class="imovel-card">
+        <div class="imovel-foto" onclick="abrirDetalhe(${idx})" style="${capa ? `background-image:url('${escapeAttr(capa)}')` : ''}">
+          ${capa ? (fotos.length > 1 ? `<span style="position:absolute; bottom:8px; right:8px; background:rgba(38,38,32,.75); color:#fff; font-family:var(--mono); font-size:.66rem; padding:2px 8px; border-radius:999px;">+${fotos.length - 1} fotos</span>` : '') : 'Sem foto'}
+        </div>
+        <div class="imovel-body">
+          <span class="imovel-badge">${escapeHtml(l.finalidade || '—')}</span>
+          <div class="imovel-titulo" onclick="abrirDetalhe(${idx})">${escapeHtml(l.tipoImovel || 'Imóvel')}</div>
+          <div class="imovel-local">${escapeHtml([l.bairro, l.cidade].filter(Boolean).join(', ') || '')}</div>
+          <div class="imovel-specs">
+            ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
+            ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
+            <span>${l.vagas ? escapeHtml(l.vagas) + ' vaga(s)' : 'Sem vaga'}</span>
+          </div>
+          <div class="imovel-valor">${l.valor ? 'R$ ' + Number(l.valor).toLocaleString('pt-BR') : 'Consulte valor'}</div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${idx})">Ver detalhes</button>
+            <button class="btn btn-solid btn-sm" onclick="document.getElementById('nav-cadastro').click()">Falar com a corretora</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    const restante = CATALOGO_ITEMS.length - items.length;
+    if (restante > 0) {
+      btnVerMais.textContent = `Ver mais imóveis (+${restante})`;
+      btnVerMais.classList.remove('hidden');
+    } else {
+      btnVerMais.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('btn-ver-mais').addEventListener('click', () => {
+    catalogoVisibleCount += CATALOGO_PAGE_SIZE;
+    renderCatalogoGrid();
+  });
 
   function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
   function escapeAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
