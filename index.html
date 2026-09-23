@@ -553,6 +553,7 @@
         .hero-adv-footer{flex-direction:column; align-items:stretch;}
         .hero-adv-clear{width:100%; justify-content:center;}
   }
+  .hidden{display:none !important;}
 </style>
 </head>
 <body>
@@ -877,6 +878,10 @@
         <h3>Não foi possível carregar os anúncios agora</h3>
         <p>Pode ter sido uma instabilidade rápida de conexão. Toque no botão abaixo para tentar de novo.</p>
         <button class="btn btn-primary" id="listingsRetryBtn" type="button">Tentar novamente</button>
+      </div>
+
+      <div style="display:flex; justify-content:center; margin-top:24px;">
+        <button class="btn btn-ghost hidden" id="btn-ver-mais-imoveis" type="button">Ver mais imóveis</button>
       </div>
     </div>
   </section>
@@ -1250,6 +1255,8 @@
 
   let ALL_LISTINGS = [];
   let currentFilter = 'todos';
+  const LISTINGS_PAGE_SIZE = 12;
+  let listingsVisibleCount = LISTINGS_PAGE_SIZE;
   let currentSearch = {
     tipo: '', cidade: '', bairro: '',
     valorMin: null, valorMax: null,
@@ -1412,12 +1419,14 @@
       dot.classList.toggle('show', n > 0);
     });
   }
-  function renderListings() {
+  function renderListings(preserveCount) {
     const grid = document.getElementById('listingsGrid');
     const empty = document.getElementById('listingsEmpty');
     const loadError = document.getElementById('listingsLoadError');
+    const moreBtn = document.getElementById('btn-ver-mais-imoveis');
     if (loadError) loadError.style.display = 'none';
     const list = ALL_LISTINGS.filter(l => matchesFilter(l, currentFilter) && matchesSearch(l));
+    if (!preserveCount) listingsVisibleCount = LISTINGS_PAGE_SIZE;
     const resultsText = `<strong>${list.length}</strong> imóvel${list.length === 1 ? '' : 'is'} encontrado${list.length === 1 ? '' : 's'}`;
     ['advResultsCount', 'l-advResultsCount'].forEach(id => {
       const countEl = document.getElementById(id);
@@ -1427,10 +1436,21 @@
     if (!list.length) {
       grid.innerHTML = '';
       empty.style.display = '';
+      if (moreBtn) moreBtn.classList.add('hidden');
       return;
     }
     empty.style.display = 'none';
-    grid.innerHTML = list.map(cardHtml).join('');
+    const visibleList = list.slice(0, listingsVisibleCount);
+    grid.innerHTML = visibleList.map(cardHtml).join('');
+    if (moreBtn) {
+      const remaining = list.length - visibleList.length;
+      if (remaining > 0) {
+        moreBtn.classList.remove('hidden');
+        moreBtn.textContent = `Ver mais imóveis (+${remaining})`;
+      } else {
+        moreBtn.classList.add('hidden');
+      }
+    }
   }
 
   function showListingsLoadError() {
@@ -1476,6 +1496,13 @@
       const loadError = document.getElementById('listingsLoadError');
       if (loadError) loadError.style.display = 'none';
       loadListings();
+    });
+  }
+  const btnVerMaisImoveis = document.getElementById('btn-ver-mais-imoveis');
+  if (btnVerMaisImoveis) {
+    btnVerMaisImoveis.addEventListener('click', () => {
+      listingsVisibleCount += LISTINGS_PAGE_SIZE;
+      renderListings(true);
     });
   }
 
