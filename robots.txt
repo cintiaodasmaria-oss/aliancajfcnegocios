@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /painel-crm.html
+Disallow: /consultoria-quintoandar.html
+
+Sitemap: https://www.aliancajfcnegocios.com.br/sitemap.xml
