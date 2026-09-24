@@ -92,7 +92,7 @@ return max + 1;
 function normalizeForDup(s) {
 return String(s || '')
 .toLowerCase()
-.normalize('NFD').replace(/[̀-M�]/g, '') // remove acentos
+.normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
 .replace(/[^a-z0-9]/g, ''); // remove espaços e pontuação
 }
 
