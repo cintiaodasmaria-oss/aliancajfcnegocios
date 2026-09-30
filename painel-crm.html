@@ -145,7 +145,7 @@
 <nav class="nav">
   <div class="brand">Aliança JFC Negócios<small>PAINEL INTERNO · SOMENTE EQUIPE</small></div>
   <div class="nav-right hidden" id="nav-right">
-    <button class="link-cadastrar" id="btn-open-wizard">+ Cadastrar imóvel</button>
+    <button class="link-cadastrar" id="btn-fix-old-photos" style="background:transparent; border:1px solid var(--verde-musgo, #4a5a3a); color:var(--verde-musgo, #4a5a3a); margin-right:10px;" title="Corrige fotos antigas do Google Drive que não aparecem para os visitantes do site">Corrigir fotos antigas</button><button class="link-cadastrar" id="btn-open-wizard">+ Cadastrar imóvel</button>
   </div>
 </nav>
 
@@ -525,7 +525,7 @@
       document.getElementById('gate-error').classList.remove('hidden');
     }
   }
-  if (TOKEN) tryLogin();
+  if (TOKEN) tryLogin(); document.getElementById('btn-fix-old-photos').addEventListener('click', async () => { if (!confirm('Corrigir os links de fotos antigas do Google Drive (que estao aparecendo quebradas no site)? Isso NAO apaga nenhuma foto, so atualiza o link salvo.')) return; const btn = document.getElementById('btn-fix-old-photos'); const textoOriginal = btn.textContent; btn.textContent = 'Corrigindo...'; btn.disabled = true; try { const r = await apiGet('migrateFotoUrls', {}); if (r && r.ok) { alert('Pronto! ' + r.corrigidos + ' cadastro(s) corrigido(s): #' + (r.numeros || []).join(', #')); await loadLeads(); } else { alert('Erro: ' + (r && r.error ? r.error : 'resposta inesperada do backend.')); } } catch (err) { alert('Erro de conexao: ' + err.message); } btn.textContent = textoOriginal; btn.disabled = false; });
 
   // ---------- SIDEBAR: navegação ----------
   document.querySelectorAll('.side-head[data-toggle]').forEach(el => {
