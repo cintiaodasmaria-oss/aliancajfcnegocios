@@ -343,17 +343,30 @@
   /* ---- Busca dentro de "Anúncios" (para quem chega direto por aqui) ---- */
   .listings-search-bar{margin:0;}
   .adv-filters .listings-search-row{padding-bottom:20px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  /* Uma busca só: a do topo. Em Anúncios fica só o resumo do que está sendo mostrado. */
+  .listings-head .filters, .listings-search-bar{display:none !important;}
+  .listings-head{margin-bottom:20px;}
   .active-search{
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:-12px 0 20px;
-    font-size:13.5px; color:var(--muted);
+    display:flex; align-items:center; justify-content:space-between; gap:12px 20px; flex-wrap:wrap;
+    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 18px; font-size:14.5px; color:var(--muted);
   }
+  .active-search-actions{display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
+  .active-search .btn-alterar{
+    display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:999px;
+    border:1.5px solid var(--green-dark); background:var(--white); color:var(--green-dark);
+    font:inherit; font-size:14px; font-weight:600; text-decoration:none; cursor:pointer;
+  }
+  .active-search .btn-alterar svg{width:16px; height:16px;}
+  .mobile-drawer a.btn, .mobile-drawer a.btn:hover{color:var(--white); justify-content:center;}
   .active-search[hidden]{display:none;}
   #listingModalDesc{white-space:pre-line;}
   .active-search strong{color:var(--green-darker); font-weight:600;}
-  .active-search button{
-    border:0; background:none; padding:0; font:inherit; font-weight:600; color:var(--green-dark);
+  .active-search #activeSearchClear{
+    border:0; background:none; padding:0; font:inherit; font-size:14px; font-weight:600; color:var(--green-dark);
     text-decoration:underline; text-underline-offset:3px; cursor:pointer;
   }
+  .active-search #activeSearchClear[hidden]{display:none;}
 
   .listings-search-row{display:flex; align-items:end; gap:14px; flex-wrap:wrap;}
   .listings-search-field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:150px;}
@@ -805,7 +818,13 @@
 
       <div class="active-search" id="activeSearch" hidden>
         <span id="activeSearchText"></span>
-        <button type="button" id="activeSearchClear">Limpar busca</button>
+        <div class="active-search-actions">
+          <button type="button" id="activeSearchClear" hidden>Limpar</button>
+          <button type="button" class="btn-alterar" id="activeSearchEdit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            Alterar busca
+          </button>
+        </div>
       </div>
 
       <div class="listings-search-bar">
@@ -2096,8 +2115,14 @@
     if (currentSearch.bairro) partes.push(currentSearch.bairro);
     const extras = countActiveFilters() - (currentSearch.tipo ? 1 : 0) - (currentSearch.cidade ? 1 : 0) - (currentSearch.bairro ? 1 : 0);
     if (extras > 0) partes.push('+' + extras + ' filtro' + (extras > 1 ? 's' : ''));
-    box.hidden = partes.length === 0;
-    txt.innerHTML = 'Buscando: ' + partes.map(p => '<strong>' + String(p).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</strong>').join(' · ');
+    const total = ALL_LISTINGS.filter(l => matchesFilter(l, currentFilter) && matchesSearch(l)).length;
+    const qtd = '<strong>' + total + '</strong> imóve' + (total === 1 ? 'l' : 'is');
+    box.hidden = !ALL_LISTINGS.length;
+    const limpar = document.getElementById('activeSearchClear');
+    if (limpar) limpar.hidden = partes.length === 0;
+    txt.innerHTML = partes.length
+      ? partes.map(p => '<strong>' + String(p).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</strong>').join(' · ') + ' — ' + qtd
+      : 'Mostrando todos os ' + qtd;
   }
   const _renderListingsBase = renderListings;
   renderListings = function (preserveCount) {
@@ -2112,6 +2137,15 @@
       const fin = document.getElementById('s-finalidade');
       if (fin) fin.value = 'todos';
       if (btnClearFilters) btnClearFilters.click(); else renderListings();
+    });
+  }
+  const activeSearchEdit = document.getElementById('activeSearchEdit');
+  if (activeSearchEdit) {
+    activeSearchEdit.addEventListener('click', () => {
+      const busca = document.querySelector('.search-bar-wrap') || document.getElementById('topo');
+      if (busca) busca.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const aba = document.querySelector('.search-tab[data-tab="buscar"]');
+      if (aba) aba.click();
     });
   }
   updateActiveSearch();
@@ -2145,7 +2179,7 @@
       if (lCidadeSync) lCidadeSync.value = currentSearch.cidade;
       if (lBairroSync) lBairroSync.value = currentSearch.bairro;
       renderListings();
-      const target = document.getElementById('listingsGrid') || document.getElementById('imoveis');
+      const target = document.getElementById('imoveis') || document.getElementById('listingsGrid');
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
