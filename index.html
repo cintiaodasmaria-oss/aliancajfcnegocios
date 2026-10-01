@@ -250,6 +250,8 @@
   /* ---------- Cadastro (form) ---------- */
   .cadastro{background:var(--paper);}
   .cadastro-grid{display:grid; grid-template-columns:.85fr 1.15fr; gap:56px;}
+  .cadastro-grid > *{min-width:0;}
+  .cadastro .field{min-width:0;} #f-fotos{max-width:100%;}
   .cadastro-side .section-head{margin-bottom:26px;}
   .cadastro-points{display:flex; flex-direction:column; gap:20px; margin-top:8px;}
   .cadastro-point{display:flex; gap:14px; align-items:flex-start;}
@@ -339,10 +341,30 @@
   .btn-sm{padding:10px 20px; font-size:14px;}
 
   /* ---- Busca dentro de "Anúncios" (para quem chega direto por aqui) ---- */
-  .listings-search-bar{
-    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px 20px 20px; margin-bottom:28px;
+  .listings-search-bar{margin:0;}
+  .adv-filters .listings-search-row{padding-bottom:20px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  .filter-chip-link{
+    display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--green-dark);
+    border-color:var(--gold); background:var(--white); font-weight:600;
   }
+  .filter-chip-link svg{width:14px; height:14px;}
+  .filter-chip-link:hover{background:var(--paper-2);}
+  .active-search{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:-12px 0 20px;
+    font-size:13.5px; color:var(--muted);
+  }
+  .active-search[hidden], .galpao-hint[hidden]{display:none;}
+  .active-search strong{color:var(--green-darker); font-weight:600;}
+  .active-search button{
+    border:0; background:none; padding:0; font:inherit; font-weight:600; color:var(--green-dark);
+    text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+  }
+  .galpao-hint{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:var(--green-dark); color:var(--white); border-radius:var(--radius); padding:16px 20px; margin-bottom:24px;
+    font-size:14.5px;
+  }
+  .galpao-hint a{color:var(--gold); font-weight:700; text-decoration:none; white-space:nowrap;}
   .listings-search-row{display:flex; align-items:end; gap:14px; flex-wrap:wrap;}
   .listings-search-field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:150px;}
   .listings-search-field label{font-size:11px; font-weight:700; color:var(--green-darker); text-transform:uppercase; letter-spacing:.05em;}
@@ -572,7 +594,6 @@
       <li><a href="#imoveis">Anúncios</a></li>
       <li><a href="galpoes.html">Galpões</a></li>
       <li><a href="#sobre">Sobre</a></li>
-      <li><a href="#cadastro">Cadastrar Imóvel</a></li>
       <li><a href="#contato">Contato</a></li>
     </ul>
     <div class="nav-cta">
@@ -591,7 +612,6 @@
     <a href="#imoveis">Anúncios</a>
     <a href="galpoes.html">Galpões para locação</a>
     <a href="#sobre">Sobre</a>
-    <a href="#cadastro">Cadastrar Imóvel</a>
     <a href="#contato">Contato</a>
     <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
     <a href="painel-crm.html" style="font-size:12px; color:var(--muted); opacity:.6;">Acesso da equipe</a>
@@ -785,69 +805,78 @@
           <button class="filter-chip" type="button" data-filter="venda">Venda</button>
           <button class="filter-chip" type="button" data-filter="locacao">Locação</button>
           <button class="filter-chip" type="button" data-filter="comercial">Comercial</button>
-        </div>
-      </div>
-
-      <div class="listings-search-bar">
-        <div class="listings-search-row">
-          <div class="listings-search-field">
-            <label for="l-s-tipo">Tipo</label>
-            <select id="l-s-tipo">
-              <option value="">Todos os tipos</option>
-              <optgroup label="Casa">
-                <option value="casa">Todas</option>
-                <option value="casa térrea">Casa térrea</option>
-                <option value="sobrado">Sobrado</option>
-                <option value="casa de vila">Casa de vila</option>
-                <option value="casa em condomínio">Casa em condomínio</option>
-              </optgroup>
-              <optgroup label="Apartamento">
-                <option value="apartamento">Todos</option>
-                <option value="apartamento padrão">Padrão</option>
-                <option value="studio/flat">Studio/flat</option>
-                <option value="duplex">Duplex</option>
-                <option value="triplex">Triplex</option>
-                <option value="cobertura">Cobertura</option>
-              </optgroup>
-              <optgroup label="Comercial">
-                <option value="comercial">Todos</option>
-                <option value="sala comercial">Sala comercial</option>
-                <option value="loja">Loja</option>
-                <option value="laje">Laje</option>
-                <option value="casa comercial">Casa comercial</option>
-              </optgroup>
-              <optgroup label="Industrial">
-                <option value="industrial">Todos</option>
-                <option value="galpão">Galpão</option>
-                <option value="prédio">Prédio</option>
-              </optgroup>
-              <optgroup label="Terreno">
-                <option value="terreno">Todos</option>
-                <option value="terreno residencial">Residencial</option>
-                <option value="terreno comercial">Comercial</option>
-                <option value="terreno logístico">Logístico</option>
-                <option value="loteamento">Loteamento</option>
-                <option value="terreno vertical">Vertical</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="listings-search-field">
-            <label for="l-s-cidade">Cidade</label>
-            <input id="l-s-cidade" type="text" placeholder="Ex: São Paulo">
-          </div>
-          <div class="listings-search-field">
-            <label for="l-s-bairro">Bairro</label>
-            <input id="l-s-bairro" type="text" placeholder="Ex: Moema">
-          </div>
-          <button class="btn btn-primary" type="button" id="l-btnBuscar">Buscar</button>
+          <a class="filter-chip filter-chip-link" href="galpoes.html">Galpões logísticos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           <button class="filters-toggle-btn" type="button" id="l-btnToggleFilters">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            Mais filtros
+            Filtros
             <span class="count-dot" id="l-filtersCountDot">0</span>
           </button>
         </div>
+      </div>
 
+      <div class="active-search" id="activeSearch" hidden>
+        <span id="activeSearchText"></span>
+        <button type="button" id="activeSearchClear">Limpar busca</button>
+      </div>
+      <div class="galpao-hint" id="galpaoHint" hidden>
+        <span>Procurando galpão logístico para alugar? Temos opções com ficha técnica e custo por m².</span>
+        <a href="galpoes.html">Ver galpões disponíveis &rarr;</a>
+      </div>
+
+      <div class="listings-search-bar">
         <div class="adv-filters" id="l-advFilters">
+          <div class="listings-search-row">
+            <div class="listings-search-field">
+              <label for="l-s-tipo">Tipo</label>
+              <select id="l-s-tipo">
+                <option value="">Todos os tipos</option>
+                <optgroup label="Casa">
+                  <option value="casa">Todas</option>
+                  <option value="casa térrea">Casa térrea</option>
+                  <option value="sobrado">Sobrado</option>
+                  <option value="casa de vila">Casa de vila</option>
+                  <option value="casa em condomínio">Casa em condomínio</option>
+                </optgroup>
+                <optgroup label="Apartamento">
+                  <option value="apartamento">Todos</option>
+                  <option value="apartamento padrão">Padrão</option>
+                  <option value="studio/flat">Studio/flat</option>
+                  <option value="duplex">Duplex</option>
+                  <option value="triplex">Triplex</option>
+                  <option value="cobertura">Cobertura</option>
+                </optgroup>
+                <optgroup label="Comercial">
+                  <option value="comercial">Todos</option>
+                  <option value="sala comercial">Sala comercial</option>
+                  <option value="loja">Loja</option>
+                  <option value="laje">Laje</option>
+                  <option value="casa comercial">Casa comercial</option>
+                </optgroup>
+                <optgroup label="Industrial">
+                  <option value="industrial">Todos</option>
+                  <option value="galpão">Galpão</option>
+                  <option value="prédio">Prédio</option>
+                </optgroup>
+                <optgroup label="Terreno">
+                  <option value="terreno">Todos</option>
+                  <option value="terreno residencial">Residencial</option>
+                  <option value="terreno comercial">Comercial</option>
+                  <option value="terreno logístico">Logístico</option>
+                  <option value="loteamento">Loteamento</option>
+                  <option value="terreno vertical">Vertical</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="listings-search-field">
+              <label for="l-s-cidade">Cidade</label>
+              <input id="l-s-cidade" type="text" placeholder="Ex: São Paulo">
+            </div>
+            <div class="listings-search-field">
+              <label for="l-s-bairro">Bairro</label>
+              <input id="l-s-bairro" type="text" placeholder="Ex: Moema">
+            </div>
+            <button class="btn btn-primary" type="button" id="l-btnBuscar">Aplicar</button>
+          </div>
           <div class="adv-filters-grid">
             <div class="adv-field">
               <label>Valor (R$)</label>
@@ -1977,6 +2006,48 @@
     });
   }
 
+  // =============== RESUMO DA BUSCA ATIVA (seção Anúncios) ===============
+  const FINALIDADE_LABEL = { venda: 'Venda', locacao: 'Locação', comercial: 'Comercial' };
+  function tipoLabel(v) {
+    if (!v) return '';
+    const opt = Array.from(document.querySelectorAll('#l-s-tipo option')).find(o => o.value === v);
+    if (!opt) return v;
+    const grupo = opt.parentElement && opt.parentElement.label;
+    return /^Tod[ao]s$/.test(opt.textContent.trim()) && grupo ? grupo : opt.textContent.trim();
+  }
+  function updateActiveSearch() {
+    const box = document.getElementById('activeSearch');
+    const txt = document.getElementById('activeSearchText');
+    const hint = document.getElementById('galpaoHint');
+    if (hint) hint.hidden = !(currentSearch.tipo === 'galpão' || currentSearch.tipo === 'industrial');
+    if (!box || !txt) return;
+    const partes = [];
+    if (FINALIDADE_LABEL[currentFilter]) partes.push(FINALIDADE_LABEL[currentFilter]);
+    if (currentSearch.tipo) partes.push(tipoLabel(currentSearch.tipo));
+    if (currentSearch.cidade) partes.push(currentSearch.cidade);
+    if (currentSearch.bairro) partes.push(currentSearch.bairro);
+    const extras = countActiveFilters() - (currentSearch.tipo ? 1 : 0) - (currentSearch.cidade ? 1 : 0) - (currentSearch.bairro ? 1 : 0);
+    if (extras > 0) partes.push('+' + extras + ' filtro' + (extras > 1 ? 's' : ''));
+    box.hidden = partes.length === 0;
+    txt.innerHTML = 'Buscando: ' + partes.map(p => '<strong>' + String(p).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</strong>').join(' · ');
+  }
+  const _renderListingsBase = renderListings;
+  renderListings = function (preserveCount) {
+    _renderListingsBase(preserveCount);
+    updateActiveSearch();
+  };
+  const activeSearchClear = document.getElementById('activeSearchClear');
+  if (activeSearchClear) {
+    activeSearchClear.addEventListener('click', () => {
+      currentFilter = 'todos';
+      filterChips.forEach(c => c.classList.toggle('active', (c.dataset.filter || 'todos') === 'todos'));
+      const fin = document.getElementById('s-finalidade');
+      if (fin) fin.value = 'todos';
+      if (btnClearFilters) btnClearFilters.click(); else renderListings();
+    });
+  }
+  updateActiveSearch();
+
   // =============== BUSCA / ANUNCIAR (hero) ===============
   const searchTabs = document.querySelectorAll('.search-tab');
   const panelBuscar = document.getElementById('panelBuscar');
@@ -1994,6 +2065,12 @@
   if (btnBuscarHero) {
     btnBuscarHero.addEventListener('click', () => {
       const finalidade = document.getElementById('s-finalidade').value || 'todos';
+      const tipoHero = document.getElementById('s-tipo').value;
+      if ((tipoHero === 'galpão' || tipoHero === 'industrial') && finalidade !== 'venda') {
+        const cid = document.getElementById('s-cidade').value.trim();
+        window.location.href = 'galpoes.html' + (cid ? '?cidade=' + encodeURIComponent(cid) : '');
+        return;
+      }
       currentFilter = finalidade;
       filterChips.forEach(c => c.classList.toggle('active', (c.dataset.filter || 'todos') === currentFilter));
       currentSearch.tipo = document.getElementById('s-tipo').value;
