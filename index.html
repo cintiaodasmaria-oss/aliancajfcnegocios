@@ -343,28 +343,18 @@
   /* ---- Busca dentro de "Anúncios" (para quem chega direto por aqui) ---- */
   .listings-search-bar{margin:0;}
   .adv-filters .listings-search-row{padding-bottom:20px; margin-bottom:20px; border-bottom:1px solid var(--line);}
-  .filter-chip-link{
-    display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--green-dark);
-    border-color:var(--gold); background:var(--white); font-weight:600;
-  }
-  .filter-chip-link svg{width:14px; height:14px;}
-  .filter-chip-link:hover{background:var(--paper-2);}
   .active-search{
     display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:-12px 0 20px;
     font-size:13.5px; color:var(--muted);
   }
-  .active-search[hidden], .galpao-hint[hidden]{display:none;}
+  .active-search[hidden]{display:none;}
+  #listingModalDesc{white-space:pre-line;}
   .active-search strong{color:var(--green-darker); font-weight:600;}
   .active-search button{
     border:0; background:none; padding:0; font:inherit; font-weight:600; color:var(--green-dark);
     text-decoration:underline; text-underline-offset:3px; cursor:pointer;
   }
-  .galpao-hint{
-    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    background:var(--green-dark); color:var(--white); border-radius:var(--radius); padding:16px 20px; margin-bottom:24px;
-    font-size:14.5px;
-  }
-  .galpao-hint a{color:var(--gold); font-weight:700; text-decoration:none; white-space:nowrap;}
+
   .listings-search-row{display:flex; align-items:end; gap:14px; flex-wrap:wrap;}
   .listings-search-field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:150px;}
   .listings-search-field label{font-size:11px; font-weight:700; color:var(--green-darker); text-transform:uppercase; letter-spacing:.05em;}
@@ -592,7 +582,7 @@
     </a>
     <ul class="nav-links">
       <li><a href="#imoveis">Anúncios</a></li>
-      <li><a href="galpoes.html">Galpões</a></li>
+      <li><a href="#imoveis" data-filtro-tipo="galpão">Galpões</a></li>
       <li><a href="#sobre">Sobre</a></li>
       <li><a href="#contato">Contato</a></li>
     </ul>
@@ -610,7 +600,7 @@
   </div>
   <nav class="mobile-drawer wrap" id="mobileDrawer">
     <a href="#imoveis">Anúncios</a>
-    <a href="galpoes.html">Galpões para locação</a>
+    <a href="#imoveis" data-filtro-tipo="galpão">Galpões para locação</a>
     <a href="#sobre">Sobre</a>
     <a href="#contato">Contato</a>
     <a class="btn btn-primary" href="#cadastro">Cadastrar imóvel</a>
@@ -805,7 +795,6 @@
           <button class="filter-chip" type="button" data-filter="venda">Venda</button>
           <button class="filter-chip" type="button" data-filter="locacao">Locação</button>
           <button class="filter-chip" type="button" data-filter="comercial">Comercial</button>
-          <a class="filter-chip filter-chip-link" href="galpoes.html">Galpões logísticos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           <button class="filters-toggle-btn" type="button" id="l-btnToggleFilters">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
             Filtros
@@ -817,10 +806,6 @@
       <div class="active-search" id="activeSearch" hidden>
         <span id="activeSearchText"></span>
         <button type="button" id="activeSearchClear">Limpar busca</button>
-      </div>
-      <div class="galpao-hint" id="galpaoHint" hidden>
-        <span>Procurando galpão logístico para alugar? Temos opções com ficha técnica e custo por m².</span>
-        <a href="galpoes.html">Ver galpões disponíveis &rarr;</a>
       </div>
 
       <div class="listings-search-bar">
@@ -1235,7 +1220,7 @@
       <h4>Navegação</h4>
       <ul>
         <li><a href="#imoveis">Anúncios</a></li>
-        <li><a href="galpoes.html">Galpões para locação</a></li>
+        <li><a href="#imoveis" data-filtro-tipo="galpão">Galpões para locação</a></li>
         <li><a href="#sobre">Sobre</a></li>
         <li><a href="#cadastro">Cadastrar imóvel</a></li>
       </ul>
@@ -1373,6 +1358,7 @@
 
   function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
   function formatPrice(l) {
+    if (l.galpao) return l.aluguel ? 'R$ ' + Number(l.aluguel).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '/m² ao mês' : 'Aluguel sob consulta';
     if (!l.valor) return 'Consulte';
     const v = 'R$ ' + Number(l.valor).toLocaleString('pt-BR');
     return (l.finalidade || '').toLowerCase().includes('loca') && !(l.finalidade || '').toLowerCase().includes('venda') ? v + '/mês' : v;
@@ -1387,6 +1373,7 @@
       .slice(0, 80) || 'imovel';
   }
   function buildListingPath(l) {
+    if (l.galpao) return '/#imovel-' + l.id;
     const parts = [l.tipoImovel, l.bairro, l.cidade].filter(Boolean).join(' ');
     const numero = l.numero || '0';
     return `/imovel/${numero}-${slugify(parts)}`;
@@ -1513,7 +1500,8 @@
         <div class="price">${formatPrice(l)}</div>
         <div class="loc">${escapeHtml(localidade || 'Localização a consultar')}</div>
         <div class="meta">
-          ${l.areaConstruida ? `<span>${escapeHtml(l.areaConstruida)} m²</span>` : ''}
+          ${l.areaConstruida ? `<span>${escapeHtml(areaFmt(l.areaConstruida))} m²</span>` : ''}
+          ${l.galpao && l.quando ? `<span>${escapeHtml(l.quando)}</span>` : ''}
           ${l.dormitorios ? `<span>${escapeHtml(l.dormitorios)} dorm.</span>` : ''}
           ${l.vagas ? `<span>${escapeHtml(l.vagas)} vaga(s)</span>` : ''}
         </div>
@@ -1594,12 +1582,93 @@
   // entre elas. Só mostra o estado de erro (com botão "Tentar novamente") se
   // todas falharem — importante porque um link de anúncio compartilhado
   // depende desta chamada terminar para poder abrir o imóvel certo.
+  // =============== GALPÕES LOGÍSTICOS (galpoes.json) ===============
+  // Entram em Anúncios como "Industrial > Galpão", depois dos imóveis do painel.
+  function areaFmt(v) { const n = Number(v); return isFinite(n) && String(v).trim() !== '' ? n.toLocaleString('pt-BR') : String(v); }
+  function rs(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function galpaoImagem(g) {
+    const t = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">'
+      + '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1B5E4A"/><stop offset="1" stop-color="#0E3127"/></linearGradient></defs>'
+      + '<rect width="800" height="600" fill="url(#g)"/>'
+      + '<g fill="none" stroke="#C79A44" stroke-width="6" stroke-linejoin="round" opacity=".9">'
+      + '<path d="M250 300 L400 215 L550 300 V420 H250 Z"/><path d="M300 420 V340 H500 V420"/><path d="M300 365 H500 M300 392 H500"/></g>'
+      + '<text x="400" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="5" fill="#C79A44" font-weight="700">GALPÃO LOGÍSTICO</text>'
+      + '<text x="400" y="495" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" fill="#FFFFFF" font-weight="700">' + t(g.cidade + '/' + g.uf) + '</text>'
+      + '<text x="400" y="540" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#E7E2D3">' + t(areaFmt(g.abl) + ' m² · Ref. ' + g.ref) + '</text>'
+      + '</svg>';
+    return 'data:image/svg+xml,' + encodeURIComponent(svg).replace(/'/g, '%27');
+  }
+  function galpaoParaAnuncio(g) {
+    const custo = g.aluguel && g.cond != null && g.iptu != null ? g.aluguel + g.cond + g.iptu : null;
+    const linhas = [
+      `Galpão logístico para locação — ref. ${g.ref}`,
+      `Região: ${g.eixo}`,
+      `Disponibilidade: ${g.quando}`,
+      `Área disponível: ${areaFmt(g.abl)} m² · ${g.modulos}`,
+      `Menor módulo: ${areaFmt(g.menor)} m² · Pé-direito: ${g.pd} m · Piso: ${g.piso} t/m² · Docas: ${g.docas}`,
+      '',
+      'Valores de referência por m² ao mês: ' + [
+        g.aluguel ? 'aluguel ' + rs(g.aluguel) : 'aluguel sob consulta',
+        g.cond ? 'condomínio ' + rs(g.cond) : null,
+        g.iptu === 0 ? 'IPTU isento' : (g.iptu ? 'IPTU ' + rs(g.iptu) : null),
+        custo ? 'custo total ' + rs(custo) : null
+      ].filter(Boolean).join(' · ') + '.',
+      g.obs ? g.obs : null,
+      '',
+      'Nome do empreendimento, endereço, fotos e planta enviados pelo WhatsApp. Atendimento sem custo para o locatário.'
+    ].filter(v => v !== null);
+    return {
+      id: g.ref, galpao: true, ref: g.ref,
+      tipoImovel: 'Galpão', finalidade: 'Locação',
+      cidade: `${g.cidade}/${g.uf}`, bairro: '',
+      areaConstruida: g.abl, aluguel: g.aluguel, quando: g.quando,
+      fotoUrl: galpaoImagem(g),
+      comodidades: [`Pé-direito ${g.pd} m`, `Piso ${g.piso} t/m²`, `Docas: ${g.docas}`, `Menor módulo ${areaFmt(g.menor)} m²`],
+      obs: linhas.join('\n')
+    };
+  }
+  const GALPOES_PROMISE = fetch('/galpoes.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : [])
+    .then(arr => (Array.isArray(arr) ? arr : []).map(galpaoParaAnuncio))
+    .catch(() => []);
+
+  // Quartos, suítes, banheiros, vagas e comodidades só aparecem para casa/apartamento (ou "Todos os tipos")
+  function ajustarCamposResidenciais() {
+    [['s-tipo', 'af-'], ['l-s-tipo', 'l-af-']].forEach(([selId, prefixo]) => {
+      const sel = document.getElementById(selId);
+      const tipo = sel ? sel.value : '';
+      const cat = categoriaDoTipo(tipo || '');
+      const residencial = !tipo || cat === 'casa' || cat === 'apartamento';
+      ['quartos', 'suites', 'banheiros', 'vagas', 'comodidades'].forEach(k => {
+        const el = document.getElementById(prefixo + k);
+        const campo = el && el.closest('.adv-field, .hero-adv-field');
+        if (campo) campo.style.display = residencial ? '' : 'none';
+      });
+    });
+  }
+  ['s-tipo', 'l-s-tipo'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) sel.addEventListener('change', ajustarCamposResidenciais);
+  });
+
+  // Links "Galpões" do menu/rodapé: filtram a própria seção Anúncios
+  document.querySelectorAll('[data-filtro-tipo]').forEach(link => {
+    link.addEventListener('click', () => {
+      currentFilter = 'todos';
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', (c.dataset.filter || 'todos') === 'todos'));
+      currentSearch.tipo = link.dataset.filtroTipo;
+      ['s-tipo', 'l-s-tipo'].forEach(id => { const s = document.getElementById(id); if (s) s.value = currentSearch.tipo; });
+      renderListings();
+    });
+  });
+
   async function loadListings(attempt) {
     attempt = attempt || 0;
     try {
       const result = await jsonp(`${API_URL}?action=listPublic`);
       if (result.ok) {
-        ALL_LISTINGS = result.data || [];
+        ALL_LISTINGS = (result.data || []).concat(await GALPOES_PROMISE);
         renderListings();
         tryOpenPendingListing();
       } else if (attempt < 2) {
@@ -1701,7 +1770,7 @@
     const localidade = [l.bairro, l.cidade].filter(Boolean).join(', ');
     listingModalLoc.textContent = localidade || 'Localização a consultar';
     const metaParts = [];
-    if (l.areaConstruida) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.areaConstruida)} m²</strong><span>Área</span></div>`);
+    if (l.areaConstruida) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(areaFmt(l.areaConstruida))} m²</strong><span>Área</span></div>`);
     if (l.dormitorios) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.dormitorios)}</strong><span>Dormitório(s)</span></div>`);
     if (l.suites) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.suites)}</strong><span>Suíte(s)</span></div>`);
     if (l.banheiros) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.banheiros)}</strong><span>Banheiro(s)</span></div>`);
@@ -1723,7 +1792,7 @@
     } else {
       listingModalLazerWrap.style.display = 'none';
     }
-    const msg = encodeURIComponent(`Olá! Tenho interesse no imóvel: ${l.tipoImovel || 'imóvel'} em ${localidade || 'São Paulo'} - ${priceText}.`);
+    const msg = encodeURIComponent(`Olá! Tenho interesse no imóvel: ${l.tipoImovel || 'imóvel'}${l.galpao ? ' ref. ' + l.id : ''} em ${localidade || 'São Paulo'} - ${priceText}.`);
     const whatsHref = `https://wa.me/5511984556597?text=${msg}`;
     listingModalWhats.href = whatsHref;
     listingModalWhatsTop.href = whatsHref;
@@ -2018,8 +2087,7 @@
   function updateActiveSearch() {
     const box = document.getElementById('activeSearch');
     const txt = document.getElementById('activeSearchText');
-    const hint = document.getElementById('galpaoHint');
-    if (hint) hint.hidden = !(currentSearch.tipo === 'galpão' || currentSearch.tipo === 'industrial');
+    ajustarCamposResidenciais();
     if (!box || !txt) return;
     const partes = [];
     if (FINALIDADE_LABEL[currentFilter]) partes.push(FINALIDADE_LABEL[currentFilter]);
@@ -2065,12 +2133,6 @@
   if (btnBuscarHero) {
     btnBuscarHero.addEventListener('click', () => {
       const finalidade = document.getElementById('s-finalidade').value || 'todos';
-      const tipoHero = document.getElementById('s-tipo').value;
-      if ((tipoHero === 'galpão' || tipoHero === 'industrial') && finalidade !== 'venda') {
-        const cid = document.getElementById('s-cidade').value.trim();
-        window.location.href = 'galpoes.html' + (cid ? '?cidade=' + encodeURIComponent(cid) : '');
-        return;
-      }
       currentFilter = finalidade;
       filterChips.forEach(c => c.classList.toggle('active', (c.dataset.filter || 'todos') === currentFilter));
       currentSearch.tipo = document.getElementById('s-tipo').value;
