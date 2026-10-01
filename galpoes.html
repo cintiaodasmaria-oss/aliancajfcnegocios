@@ -352,7 +352,12 @@
   const qs = new URLSearchParams(location.search);
   if (qs.get('regiao') && regioes.includes(qs.get('regiao'))) selReg.value = qs.get('regiao');
   fillCidades();
-  if (qs.get('cidade')) selCid.value = qs.get('cidade');
+  if (qs.get('cidade')) {
+    const norm = t => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const alvo = norm(qs.get('cidade'));
+    const op = Array.from(selCid.options).find(o => o.value && (norm(o.value) === alvo || norm(o.value).startsWith(alvo)));
+    if (op) selCid.value = op.value;
+  }
   render();
   if (qs.get('ref')) abrir(qs.get('ref'));
 </script>
