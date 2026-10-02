@@ -380,6 +380,16 @@
     border:1.5px dashed var(--line); border-radius:var(--radius); padding:72px 40px; text-align:center;
     background:var(--paper-2);
   }
+  .listings-loading{
+    display:flex; align-items:center; justify-content:center; gap:14px; margin-top:32px;
+    border:1.5px dashed var(--line); border-radius:var(--radius); padding:64px 24px;
+    background:var(--paper-2); color:var(--muted); font-size:15px;
+  }
+  .listings-loading .spinner{
+    width:22px; height:22px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--green-dark);
+    animation:jfcspin .8s linear infinite; flex:none;
+  }
+  @keyframes jfcspin{to{transform:rotate(360deg);}}
   .empty-state .icon-wrap{
     width:64px; height:64px; border-radius:50%; background:var(--white); border:1px solid var(--line);
     display:flex; align-items:center; justify-content:center; margin:0 auto 22px;
@@ -961,7 +971,8 @@
       </div>
 
       <div class="listings-grid" id="listingsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; margin-top:32px;"></div>
-      <div class="empty-state" id="listingsEmpty">
+      <div class="listings-loading" id="listingsLoading"><span class="spinner"></span>Carregando imóveis…</div>
+      <div class="empty-state" id="listingsEmpty" style="display:none;">
         <div class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>
         </div>
@@ -1682,28 +1693,77 @@
     });
   });
 
-  async function loadListings(attempt) {
-    attempt = attempt || 0;
+  // =============== CARREGAMENTO DOS ANÚNCIOS ===============
+  // Galpões (galpoes.json) aparecem na hora; os imóveis da planilha chegam em seguida.
+  // A última lista recebida fica guardada no aparelho e aparece imediatamente na próxima visita.
+  let listingsReady = false;
+  let CRM_LISTINGS = null; // null = ainda não chegou
+  let crmFalhou = false;
+  let GALPOES_LIST = [];
+  const LISTINGS_CACHE_KEY = 'jfc_listings_cache_v1';
+  function lerCacheAnuncios() {
     try {
-      const result = await jsonp(`${API_URL}?action=listPublic`);
-      if (result.ok) {
-        ALL_LISTINGS = (result.data || []).concat(await GALPOES_PROMISE);
-        renderListings();
-        tryOpenPendingListing();
-      } else if (attempt < 2) {
-        await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
-        return loadListings(attempt + 1);
+      const c = JSON.parse(localStorage.getItem(LISTINGS_CACHE_KEY) || 'null');
+      return c && Array.isArray(c.data) ? c.data : null;
+    } catch (e) { return null; }
+  }
+  function salvarCacheAnuncios(data) {
+    try { localStorage.setItem(LISTINGS_CACHE_KEY, JSON.stringify({ t: Date.now(), data: data })); } catch (e) { /* sem espaço ou bloqueado */ }
+  }
+  function montarListaAnuncios() {
+    ALL_LISTINGS = (CRM_LISTINGS || []).concat(GALPOES_LIST);
+    if (ALL_LISTINGS.length || CRM_LISTINGS !== null) listingsReady = true;
+    renderListings(true);
+    tryOpenPendingListing();
+  }
+  async function buscarAnunciosPlanilha() {
+    const url = `${API_URL}?action=listPublic`;
+    try {
+      const r = await jsonp(url, 15000);
+      if (r && r.ok) return r.data || [];
+    } catch (e) { /* tenta a segunda via */ }
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      const r = await resp.json();
+      if (r && r.ok) return r.data || [];
+    } catch (e) { /* falhou também */ }
+    return null;
+  }
+  async function loadListings() {
+    crmFalhou = false;
+    const loadError = document.getElementById('listingsLoadError');
+    if (loadError) loadError.style.display = 'none';
+    for (let tentativa = 0; tentativa < 3; tentativa++) {
+      const data = await buscarAnunciosPlanilha();
+      if (data) {
+        CRM_LISTINGS = data;
+        salvarCacheAnuncios(data);
+        montarListaAnuncios();
+        return;
+      }
+      await new Promise(r => setTimeout(r, 1500 * (tentativa + 1)));
+    }
+    if (CRM_LISTINGS === null) {
+      listingsReady = true;
+      crmFalhou = true;
+      if (ALL_LISTINGS.length) {
+        renderListings(true);
+        if (loadError) loadError.style.display = '';
       } else {
         showListingsLoadError();
+        const loading = document.getElementById('listingsLoading');
+        if (loading) loading.style.display = 'none';
       }
-    } catch (err) {
-      if (attempt < 2) {
-        await new Promise(r => setTimeout(r, 1200 * (attempt + 1)));
-        return loadListings(attempt + 1);
-      }
-      showListingsLoadError();
     }
   }
+  const anunciosGuardados = lerCacheAnuncios();
+  if (anunciosGuardados) CRM_LISTINGS = anunciosGuardados;
+  GALPOES_PROMISE.then(lista => {
+    GALPOES_LIST = lista || [];
+    if (GALPOES_LIST.length || CRM_LISTINGS !== null) montarListaAnuncios();
+  });
+  // espera o resto do script terminar de carregar antes de desenhar a lista guardada
+  if (anunciosGuardados) setTimeout(montarListaAnuncios, 0);
   loadListings();
   const listingsRetryBtn = document.getElementById('listingsRetryBtn');
   if (listingsRetryBtn) {
@@ -1837,8 +1897,12 @@
   function tryOpenPendingListing() {
     if (!pendingListingRef || !ALL_LISTINGS.length) return;
     const listing = findListingByRef(pendingListingRef);
-    if (listing) openListingModal(listing, { skipHistory: true });
-    pendingListingRef = null;
+    if (listing) {
+      openListingModal(listing, { skipHistory: true });
+      pendingListingRef = null;
+    } else if (CRM_LISTINGS !== null && listingsReady) {
+      pendingListingRef = null;
+    }
   }
 
   const listingsGridEl = document.getElementById('listingsGrid');
@@ -2116,7 +2180,7 @@
     const extras = countActiveFilters() - (currentSearch.tipo ? 1 : 0) - (currentSearch.cidade ? 1 : 0) - (currentSearch.bairro ? 1 : 0);
     if (extras > 0) partes.push('+' + extras + ' filtro' + (extras > 1 ? 's' : ''));
     const total = ALL_LISTINGS.filter(l => matchesFilter(l, currentFilter) && matchesSearch(l)).length;
-    const qtd = '<strong>' + total + '</strong> imóve' + (total === 1 ? 'l' : 'is');
+    const qtd = (total === 0 && CRM_LISTINGS === null && !crmFalhou) ? 'carregando…' : '<strong>' + total + '</strong> imóve' + (total === 1 ? 'l' : 'is');
     box.hidden = !ALL_LISTINGS.length;
     const limpar = document.getElementById('activeSearchClear');
     if (limpar) limpar.hidden = partes.length === 0;
@@ -2127,6 +2191,16 @@
   const _renderListingsBase = renderListings;
   renderListings = function (preserveCount) {
     _renderListingsBase(preserveCount);
+    const loading = document.getElementById('listingsLoading');
+    const empty = document.getElementById('listingsEmpty');
+    const aindaCarregando = !listingsReady || (CRM_LISTINGS === null && !crmFalhou);
+    const semCartoes = !document.querySelector('#listingsGrid .listing-card');
+    if (aindaCarregando && semCartoes) {
+      if (empty) empty.style.display = 'none';
+      if (loading) loading.style.display = '';
+    } else if (loading) {
+      loading.style.display = 'none';
+    }
     updateActiveSearch();
   };
   const activeSearchClear = document.getElementById('activeSearchClear');
