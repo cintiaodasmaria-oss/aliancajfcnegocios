@@ -1393,7 +1393,7 @@
     const v = 'R$ ' + Number(l.valor).toLocaleString('pt-BR');
     return (l.finalidade || '').toLowerCase().includes('loca') && !(l.finalidade || '').toLowerCase().includes('venda') ? v + '/mês' : v;
   }
-  function firstPhoto(l) { return (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean)[0] || ''; }
+  function firstPhoto(l) { return ((l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean)[0] || '').split('#amb=')[0]; }
   function slugify(str) {
     return String(str || '')
       .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -1816,6 +1816,7 @@
   const listingModalWhatsTop = document.getElementById('listingModalWhatsTop');
   const listingModalClose = document.getElementById('listingModalClose');
   let modalPhotos = [];
+  let modalAmbientes = [];
   let modalPhotoIdx = 0;
   let currentListingId = null;
   let pendingListingRef = parseListingRefFromLocation();
@@ -1826,7 +1827,7 @@
       listingModalCount.textContent = '';
     } else {
       listingModalPhotoImg.src = modalPhotos[modalPhotoIdx];
-      listingModalCount.textContent = `${modalPhotoIdx + 1} / ${modalPhotos.length}`;
+      listingModalCount.textContent = `${modalPhotoIdx + 1} / ${modalPhotos.length}` + (modalAmbientes[modalPhotoIdx] ? ' · ' + modalAmbientes[modalPhotoIdx] : '');
     }
     listingModalThumbs.querySelectorAll('img').forEach((img, i) => {
       img.classList.toggle('active', i === modalPhotoIdx);
@@ -1835,10 +1836,12 @@
 
   function openListingModal(l, opts) {
     currentListingId = l.id;
-    modalPhotos = (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean);
+    const fotosBrutas = (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean);
+    modalPhotos = fotosBrutas.map(u => u.split('#amb=')[0]);
+    modalAmbientes = fotosBrutas.map(u => { const m = u.split('#amb='); return m[1] ? decodeURIComponent(m[1]) : ''; });
     modalPhotoIdx = 0;
     listingModalThumbs.innerHTML = modalPhotos.map((src, i) =>
-      `<img src="${escapeHtml(src)}" data-idx="${i}" alt="Foto ${i + 1}">`
+      `<img src="${escapeHtml(src)}" data-idx="${i}" alt="${escapeHtml(modalAmbientes[i] || 'Foto ' + (i + 1))}" title="${escapeHtml(modalAmbientes[i] || '')}">`
     ).join('');
     renderModalPhoto();
     listingModalTag.textContent = l.finalidade || '';
