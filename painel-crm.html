@@ -134,6 +134,11 @@
   .foto-move button{width:19px; height:19px; border-radius:3px; border:1px solid var(--pergaminho-escuro); background:var(--branco); color:var(--verde-profundo); font-size:.7rem; line-height:1; cursor:pointer; padding:0;}
   .foto-move button:hover{background:var(--verde-claro);}
   .foto-move button:disabled{opacity:.35; cursor:default;}
+  .foto-item[draggable=true]{cursor:grab;}
+  .foto-item.dragging{opacity:.4;}
+  .foto-item.drop-target img{outline:2.5px dashed var(--verde-musgo); outline-offset:1px;}
+  .foto-item{margin-bottom:26px;}
+  .foto-amb{position:absolute; top:90px; left:0; width:88px; font-size:.65rem; padding:1px 2px; border:1px solid var(--pergaminho-escuro); border-radius:3px; background:var(--branco); color:var(--verde-profundo);}
   .edit-fotos-atuais{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
   .wizard-value{font-family:var(--serif); font-size:2.1rem; color:var(--verde-profundo); font-weight:600; margin:6px 0 20px;}
   .wizard-value span{font-size:1.2rem;}
@@ -924,13 +929,21 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
   document.getElementById('edit-cancel').addEventListener('click', closeEdit);
   document.getElementById('edit-cancel-2').addEventListener('click', closeEdit);
 
+  // Cada foto pode levar o ambiente no proprio endereco, depois do "#amb=" (ex.: ...jpg#amb=Cozinha).
+  // O navegador ignora essa parte ao carregar a imagem, entao nao precisa de coluna nova na planilha.
+  const AMBIENTES = ['Fachada','Sala','Cozinha','Dormitório','Suíte','Banheiro','Lavabo','Varanda','Área de serviço','Área de lazer','Garagem','Outros'];
+  function fotoLimpa(u) { return String(u || '').split('#amb=')[0]; }
+  function fotoAmbiente(u) { const m = String(u || '').split('#amb='); return m[1] ? decodeURIComponent(m[1]) : ''; }
+  function fotoComAmbiente(u, amb) { return fotoLimpa(u) + (amb ? '#amb=' + encodeURIComponent(amb) : ''); }
+  let dragFotoIdx = null;
+
   function renderFotosAtuais() {
     const wrap = document.getElementById('e-fotos-atuais');
     if (!editFotosAtuais.length) { wrap.innerHTML = '<span style="font-size:.8rem; color:var(--verde-musgo);">Nenhuma foto ainda.</span>'; return; }
     const total = editFotosAtuais.length;
     wrap.innerHTML = editFotosAtuais.map((url, i) => `
-      <div class="foto-item${i === 0 ? ' is-capa' : ''}">
-        <img src="${escapeHtml(url)}" loading="lazy">
+      <div class="foto-item${i === 0 ? ' is-capa' : ''}" draggable="true" data-idx="${i}">
+        <img src="${escapeHtml(fotoLimpa(url))}" loading="lazy" draggable="false">
         <button type="button" class="foto-remove" data-foto-idx="${i}" title="Remover foto">×</button>
         ${i === 0
           ? '<span class="foto-capa-badge">Capa</span>'
@@ -939,9 +952,36 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
           <button type="button" data-move-idx="${i}" data-move-dir="-1" title="Mover para trás" ${i === 0 ? 'disabled' : ''}>◀</button>
           <button type="button" data-move-idx="${i}" data-move-dir="1" title="Mover para frente" ${i === total - 1 ? 'disabled' : ''}>▶</button>
         </div>
+        <select class="foto-amb" data-amb-idx="${i}" title="Ambiente desta foto">
+          <option value="">Ambiente…</option>
+          ${AMBIENTES.map(a => `<option value="${a}"${fotoAmbiente(url) === a ? ' selected' : ''}>${a}</option>`).join('')}
+        </select>
       </div>`).join('');
     wrap.querySelectorAll('.foto-remove').forEach(btn => {
       btn.addEventListener('click', () => removeFotoAtual(editFotosAtuais[Number(btn.dataset.fotoIdx)]));
+    });
+    wrap.querySelectorAll('.foto-amb').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const idx = Number(sel.dataset.ambIdx);
+        editFotosAtuais[idx] = fotoComAmbiente(editFotosAtuais[idx], sel.value);
+        editFotosOrdemAlterada = true;
+      });
+    });
+    wrap.querySelectorAll('.foto-item').forEach(item => {
+      item.addEventListener('dragstart', e => { dragFotoIdx = Number(item.dataset.idx); item.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(dragFotoIdx)); } catch (_) {} });
+      item.addEventListener('dragend', () => { item.classList.remove('dragging'); wrap.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target')); });
+      item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drop-target'); });
+      item.addEventListener('dragleave', () => item.classList.remove('drop-target'));
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        const to = Number(item.dataset.idx);
+        if (dragFotoIdx === null || dragFotoIdx === to) return;
+        const [foto] = editFotosAtuais.splice(dragFotoIdx, 1);
+        editFotosAtuais.splice(to, 0, foto);
+        dragFotoIdx = null;
+        editFotosOrdemAlterada = true;
+        renderFotosAtuais();
+      });
     });
     wrap.querySelectorAll('.foto-set-capa').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -968,10 +1008,11 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
     if (!confirm('Remover esta foto definitivamente (inclusive do Google Drive)?')) return;
     const statusEl = document.getElementById('edit-save-status');
     statusEl.textContent = 'Removendo foto...';
-    const result = await apiGet('removePhoto', { id: editId, url });
+    const result = await apiGet('removePhoto', { id: editId, url: fotoLimpa(url) });
     statusEl.textContent = '';
     if (!result.ok) { alert('Erro ao remover foto: ' + (result.error || '')); return; }
     editFotosAtuais = editFotosAtuais.filter(u => u !== url);
+    await apiPost({ action: 'update', id: editId, fields: { fotoUrl: editFotosAtuais.join(';') } });
     renderFotosAtuais();
     await loadLeads();
   }
