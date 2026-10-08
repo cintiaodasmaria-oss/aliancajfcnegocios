@@ -472,7 +472,7 @@
   // ⚠️ URL do Apps Script (Web App)
   const API_URL = "https://script.google.com/macros/s/AKfycbx0psS6MZFW7E6o_aimSzdgbwhBSNT70tvFtQtxEGCKDC-Qt8y4GpbSCJKNj2DY_QeUaw/exec";
 
-  let TOKEN = sessionStorage.getItem('jfc-token') || '';
+  let TOKEN = (function(){ try { return localStorage.getItem('jfc-token') || sessionStorage.getItem('jfc-token') || ''; } catch(e) { return ''; } })();
   let LEADS = [];
   let currentView = 'inicio';
 
@@ -493,7 +493,20 @@
     const params = new URLSearchParams({ action, token: TOKEN, ...(extraParams || {}) });
     return jsonp(`${API_URL}?${params.toString()}`);
   }
-  async function apiPost(body) {
+  // Tenta de novo quando o backend (Apps Script) demora ou responde erro transitorio, em vez de deslogar.
+async function apiGetRetry(action, tries) {
+let last;
+for (let i = 0; i < (tries || 3); i++) {
+try {
+const r = await apiGet(action);
+if (r && r.ok) return r;
+last = r;
+} catch (err) { last = { ok: false, error: err.message }; }
+await new Promise(res => setTimeout(res, 2500 * (i + 1)));
+}
+return last || { ok: false, error: 'Sem resposta do backend.' };
+}
+async function apiPost(body) {
     const params = new URLSearchParams({ action: body.action, token: TOKEN });
     if (body.lead) params.set('lead', JSON.stringify(body.lead));
     if (body.id) params.set('id', body.id);
@@ -509,9 +522,9 @@
   async function tryLogin() {
     TOKEN = document.getElementById('gate-token').value.trim();
     try {
-      const result = await apiGet('list');
-      if (result.ok) {
-        sessionStorage.setItem('jfc-token', TOKEN);
+const result = await apiGetRetry('list', 3);
+if (result.ok) {
+        try { sessionStorage.setItem('jfc-token', TOKEN); localStorage.setItem('jfc-token', TOKEN); } catch(e) {}
         document.getElementById('gate').classList.add('hidden');
         document.getElementById('painel').classList.remove('hidden');
         document.getElementById('nav-right').classList.remove('hidden');
@@ -566,9 +579,9 @@
   // ---------- CARREGAR DADOS ----------
   async function loadLeads() {
     document.getElementById('loading').classList.remove('hidden');
-    const result = await apiGet('list');
-    document.getElementById('loading').classList.add('hidden');
-    if (!result.ok) { alert('Erro ao carregar: ' + result.error); return; }
+    const result = await apiGetRetry('list', 3);
+document.getElementById('loading').classList.add('hidden');
+if (!result || !result.ok) { document.getElementById('view-sub').textContent = 'Servidor lento ou sem resposta. Os dados na tela podem estar desatualizados; tente de novo em instantes.'; return; }
     LEADS = result.data || [];
     updateCounts();
     renderView();
@@ -640,9 +653,9 @@
       || `<tr><td colspan="5" class="empty-note">Nenhum cadastro nesta categoria.</td></tr>`;
   }
 
-  async function updateStatus(id, status) { await apiPost({ action: 'updateStatus', id, status }); await loadLeads(); }
-  async function togglePublicarSite(id, current) { await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); await loadLeads(); }
-  async function deleteLead(id) { if (!confirm('Remover este cadastro?')) return; await apiPost({ action: 'delete', id }); await loadLeads(); }
+  async function updateStatus(id, status) { try { const r = await apiPost({ action: 'updateStatus', id, status }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.status = status; updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
+  async function togglePublicarSite(id, current) { try { const r = await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.publicarSite = !current; renderView(); loadLeads().catch(() => {}); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
+  async function deleteLead(id) { if (!confirm('Remover este cadastro?')) return; try { const r = await apiPost({ action: 'delete', id }); if (r && r.ok) { LEADS = LEADS.filter(x => x.id !== id); updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
 
   // ================= WIZARD =================
   const wizardOverlay = document.getElementById('wizard-overlay');
@@ -846,11 +859,15 @@
     const statusEl = document.getElementById('wizard-save-status');
     const files = wFotosAcumuladas;
     statusEl.textContent = files.length ? 'Enviando cadastro e fotos...' : 'Salvando...';
-    if (files.length) {
-      await enviarComFotos(lead, files);
-    } else {
-      await apiPost({ action: 'add', lead });
-    }
+    try {
+if (files.length) {
+await enviarComFotos(lead, files);
+} else {
+await apiPost({ action: 'add', lead });
+}
+} catch (err) {
+statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
+}
     statusEl.textContent = '';
     closeWizard();
     await loadLeads();
