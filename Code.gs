@@ -24,6 +24,13 @@
  * "Implantar" > "Gerenciar implantações" > ícone de lápis > "Nova versão" > Implantar,
  * senão as mudanças não entram no ar (a URL continua a mesma).
  *
+ * ATUALIZAÇÃO 2026-10-10: novas colunas (valorLocacao, iptu, descricao), cabeçalhos criados
+ * automaticamente na planilha, e rota pública protegida para o XML dos portais (VRSync:
+ * ZAP / Viva Real / OLX): ?action=xml&key=SUA_CHAVE. Veja a seção "XML PARA PORTAIS" no fim.
+ * Propriedades do script usadas pelo XML (Configurações do projeto > Propriedades do script):
+ *   XML_KEY (obrigatória: uma senha longa que vai na URL do XML), XML_EMAIL, XML_NOME,
+ *   XML_TEL, XML_SITE e XML_ENDERECO_VISIVEL (All, Street ou Neighborhood; padrão Neighborhood).
+ *
  * ATUALIZAÇÃO 2026-09-30: adicionado cache curto (CacheService) em getAllRows(), para
  * deixar chamadas repetidas em uma janela de ~50s quase instantâneas e reduzir a
  * concorrência que causava lentidão/timeout no painel e no site. Ver função
@@ -31,7 +38,7 @@
  */
 
 const SHEET_NAME = 'leads';
-const HEADERS = ['id','numero','criadoEm','nome','telefone','cep','cidade','bairro','endereco','tipoImovel','finalidade','areaConstruida','areaTerreno','dormitorios','suites','banheiros','vagas','valor','condominio','comodidades','obs','status','publicarSite','fotoUrl'];
+const HEADERS = ['id','numero','criadoEm','nome','telefone','cep','cidade','bairro','endereco','tipoImovel','finalidade','areaConstruida','areaTerreno','dormitorios','suites','banheiros','vagas','valor','condominio','comodidades','obs','status','publicarSite','fotoUrl','valorLocacao','iptu','descricao'];
 
 // Campos pessoais do proprietário que NUNCA devem sair pela rota pública (listPublic).
 // A URL deste backend fica visível no código-fonte do site (GitHub Pages não esconde isso),
@@ -44,6 +51,12 @@ function getSheet() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = ss.getSheets()[0];
   if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
+  // Colunas novas (valorLocacao, iptu, descricao): cria os cabeçalhos que faltam na linha 1.
+  try {
+    if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
+    const faltando = String(sheet.getRange(1, HEADERS.length).getValue() || '') === '';
+    if (faltando) sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  } catch (e) {}
   return sheet;
 }
 
@@ -185,6 +198,11 @@ function doGet(e) {
   // Sem callback = chamada direta no navegador (para teste manual) → devolve JSON puro
   const respond = (obj) => callback ? jsonpOut(callback, obj) : jsonOut(obj);
 
+  // XML para portais (ZAP/Viva Real/OLX) — protegido por chave (XML_KEY), não por token do painel
+  if (action === 'xml') {
+    return xmlResponse(e.parameter.key);
+  }
+
   if (action === 'listPublic') {
     const rows = getAllRows().filter(r => r.publicarSite).map(sanitizeForPublic);
     return respond({ ok: true, data: rows });
@@ -300,6 +318,11 @@ function doGet(e) {
   if (action === 'debug') {
     const v = PropertiesService.getScriptProperties().getProperty('lastDoPostDebug');
     return respond({ ok: true, debug: v });
+  }
+
+  // Relatório (só pra você, no painel): quais cadastros entram no XML e por que os outros ficam de fora
+  if (action === 'xmlReport') {
+    return respond(xmlReport());
   }
 
   if (action === 'search') {
@@ -506,4 +529,268 @@ function getOrCreatePhotosFolder() {
   const folders = DriveApp.getFoldersByName(NOME_PASTA);
   if (folders.hasNext()) return folders.next();
   return DriveApp.createFolder(NOME_PASTA);
+}
+
+
+// =====================================================================================
+// XML PARA PORTAIS (formato VRSync — Grupo OLX: ZAP, Viva Real e OLX)
+// =====================================================================================
+// IMPORTANTE: este XML segue o padrão VRSync como eu o conheço, mas o Grupo OLX valida o
+// arquivo no cadastro do feed. Se a validação deles apontar algum campo, é só me mandar a
+// mensagem de erro que eu ajusto. A URL a cadastrar no portal é:
+//   <URL do aplicativo da Web>?action=xml&key=<XML_KEY>
+//
+// Regras para um cadastro entrar no XML (as mesmas dos portais):
+//   - publicarSite = sim e status = publicado
+//   - 5 fotos ou mais; valor preenchido; cidade e bairro preenchidos
+//   - título entre 10 e 100 caracteres e descrição entre 50 e 3000 (se a descrição do
+//     cadastro estiver vazia ou curta, o sistema gera uma automaticamente)
+// Cadastros "Venda e Locação" só entram como venda+locação se o valor da locação estiver
+// preenchido; senão entram só como venda.
+
+const SITE_URL = 'https://www.aliancajfcnegocios.com.br';
+
+function xmlEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function xmlCdata(s) {
+  return '<![CDATA[' + String(s == null ? '' : s).replace(/\]\]>/g, ']]]]><![CDATA[>') + ']]>';
+}
+function xmlSlug(str) {
+  return String(str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'imovel';
+}
+function xmlNum(v) {
+  if (v === '' || v == null) return 0;
+  const n = Number(String(v).replace(',', '.'));
+  return isNaN(n) ? 0 : n;
+}
+function xmlUfPorCep(cep) {
+  const d = String(cep || '').replace(/\D/g, '');
+  if (d.length < 5) return 'SP';
+  const n3 = parseInt(d.slice(0, 3), 10), n2 = parseInt(d.slice(0, 2), 10);
+  if (n3 >= 689 && n3 <= 689) return 'AP';
+  if (n3 === 693) return 'RR';
+  if (n3 === 698) return 'AC';
+  if (n3 >= 789 && n3 <= 789) return 'RO';
+  if (n2 >= 1 && n2 <= 19) return 'SP';
+  if (n2 >= 20 && n2 <= 28) return 'RJ';
+  if (n2 === 29) return 'ES';
+  if (n2 >= 30 && n2 <= 39) return 'MG';
+  if (n2 >= 40 && n2 <= 48) return 'BA';
+  if (n2 === 49) return 'SE';
+  if (n2 >= 50 && n2 <= 56) return 'PE';
+  if (n2 === 57) return 'AL';
+  if (n2 === 58) return 'PB';
+  if (n2 === 59) return 'RN';
+  if (n2 >= 60 && n2 <= 63) return 'CE';
+  if (n2 === 64) return 'PI';
+  if (n2 === 65) return 'MA';
+  if (n2 >= 66 && n2 <= 68) return 'PA';
+  if (n2 === 69) return 'AM';
+  if (n2 >= 70 && n2 <= 73) return 'DF';
+  if (n2 >= 72 && n2 <= 76) return 'GO';
+  if (n2 === 77) return 'TO';
+  if (n2 === 78) return 'MT';
+  if (n2 === 79) return 'MS';
+  if (n2 >= 80 && n2 <= 87) return 'PR';
+  if (n2 >= 88 && n2 <= 89) return 'SC';
+  if (n2 >= 90 && n2 <= 99) return 'RS';
+  return 'SP';
+}
+const UF_NOMES = { SP:'São Paulo', RJ:'Rio de Janeiro', ES:'Espírito Santo', MG:'Minas Gerais', BA:'Bahia', SE:'Sergipe', PE:'Pernambuco', AL:'Alagoas', PB:'Paraíba', RN:'Rio Grande do Norte', CE:'Ceará', PI:'Piauí', MA:'Maranhão', PA:'Pará', AP:'Amapá', AM:'Amazonas', RR:'Roraima', AC:'Acre', DF:'Distrito Federal', GO:'Goiás', TO:'Tocantins', MT:'Mato Grosso', MS:'Mato Grosso do Sul', RO:'Rondônia', PR:'Paraná', SC:'Santa Catarina', RS:'Rio Grande do Sul' };
+
+// Tipo do CRM -> [UsageType, PropertyType] do VRSync
+function xmlTipo(t) {
+  const s = String(t || '').toLowerCase();
+  const R = 'Residential', C = 'Commercial';
+  if (/studio|flat/.test(s)) return [R, 'Residential / Studio'];
+  if (/cobertura/.test(s)) return [R, 'Residential / Penthouse'];
+  if (/duplex|triplex|apartamento/.test(s)) return [R, 'Residential / Apartment'];
+  if (/condom/.test(s) && /casa/.test(s)) return [R, 'Residential / Condo'];
+  if (/sobrado/.test(s)) return [R, 'Residential / Sobrado'];
+  if (/casa comercial/.test(s)) return [C, 'Commercial / Business'];
+  if (/casa/.test(s)) return [R, 'Residential / Home'];
+  if (/terreno.*(comercial|log|industrial)|loteamento/.test(s)) return [C, 'Commercial / Land Lot'];
+  if (/terreno|lote/.test(s)) return [R, 'Residential / Land Lot'];
+  if (/galp/.test(s)) return [C, 'Commercial / Industrial'];
+  if (/pr[eé]dio/.test(s)) return [C, 'Commercial / Building'];
+  if (/sala|conjunto|laje|andar corporativo/.test(s)) return [C, 'Commercial / Office'];
+  if (/loja|sal[aã]o/.test(s)) return [C, 'Commercial / Business'];
+  return [null, null];
+}
+
+function xmlFotos(r) {
+  return String(r.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean).map(u => {
+    const i = u.indexOf('#amb=');
+    return { url: i > -1 ? u.slice(0, i) : u, amb: i > -1 ? decodeURIComponent(u.slice(i + 5)) : '' };
+  });
+}
+
+function xmlFinalidade(r) {
+  const f = String(r.finalidade || '');
+  const venda = /venda/i.test(f), loc = /loca|alug/i.test(f);
+  if (venda && loc) return xmlNum(r.valorLocacao) > 0 ? 'Sale/Rent' : 'For Sale';
+  if (loc) return 'For Rent';
+  return 'For Sale';
+}
+
+function xmlTitulo(r) {
+  const tipo = String(r.tipoImovel || 'Imóvel');
+  const fin = xmlFinalidade(r);
+  const verbo = fin === 'For Rent' ? 'para alugar' : fin === 'Sale/Rent' ? 'à venda e para alugar' : 'à venda';
+  let t = tipo + ' ' + verbo;
+  const dorm = xmlNum(r.dormitorios), area = xmlNum(r.areaConstruida) || xmlNum(r.areaTerreno);
+  if (dorm) t += ', ' + dorm + (dorm === 1 ? ' quarto' : ' quartos');
+  if (area) t += ', ' + area + ' m²';
+  const onde = [r.bairro, r.cidade].filter(Boolean).join(', ');
+  if (onde) t += ' - ' + onde;
+  return t.length > 100 ? t.slice(0, 97) + '...' : t;
+}
+
+function xmlDescricao(r) {
+  const d = String(r.descricao || '').trim();
+  if (d.length >= 50) return d.slice(0, 3000);
+  const tipo = String(r.tipoImovel || 'Imóvel').toLowerCase();
+  const fin = xmlFinalidade(r);
+  const verbo = fin === 'For Rent' ? 'para locação' : fin === 'Sale/Rent' ? 'à venda e para locação' : 'à venda';
+  const onde = [r.bairro, r.cidade].filter(Boolean).join(', ');
+  const f = ['Excelente ' + tipo + ' ' + verbo + (onde ? ' em ' + onde : '') + '.'];
+  const t = [];
+  const area = xmlNum(r.areaConstruida) || xmlNum(r.areaTerreno);
+  if (area) t.push(area + ' m² de ' + (xmlNum(r.areaConstruida) ? 'área construída' : 'terreno'));
+  if (xmlNum(r.dormitorios)) t.push(xmlNum(r.dormitorios) + ' dormitório(s)' + (xmlNum(r.suites) ? ' (' + xmlNum(r.suites) + ' suíte(s))' : ''));
+  if (xmlNum(r.banheiros)) t.push(xmlNum(r.banheiros) + ' banheiro(s)');
+  if (xmlNum(r.vagas)) t.push(xmlNum(r.vagas) + ' vaga(s) de garagem');
+  if (t.length) f.push('Conta com ' + t.join(', ') + '.');
+  if (r.comodidades && r.comodidades.length) f.push('Diferenciais: ' + r.comodidades.join(', ').toLowerCase() + '.');
+  f.push('Agende sua visita com a Aliança JFC Negócios, com atendimento personalizado em todas as etapas. CRECI 122.970.');
+  return f.join(' ').slice(0, 3000);
+}
+
+function xmlMotivos(r) {
+  const m = [];
+  if (!r.publicarSite) m.push('Publicar no site = Não');
+  if (r.status !== 'publicado') m.push('status não é "publicado"');
+  const fotos = xmlFotos(r);
+  if (fotos.length < 5) m.push('menos de 5 fotos (' + fotos.length + ')');
+  if (!(xmlNum(r.valor) > 0)) m.push('sem valor');
+  if (!r.cidade) m.push('sem cidade');
+  if (!r.bairro) m.push('sem bairro');
+  if (!xmlTipo(r.tipoImovel)[1]) m.push('tipo de imóvel sem correspondência no VRSync (' + (r.tipoImovel || 'vazio') + ')');
+  const t = xmlTitulo(r);
+  if (t.length < 10 || t.length > 100) m.push('título fora de 10–100 caracteres');
+  const d = xmlDescricao(r);
+  if (d.length < 50) m.push('descrição curta');
+  return m;
+}
+
+function xmlEndereco(r) {
+  const txt = String(r.endereco || '');
+  const partes = txt.split(',');
+  const rua = partes[0].split(' - ')[0].trim();
+  const mNum = /(\d+[A-Za-z]?)/.exec(partes.slice(1).join(','));
+  const resto = txt.indexOf(' - ') > -1 ? txt.slice(txt.indexOf(' - ') + 3).trim() : '';
+  return { rua: rua, numero: mNum ? mNum[1] : '', complemento: resto };
+}
+
+function xmlListing(r, cfg) {
+  const tipo = xmlTipo(r.tipoImovel);
+  const fin = xmlFinalidade(r);
+  const uf = xmlUfPorCep(r.cep);
+  const end = xmlEndereco(r);
+  const fotos = xmlFotos(r).slice(0, 50);
+  const slug = xmlSlug([r.tipoImovel, r.bairro, r.cidade].filter(Boolean).join(' '));
+  const o = [];
+  o.push('    <Listing>');
+  o.push('      <ListingID>' + xmlEsc('JFC' + r.numero) + '</ListingID>');
+  o.push('      <Title>' + xmlCdata(xmlTitulo(r)) + '</Title>');
+  o.push('      <TransactionType>' + fin + '</TransactionType>');
+  o.push('      <DetailViewUrl>' + xmlEsc(SITE_URL + '/imovel/' + r.numero + '-' + slug) + '</DetailViewUrl>');
+  o.push('      <Media>');
+  fotos.forEach((f, i) => {
+    o.push('        <Item medium="image"' + (i === 0 ? ' primary="true"' : '') + (f.amb ? ' caption="' + xmlEsc(f.amb) + '"' : '') + '>' + xmlEsc(f.url) + '</Item>');
+  });
+  o.push('      </Media>');
+  o.push('      <Details>');
+  o.push('        <UsageType>' + tipo[0] + '</UsageType>');
+  o.push('        <PropertyType>' + tipo[1] + '</PropertyType>');
+  o.push('        <Description>' + xmlCdata(xmlDescricao(r)) + '</Description>');
+  if (fin === 'For Sale' || fin === 'Sale/Rent') o.push('        <ListPrice currency="BRL">' + Math.round(xmlNum(r.valor)) + '</ListPrice>');
+  if (fin === 'For Rent') o.push('        <RentalPrice currency="BRL" period="Monthly">' + Math.round(xmlNum(r.valor)) + '</RentalPrice>');
+  if (fin === 'Sale/Rent') o.push('        <RentalPrice currency="BRL" period="Monthly">' + Math.round(xmlNum(r.valorLocacao)) + '</RentalPrice>');
+  if (xmlNum(r.condominio) > 0) o.push('        <PropertyAdministrationFee currency="BRL">' + Math.round(xmlNum(r.condominio)) + '</PropertyAdministrationFee>');
+  if (xmlNum(r.iptu) > 0) o.push('        <YearlyTax currency="BRL">' + Math.round(xmlNum(r.iptu)) + '</YearlyTax>');
+  if (xmlNum(r.areaConstruida) > 0) o.push('        <LivingArea unit="square metres">' + xmlNum(r.areaConstruida) + '</LivingArea>');
+  if (xmlNum(r.areaTerreno) > 0) o.push('        <LotArea unit="square metres">' + xmlNum(r.areaTerreno) + '</LotArea>');
+  if (xmlNum(r.dormitorios) > 0) o.push('        <Bedrooms>' + xmlNum(r.dormitorios) + '</Bedrooms>');
+  if (xmlNum(r.banheiros) > 0) o.push('        <Bathrooms>' + xmlNum(r.banheiros) + '</Bathrooms>');
+  if (xmlNum(r.suites) > 0) o.push('        <Suites>' + xmlNum(r.suites) + '</Suites>');
+  if (xmlNum(r.vagas) > 0) o.push('        <Garage type="Parking Space">' + xmlNum(r.vagas) + '</Garage>');
+  o.push('      </Details>');
+  o.push('      <Location displayAddress="' + cfg.display + '">');
+  o.push('        <Country abbreviation="BR">Brasil</Country>');
+  o.push('        <State abbreviation="' + uf + '">' + xmlEsc(UF_NOMES[uf] || uf) + '</State>');
+  o.push('        <City>' + xmlEsc(r.cidade) + '</City>');
+  o.push('        <Neighborhood>' + xmlEsc(r.bairro) + '</Neighborhood>');
+  if (end.rua) o.push('        <Address>' + xmlEsc(end.rua) + '</Address>');
+  if (end.numero) o.push('        <StreetNumber>' + xmlEsc(end.numero) + '</StreetNumber>');
+  if (end.complemento) o.push('        <Complement>' + xmlEsc(end.complemento) + '</Complement>');
+  if (r.cep) o.push('        <PostalCode>' + xmlEsc(String(r.cep).replace(/\D/g, '').replace(/^(\d{5})(\d{3})$/, '$1-$2')) + '</PostalCode>');
+  o.push('      </Location>');
+  o.push('      <ContactInfo>');
+  o.push('        <Name>' + xmlEsc(cfg.nome) + '</Name>');
+  o.push('        <Email>' + xmlEsc(cfg.email) + '</Email>');
+  o.push('        <Website>' + xmlEsc(cfg.site) + '</Website>');
+  if (cfg.tel) o.push('        <Telephone>' + xmlEsc(cfg.tel) + '</Telephone>');
+  o.push('      </ContactInfo>');
+  o.push('    </Listing>');
+  return o.join('\n');
+}
+
+function xmlConfig() {
+  const p = PropertiesService.getScriptProperties();
+  const disp = p.getProperty('XML_ENDERECO_VISIVEL') || 'Neighborhood';
+  return {
+    nome: p.getProperty('XML_NOME') || 'Aliança JFC Negócios',
+    email: p.getProperty('XML_EMAIL') || 'contato@aliancajfcnegocios.com.br',
+    tel: p.getProperty('XML_TEL') || '',
+    site: p.getProperty('XML_SITE') || SITE_URL,
+    display: ['All', 'Street', 'Neighborhood'].indexOf(disp) > -1 ? disp : 'Neighborhood'
+  };
+}
+
+function xmlResponse(key) {
+  const real = PropertiesService.getScriptProperties().getProperty('XML_KEY');
+  if (!real || key !== real) {
+    return ContentService.createTextOutput('Acesso negado ao XML.').setMimeType(ContentService.MimeType.TEXT);
+  }
+  const cfg = xmlConfig();
+  const rows = getAllRows().filter(r => xmlMotivos(r).length === 0);
+  const agora = Utilities.formatDate(new Date(), 'GMT', "yyyy-MM-dd'T'HH:mm:ss");
+  const out = [];
+  out.push('<?xml version="1.0" encoding="UTF-8"?>');
+  out.push('<ListingDataFeed xmlns="http://www.vivareal.com/schemas/1.0/VRSync" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.vivareal.com/schemas/1.0/VRSync http://xml.vivareal.com/vrsync.xsd">');
+  out.push('  <Header>');
+  out.push('    <Provider>' + xmlEsc(cfg.nome) + '</Provider>');
+  out.push('    <Email>' + xmlEsc(cfg.email) + '</Email>');
+  out.push('    <ContactName>' + xmlEsc(cfg.nome) + '</ContactName>');
+  out.push('    <PublishDate>' + agora + '</PublishDate>');
+  if (cfg.tel) out.push('    <Telephone>' + xmlEsc(cfg.tel) + '</Telephone>');
+  out.push('  </Header>');
+  out.push('  <Listings>');
+  rows.forEach(r => out.push(xmlListing(r, cfg)));
+  out.push('  </Listings>');
+  out.push('</ListingDataFeed>');
+  return ContentService.createTextOutput(out.join('\n')).setMimeType(ContentService.MimeType.XML);
+}
+
+function xmlReport() {
+  const rows = getAllRows().filter(r => r.publicarSite);
+  const entram = [], ficam = [];
+  rows.forEach(r => {
+    const m = xmlMotivos(r);
+    if (m.length === 0) entram.push(r.numero); else ficam.push({ numero: r.numero, motivos: m });
+  });
+  return { ok: true, entram: entram, totalEntram: entram.length, ficamDeFora: ficam, totalFora: ficam.length };
 }

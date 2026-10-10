@@ -251,7 +251,7 @@
       <div class="wizard-step" data-panel="0">
         <h3>Localização</h3>
         <p class="sub">Informe o endereço e o tipo de anúncio que deseja fazer.</p>
-        <div class="wfield"><label>CEP</label><input id="w-cep" placeholder="00000-000" maxlength="9"></div>
+        <div class="wfield"><label>CEP</label><input id="w-cep" placeholder="00000-000" maxlength="9"><button type="button" class="btn btn-ghost btn-cep" data-cep-busca="w" style="margin-top:8px;padding:8px 14px;font-size:13px;">Buscar CEP pelo endereço</button><div class="cep-opcoes" id="w-cep-opcoes" style="margin-top:8px;"></div></div>
         <div class="wgrid2">
           <div class="wfield"><label>Cidade</label><input id="w-cidade" required></div>
           <div class="wfield"><label>Bairro</label><input id="w-bairro" required></div>
@@ -348,7 +348,14 @@
       <div class="wizard-step hidden" data-panel="3">
         <h3>Valor</h3>
         <p class="sub">Defina o valor pretendido para o anúncio.</p>
-        <div class="wfield"><label>Valor (R$)</label><input id="w-valor" type="number" min="0" placeholder="0,00" required></div>
+        <div class="wfield"><label>Valor (R$) — venda, ou aluguel se for só locação</label><input id="w-valor" type="number" min="0" placeholder="0,00" required></div>
+        <div class="wfield"><label>Valor da locação (R$/mês) — só se o imóvel for para venda E locação</label><input id="w-valor-locacao" type="number" min="0" placeholder="0,00"></div>
+        <div class="wfield"><label>Condomínio (R$/mês)</label><input id="w-condominio" type="number" min="0" placeholder="0,00"></div>
+        <div class="wfield"><label>IPTU (R$/ano)</label><input id="w-iptu" type="number" min="0" placeholder="0,00"></div>
+        <div class="wfield"><label>Descrição do imóvel (aparece no anúncio e nos portais)</label>
+          <textarea id="w-descricao" rows="5" style="width:100%;font:inherit;padding:10px;border:1px solid var(--line,#ccc);border-radius:6px;" placeholder="Descreva o imóvel (50 a 3000 caracteres)"></textarea>
+          <button type="button" class="btn btn-ghost" data-desc-sugerir="w" style="margin-top:8px;padding:8px 14px;font-size:13px;">Sugerir descrição</button>
+          <div style="font-size:12px;opacity:.7;margin-top:4px;" id="w-descricao-count"></div></div>
         <div class="wfield">
           <label>Publicar este imóvel no site público assim que aprovado?</label>
           <div class="toggle-group">
@@ -377,7 +384,7 @@
     <div class="wizard-panel" style="padding:40px clamp(24px,4vw,50px);">
 
       <h3>Localização</h3>
-      <div class="wfield"><label>CEP</label><input id="e-cep" placeholder="00000-000" maxlength="9"></div>
+      <div class="wfield"><label>CEP</label><input id="e-cep" placeholder="00000-000" maxlength="9"><button type="button" class="btn btn-ghost btn-cep" data-cep-busca="e" style="margin-top:8px;padding:8px 14px;font-size:13px;">Buscar CEP pelo endereço</button><div class="cep-opcoes" id="e-cep-opcoes" style="margin-top:8px;"></div></div>
       <div class="wgrid2">
         <div class="wfield"><label>Cidade</label><input id="e-cidade"></div>
         <div class="wfield"><label>Bairro</label><input id="e-bairro"></div>
@@ -455,7 +462,14 @@
       </div>
 
       <h3 style="margin-top:26px;">Valor</h3>
-      <div class="wfield"><label>Valor (R$)</label><input id="e-valor" type="number" min="0" placeholder="0,00"></div>
+      <div class="wfield"><label>Valor (R$) — venda, ou aluguel se for só locação</label><input id="e-valor" type="number" min="0" placeholder="0,00"></div>
+      <div class="wfield"><label>Valor da locação (R$/mês) — só se o imóvel for para venda E locação</label><input id="e-valor-locacao" type="number" min="0" placeholder="0,00"></div>
+      <div class="wfield"><label>Condomínio (R$/mês)</label><input id="e-condominio" type="number" min="0" placeholder="0,00"></div>
+      <div class="wfield"><label>IPTU (R$/ano)</label><input id="e-iptu" type="number" min="0" placeholder="0,00"></div>
+      <div class="wfield"><label>Descrição do imóvel (aparece no anúncio e nos portais)</label>
+        <textarea id="e-descricao" rows="5" style="width:100%;font:inherit;padding:10px;border:1px solid var(--line,#ccc);border-radius:6px;" placeholder="Descreva o imóvel (50 a 3000 caracteres)"></textarea>
+        <button type="button" class="btn btn-ghost" data-desc-sugerir="e" style="margin-top:8px;padding:8px 14px;font-size:13px;">Sugerir descrição</button>
+        <div style="font-size:12px;opacity:.7;margin-top:4px;" id="e-descricao-count"></div></div>
       <div class="wfield">
         <label>Publicar este imóvel no site público?</label>
         <div class="toggle-group">
@@ -682,7 +696,8 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
   function resetWizard() {
     wStep = 0; wFinalidades = new Set(); wPublicar = false;
     ['w-cep','w-cidade','w-bairro','w-end','w-nome','w-tel','w-area-construida','w-area-terreno',
-     'w-dormitorios','w-suites','w-banheiros','w-vagas','w-valor'].forEach(id => document.getElementById(id).value = '');
+     'w-dormitorios','w-suites','w-banheiros','w-vagas','w-valor','w-valor-locacao','w-condominio','w-iptu','w-descricao'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('w-cep-opcoes').innerHTML = '';
     document.getElementById('w-tipo-imovel').selectedIndex = 0;
     document.querySelectorAll('#w-comodidades input').forEach(el => el.checked = false);
     document.querySelectorAll('[data-final]').forEach(b => b.classList.remove('active'));
@@ -754,6 +769,120 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     } catch (err) { /* segue com preenchimento manual */ }
   });
 
+
+  // ===== Buscar CEP pelo endereço (ViaCEP) =====
+  const UF_POR_CIDADE = {
+    'rio de janeiro':'RJ','niteroi':'RJ','belo horizonte':'MG','uberlandia':'MG','curitiba':'PR','londrina':'PR','porto alegre':'RS',
+    'florianopolis':'SC','joinville':'SC','brasilia':'DF','salvador':'BA','recife':'PE','fortaleza':'CE','goiania':'GO','manaus':'AM',
+    'belem':'PA','vitoria':'ES','natal':'RN','joao pessoa':'PB','maceio':'AL','aracaju':'SE','teresina':'PI','sao luis':'MA',
+    'campo grande':'MS','cuiaba':'MT','palmas':'TO','porto velho':'RO','rio branco':'AC','macapa':'AP','boa vista':'RR'
+  };
+  function semAcento(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim(); }
+  function expandeLogradouro(rua){
+    return rua.replace(/^\s*(av\.?|avda\.?)\s+/i,'Avenida ').replace(/^\s*r\.?\s+/i,'Rua ').replace(/^\s*al\.?\s+/i,'Alameda ')
+              .replace(/^\s*(est\.?|estr\.?)\s+/i,'Estrada ').replace(/^\s*(pc\.?|pça\.?)\s+/i,'Praça ').replace(/^\s*rod\.?\s+/i,'Rodovia ')
+              .replace(/^\s*tv\.?\s+/i,'Travessa ').replace(/^\s*(lgo\.?|lg\.?)\s+/i,'Largo ').trim();
+  }
+  // Decide se o número cai na faixa descrita pelo ViaCEP ("de 1 a 99 - lado ímpar", "até 600", "de 601 ao fim"...)
+  function cepServeNumero(comp, n){
+    if (!comp || !n) return true;
+    const c = semAcento(comp);
+    if (/lado impar/.test(c) && n % 2 === 0) return false;
+    if (/lado par/.test(c) && n % 2 !== 0) return false;
+    let m = /de\s+(\d+)\s*a\s*(\d+)/.exec(c); if (m) return n >= +m[1] && n <= +m[2];
+    m = /de\s+(\d+)\s*ao\s*fim/.exec(c); if (m) return n >= +m[1];
+    m = /ate\s+(\d+)/.exec(c); if (m) return n <= +m[1];
+    return true;
+  }
+  function limpaStatusCep(p){ document.getElementById(p+'-cep-opcoes').innerHTML=''; }
+  function escolheCep(p, r){
+    document.getElementById(p+'-cep').value = r.cep || '';
+    const cid = document.getElementById(p+'-cidade'), bai = document.getElementById(p+'-bairro');
+    if (!cid.value.trim() && r.localidade) cid.value = r.localidade;
+    if (!bai.value.trim() && r.bairro) bai.value = r.bairro;
+    limpaStatusCep(p);
+  }
+  async function buscarCepPorEndereco(p){
+    const box = document.getElementById(p+'-cep-opcoes');
+    const cidade = document.getElementById(p+'-cidade').value.trim();
+    const endTxt = document.getElementById(p+'-end').value.trim();
+    if (!cidade || !endTxt){ box.textContent = 'Preencha a cidade e o endereço (rua e número) primeiro.'; return; }
+    const partes = endTxt.split(',');
+    let rua = expandeLogradouro(partes[0].split(' - ')[0]);
+    const mNum = /(\d+)/.exec(partes.slice(1).join(','));
+    const numero = mNum ? parseInt(mNum[1],10) : 0;
+    let uf = UF_POR_CIDADE[semAcento(cidade)] || 'SP';
+    box.textContent = 'Buscando CEP...';
+    async function consulta(u){
+      const url = 'https://viacep.com.br/ws/'+u+'/'+encodeURIComponent(cidade)+'/'+encodeURIComponent(rua)+'/json/';
+      const res = await fetch(url); const d = await res.json(); return Array.isArray(d) ? d : [];
+    }
+    try {
+      let lista = await consulta(uf);
+      if (!lista.length && !UF_POR_CIDADE[semAcento(cidade)]){
+        const outro = (window.prompt('Não achei em SP. Qual a sigla do estado (ex.: RJ, MG, PR)?') || '').trim().toUpperCase();
+        if (outro.length === 2){ uf = outro; lista = await consulta(uf); }
+      }
+      if (!lista.length){ box.textContent = 'Nenhum CEP encontrado para esse endereço. Confira o nome da rua e a cidade.'; return; }
+      let filtrada = lista.filter(r => cepServeNumero(r.complemento, numero));
+      if (!filtrada.length) filtrada = lista;
+      if (filtrada.length === 1){ escolheCep(p, filtrada[0]); box.textContent = 'CEP preenchido: '+filtrada[0].cep+(filtrada[0].bairro ? ' ('+filtrada[0].bairro+')' : ''); return; }
+      box.innerHTML = '<div style="font-size:13px;margin-bottom:6px;">Mais de um CEP para essa rua — escolha o que cobre o seu número:</div>';
+      filtrada.slice(0,12).forEach(r => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'btn btn-ghost';
+        b.style.cssText = 'display:block;margin:0 0 6px 0;padding:8px 12px;font-size:13px;text-align:left;';
+        b.textContent = r.cep+' — '+(r.bairro||'')+(r.complemento ? ' · '+r.complemento : '');
+        b.addEventListener('click', () => escolheCep(p, r));
+        box.appendChild(b);
+      });
+    } catch (err) { box.textContent = 'Não consegui consultar o CEP agora. Tente de novo em instantes.'; }
+  }
+  document.querySelectorAll('[data-cep-busca]').forEach(btn => btn.addEventListener('click', () => buscarCepPorEndereco(btn.dataset.cepBusca)));
+
+  // ===== Descrição do imóvel =====
+  function atualizaContadorDescricao(p){
+    const el = document.getElementById(p+'-descricao'), c = document.getElementById(p+'-descricao-count');
+    if (!el || !c) return;
+    const n = el.value.length;
+    c.textContent = n + ' caracteres' + (n && n < 50 ? ' (mínimo 50 para os portais)' : n > 3000 ? ' (máximo 3000)' : '');
+  }
+  function lerFormImovel(p){
+    const v = id => (document.getElementById(p+'-'+id) || {}).value || '';
+    const fin = p === 'w' ? finalidadeTexto() : eFinalidadeTexto();
+    const comodidades = Array.from(document.querySelectorAll('#'+p+'-comodidades input:checked')).map(el => el.value);
+    return { tipoImovel: v('tipo-imovel'), finalidade: fin, bairro: v('bairro'), cidade: v('cidade'),
+             areaConstruida: v('area-construida'), areaTerreno: v('area-terreno'), dormitorios: v('dormitorios'),
+             suites: v('suites'), banheiros: v('banheiros'), vagas: v('vagas'), valor: v('valor'), condominio: v('condominio'), comodidades };
+  }
+  function gerarDescricaoImovel(l){
+    const brl = n => 'R$ ' + Number(n).toLocaleString('pt-BR');
+    const tipo = (l.tipoImovel || 'Imóvel').toLowerCase();
+    const fin = l.finalidade || '';
+    const verbo = fin.indexOf('Venda') > -1 && fin.indexOf('Loca') > -1 ? 'à venda e para locação' : fin.indexOf('Loca') > -1 || fin === 'Aluguel' ? 'para locação' : 'à venda';
+    const onde = [l.bairro, l.cidade].filter(Boolean).join(', ');
+    const f = [];
+    f.push('Excelente ' + tipo + ' ' + verbo + (onde ? ' em ' + onde : '') + '.');
+    const area = l.areaConstruida || l.areaTerreno;
+    const t = [];
+    if (area) t.push(area + ' m² de ' + (l.areaConstruida ? 'área construída' : 'terreno'));
+    if (l.dormitorios) t.push(l.dormitorios + (Number(l.dormitorios) === 1 ? ' dormitório' : ' dormitórios') + (l.suites ? ' (' + l.suites + (Number(l.suites) === 1 ? ' suíte' : ' suítes') + ')' : ''));
+    if (l.banheiros) t.push(l.banheiros + (Number(l.banheiros) === 1 ? ' banheiro' : ' banheiros'));
+    if (l.vagas) t.push(l.vagas + (Number(l.vagas) === 1 ? ' vaga de garagem' : ' vagas de garagem'));
+    if (t.length) f.push('Conta com ' + t.join(', ') + '.');
+    if (l.comodidades && l.comodidades.length) f.push('Diferenciais: ' + l.comodidades.join(', ').toLowerCase() + '.');
+    if (l.condominio) f.push('Condomínio: ' + brl(l.condominio) + ' por mês.');
+    f.push('Agende sua visita com a Aliança JFC Negócios — atendimento personalizado e acompanhamento em todas as etapas da negociação. CRECI 122.970.');
+    return f.join(' ');
+  }
+  document.querySelectorAll('[data-desc-sugerir]').forEach(btn => btn.addEventListener('click', () => {
+    const p = btn.dataset.descSugerir, el = document.getElementById(p+'-descricao');
+    if (el.value.trim() && !window.confirm('Já existe um texto. Substituir pela sugestão?')) return;
+    el.value = gerarDescricaoImovel(lerFormImovel(p));
+    atualizaContadorDescricao(p);
+  }));
+  ['w','e'].forEach(p => { const el = document.getElementById(p+'-descricao'); if (el) el.addEventListener('input', () => atualizaContadorDescricao(p)); });
+
   // Preview de fotos. As fotos escolhidas ficam acumuladas em wFotosAcumuladas em vez de
   // usar wFotosInput.files diretamente -- o input nativo SUBSTITUI a seleção a cada escolha,
   // então sem esse array a gente perdia as fotos escolhidas antes ao selecionar mais fotos.
@@ -804,6 +933,10 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
       banheiros: document.getElementById('w-banheiros').value,
       vagas: document.getElementById('w-vagas').value,
       valor: document.getElementById('w-valor').value,
+      valorLocacao: document.getElementById('w-valor-locacao').value,
+      condominio: document.getElementById('w-condominio').value,
+      iptu: document.getElementById('w-iptu').value,
+      descricao: document.getElementById('w-descricao').value.trim(),
       comodidades,
       publicarSite: wPublicar,
       status
@@ -905,6 +1038,12 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
     document.getElementById('e-banheiros').value = lead.banheiros || '';
     document.getElementById('e-vagas').value = lead.vagas || '';
     document.getElementById('e-valor').value = lead.valor || '';
+    document.getElementById('e-valor-locacao').value = lead.valorLocacao || '';
+    document.getElementById('e-condominio').value = lead.condominio || '';
+    document.getElementById('e-iptu').value = lead.iptu || '';
+    document.getElementById('e-descricao').value = lead.descricao || '';
+    document.getElementById('e-cep-opcoes').innerHTML = '';
+    atualizaContadorDescricao('e');
     document.querySelectorAll('#e-comodidades input').forEach(el => {
       el.checked = (lead.comodidades || []).includes(el.value);
     });
@@ -929,8 +1068,8 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
   document.getElementById('edit-cancel').addEventListener('click', closeEdit);
   document.getElementById('edit-cancel-2').addEventListener('click', closeEdit);
 
-  // Cada foto pode levar o ambiente no proprio endereco, depois do "#amb=" (ex.: ...jpg#amb=Cozinha).
-  // O navegador ignora essa parte ao carregar a imagem, entao nao precisa de coluna nova na planilha.
+  // Cada foto pode levar o ambiente no próprio endereço, depois do "#amb=" (ex.: ...jpg#amb=Cozinha).
+  // O navegador ignora essa parte ao carregar a imagem, então não precisa de coluna nova na planilha.
   const AMBIENTES = ['Fachada','Sala','Cozinha','Dormitório','Suíte','Banheiro','Lavabo','Varanda','Área de serviço','Área de lazer','Garagem','Outros'];
   function fotoLimpa(u) { return String(u || '').split('#amb=')[0]; }
   function fotoAmbiente(u) { const m = String(u || '').split('#amb='); return m[1] ? decodeURIComponent(m[1]) : ''; }
@@ -1012,6 +1151,7 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
     statusEl.textContent = '';
     if (!result.ok) { alert('Erro ao remover foto: ' + (result.error || '')); return; }
     editFotosAtuais = editFotosAtuais.filter(u => u !== url);
+    // regrava a lista local (com os ambientes) para não perder as etiquetas das outras fotos
     await apiPost({ action: 'update', id: editId, fields: { fotoUrl: editFotosAtuais.join(';') } });
     renderFotosAtuais();
     await loadLeads();
@@ -1078,6 +1218,10 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
       banheiros: document.getElementById('e-banheiros').value,
       vagas: document.getElementById('e-vagas').value,
       valor: document.getElementById('e-valor').value,
+      valorLocacao: document.getElementById('e-valor-locacao').value,
+      condominio: document.getElementById('e-condominio').value,
+      iptu: document.getElementById('e-iptu').value,
+      descricao: document.getElementById('e-descricao').value.trim(),
       comodidades,
       publicarSite: publicarBtn ? publicarBtn.dataset.ePublicar === '1' : false
     };
