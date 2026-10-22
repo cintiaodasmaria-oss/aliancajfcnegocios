@@ -1,24 +1,5 @@
 [
  {
-  "cidade": "Guarulhos",
-  "uf": "SP",
-  "regiao": "Grande São Paulo",
-  "eixo": "Grande SP - Guarulhos (Dutra/Ayrton Senna)",
-  "status": "Imediata",
-  "quando": "Imediata",
-  "abl": 4566,
-  "menor": 2177,
-  "modulos": "2 módulos: 2.389 e 2.177 m²",
-  "pd": "até 12",
-  "piso": "até 6",
-  "docas": "4 por módulo",
-  "aluguel": 34,
-  "cond": 5.03,
-  "iptu": 1.48,
-  "obs": "",
-  "ref": "GL-01"
- },
- {
   "cidade": "Sumaré",
   "uf": "SP",
   "regiao": "Interior de SP",
