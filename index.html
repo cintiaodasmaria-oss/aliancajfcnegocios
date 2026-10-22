@@ -1762,6 +1762,14 @@
     GALPOES_LIST = lista || [];
     if (GALPOES_LIST.length || CRM_LISTINGS !== null) montarListaAnuncios();
   });
+  // Galpões cadastrados pelo painel (planilha): chegam logo depois e substituem a lista do galpoes.json.
+  // Se o backend não responder (ou ainda não tiver esta rota), continua valendo o galpoes.json.
+  jsonp(`${API_URL}?action=listGalpoesPublic`, 15000).then(r => {
+    if (r && r.ok && Array.isArray(r.data) && r.data.length) {
+      GALPOES_LIST = r.data.map(galpaoParaAnuncio);
+      montarListaAnuncios();
+    }
+  }).catch(() => {});
   // espera o resto do script terminar de carregar antes de desenhar a lista guardada
   if (anunciosGuardados) setTimeout(montarListaAnuncios, 0);
   loadListings();

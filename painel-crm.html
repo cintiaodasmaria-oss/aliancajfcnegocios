@@ -234,13 +234,16 @@
     </div>
 
     <div id="view-galpoes" class="hidden">
-      <div class="search-box" style="margin-bottom:12px;">
-        <input type="text" id="galpoes-search" placeholder="Buscar por Ref. (GL-12), cidade, empreendimento ou desenvolvedora" style="width:100%;max-width:520px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+        <div class="search-box" style="flex:1;min-width:240px;margin:0;">
+          <input type="text" id="galpoes-search" placeholder="Buscar por Ref. (GL-12), cidade, empreendimento ou desenvolvedora" style="width:100%;max-width:520px;">
+        </div>
+        <button class="btn" id="btn-novo-galpao" style="white-space:nowrap;">+ Cadastrar galpão</button>
       </div>
-      <p class="empty-note" style="text-align:left;margin:0 0 12px;">Uso interno. A Ref. é o código que o cliente vê no anúncio do site. Empreendimento, endereço e contato nunca aparecem no site público.</p>
+      <p class="empty-note" style="text-align:left;margin:0 0 12px;">Uso interno. A Ref. é o código que o cliente vê no anúncio do site. Empreendimento, endereço, desenvolvedora e contato nunca aparecem no site público. Cadastre aqui os galpões novos: não precisa mexer em código.</p>
       <div class="list-wrap">
         <table class="simple">
-          <thead><tr><th>Ref. site</th><th>Empreendimento</th><th>Local</th><th>Área / valor</th><th>Contato</th></tr></thead>
+          <thead><tr><th>Ref. site</th><th>Empreendimento</th><th>Local</th><th>Área / valor</th><th>Contato</th><th>Ações</th></tr></thead>
           <tbody id="tbl-galpoes"></tbody>
         </table>
       </div>
@@ -248,6 +251,59 @@
 
     <div id="loading" class="empty-note hidden">Carregando…</div>
   </main>
+</div>
+
+<!-- ========== CADASTRO DE GALPÃO ========== -->
+<div class="wizard-overlay hidden" id="galpao-overlay">
+  <div class="wizard-topbar">
+    <div class="brand" style="font-size:1rem;" id="galpao-titulo">Cadastrar galpão</div>
+    <button class="btn btn-ghost" id="galpao-fechar">Fechar</button>
+  </div>
+  <div style="max-width:880px;margin:0 auto;padding:20px clamp(16px,3vw,36px) 60px;">
+    <p class="empty-note" style="text-align:left;margin:0 0 14px;">Campos marcados com 🔒 são internos: nunca aparecem no site. Os demais aparecem no anúncio se "Publicar no site" estiver marcado.</p>
+    <style>
+      .gform{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 16px;}
+      .gform label{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--verde-musgo);margin-bottom:3px;}
+      .gform input,.gform select,.gform textarea{width:100%;padding:9px 10px;border:1px solid var(--pergaminho-escuro);border-radius:6px;background:var(--branco);font:inherit;color:var(--grafite);}
+      .gform .full{grid-column:1/-1;}
+      .gform h4{grid-column:1/-1;margin:10px 0 0;font-family:var(--serif);color:var(--verde-profundo);}
+    </style>
+    <div class="gform">
+      <h4>Quem é</h4>
+      <div><label>🔒 DESENVOLVEDORA / PROPRIETÁRIO *</label><input id="g-dev" placeholder="Ex.: Bresco, LOG, Sanca"></div>
+      <div><label>🔒 EMPREENDIMENTO</label><input id="g-emp" placeholder="Nome do condomínio / projeto"></div>
+      <div class="full"><label>🔒 ENDEREÇO</label><input id="g-end"></div>
+      <div><label>🔒 CONTATO</label><input id="g-contato" placeholder="Nome, telefone ou e-mail"></div>
+      <div><label>🔒 DIVULGAÇÃO AUTORIZADA?</label><select id="g-autorizado"><option>Pendente</option><option>Sim</option><option>Sim, sem valores</option><option>Não</option></select></div>
+      <h4>Onde fica</h4>
+      <div><label>CIDADE *</label><input id="g-cidade"></div>
+      <div><label>UF</label><input id="g-uf" maxlength="2" style="text-transform:uppercase"></div>
+      <div><label>REGIÃO (FILTRO DO SITE)</label><select id="g-regiao"><option>Grande São Paulo</option><option>Interior de SP</option><option>Minas Gerais</option><option>Rio de Janeiro e Espírito Santo</option><option>Sul</option><option>Centro-Oeste</option><option>Nordeste e Norte</option></select></div>
+      <div class="full"><label>EIXO / REFERÊNCIA DE LOCALIZAÇÃO (aparece no site, sem endereço)</label><input id="g-eixo" placeholder="Ex.: Grande SP - Guarulhos (Dutra/Ayrton Senna)"></div>
+      <h4>O galpão</h4>
+      <div><label>STATUS</label><select id="g-status"><option>Imediata</option><option>Futura (data definida)</option><option>Em obras / pré-locação</option><option>Projeto / BTS</option></select></div>
+      <div><label>DISPONIBILIDADE</label><input id="g-quando" placeholder="Imediata, Jan/2027..."></div>
+      <div><label>ÁREA DISPONÍVEL (m²)</label><input id="g-abl" inputmode="decimal"></div>
+      <div><label>MENOR MÓDULO (m²)</label><input id="g-menor" inputmode="decimal"></div>
+      <div class="full"><label>MÓDULOS</label><input id="g-modulos" placeholder="Ex.: 2 módulos: 2.389 e 2.177 m²"></div>
+      <div><label>PÉ-DIREITO (m)</label><input id="g-pd"></div>
+      <div><label>PISO (t/m²)</label><input id="g-piso"></div>
+      <div><label>DOCAS</label><input id="g-docas"></div>
+      <h4>Valores</h4>
+      <div><label>ALUGUEL (R$/m²)</label><input id="g-aluguel" inputmode="decimal" placeholder="vazio = sob consulta"></div>
+      <div><label>CONDOMÍNIO (R$/m²)</label><input id="g-cond" inputmode="decimal"></div>
+      <div><label>IPTU (R$/m²)</label><input id="g-iptu" inputmode="decimal"></div>
+      <div class="full"><label style="display:flex;gap:8px;align-items:center;"><input type="checkbox" id="g-ocultar" style="width:auto;"> NÃO MOSTRAR VALORES NO SITE (aparece "sob consulta")</label></div>
+      <h4>Observações</h4>
+      <div class="full"><label>OBSERVAÇÃO PÚBLICA (aparece no anúncio)</label><textarea id="g-obspub" rows="2"></textarea></div>
+      <div class="full"><label>🔒 OBSERVAÇÕES INTERNAS (comissão, regras, pendências)</label><textarea id="g-obs" rows="3"></textarea></div>
+      <div class="full"><label style="display:flex;gap:8px;align-items:center;font-size:.8rem;"><input type="checkbox" id="g-publicar" style="width:auto;"> PUBLICAR NO SITE (gera a Ref. GL-xx automaticamente)</label></div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:12px;align-items:center;">
+      <button class="btn" id="galpao-salvar">Salvar galpão</button>
+      <span id="galpao-status" class="empty-note" style="margin:0;"></span>
+    </div>
+  </div>
 </div>
 
 <!-- ========== ASSISTENTE DE CADASTRO (WIZARD) ========== -->
@@ -699,10 +755,10 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
   let GALPOES = null;
   async function loadGalpoes() {
     if (GALPOES) return;
-    document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="5" class="empty-note">Carregando galpões…</td></tr>';
+    document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="6" class="empty-note">Carregando galpões…</td></tr>';
     const r = await apiGetRetry('listGalpoes', 3);
     if (!r || !r.ok) {
-      document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="5" class="empty-note">Não consegui carregar os galpões (' + escapeHtml((r && r.error) || 'sem resposta') + '). Se aparecer "Ação desconhecida", falta atualizar o Code.gs no Apps Script.</td></tr>';
+      document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="6" class="empty-note">Não consegui carregar os galpões (' + escapeHtml((r && r.error) || 'sem resposta') + '). Se aparecer "Ação desconhecida", falta atualizar o Code.gs no Apps Script.</td></tr>';
       return;
     }
     GALPOES = r.data || [];
@@ -716,14 +772,73 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     const ordem = g => g.ref ? 0 : 1;
     const list = [...GALPOES].sort((a, b) => ordem(a) - ordem(b) || String(a.ref || a.cod).localeCompare(String(b.ref || b.cod))).filter(g => !q || [g.ref, g.cod, g.dev, g.emp, g.cidade, g.end].some(x => String(x || '').toLowerCase().includes(q)));
     document.getElementById('tbl-galpoes').innerHTML = list.map(g => `<tr>
-      <td class="imovel-cell"><b>${escapeHtml(g.ref || 'Fora do site')}</b><span class="protocolo">cód. interno ${escapeHtml(g.cod)}</span></td>
+      <td class="imovel-cell"><b>${escapeHtml(g.ref || 'Fora do site')}</b>${g.ref && String(g.publicar) !== 'Sim' ? '<span class="protocolo">oculto no site</span>' : ''}<span class="protocolo">cód. interno ${escapeHtml(g.cod)}</span></td>
       <td class="imovel-cell"><b>${escapeHtml(g.emp)}</b>${escapeHtml(g.dev)}<span class="protocolo">${escapeHtml(g.status)} · divulgação: ${escapeHtml(g.autorizado || '—')}</span></td>
       <td class="imovel-cell">${escapeHtml(g.cidade)}<span class="protocolo">${escapeHtml(g.end)}</span></td>
       <td class="imovel-cell">${fmtNum(g.abl)} m²<span class="protocolo">menor módulo ${fmtNum(g.menor)} m² · ${g.aluguel !== '' ? 'R$ ' + fmtNum(g.aluguel) + '/m²' : 'valor sob consulta'}</span></td>
       <td class="imovel-cell">${escapeHtml(g.contato || '—')}${g.obs ? `<span class="protocolo" title="${escapeHtml(g.obs)}">${escapeHtml(String(g.obs).slice(0, 140))}${String(g.obs).length > 140 ? '…' : ''}</span>` : ''}</td>
-    </tr>`).join('') || '<tr><td colspan="5" class="empty-note">Nenhum galpão encontrado.</td></tr>';
+      <td><div class="row-actions">
+        <button class="del-btn" style="color:var(--verde-profundo);" onclick="openGalpaoForm('${g.id}')">editar</button>
+        <button class="del-btn" style="color:${String(g.publicar) === 'Sim' ? 'var(--verde-profundo)' : 'var(--verde-musgo)'};" onclick="toggleGalpaoPublicar('${g.id}')">${String(g.publicar) === 'Sim' ? '✓ no site' : 'publicar no site'}</button>
+        <button class="del-btn" onclick="removeGalpao('${g.id}')">remover</button>
+      </div></td>
+    </tr>`).join('') || '<tr><td colspan="6" class="empty-note">Nenhum galpão encontrado.</td></tr>';
   }
   document.getElementById('galpoes-search').addEventListener('input', renderGalpoes);
+
+  // ---- cadastro / edição de galpões ----
+  const G_CAMPOS = { dev:'g-dev', emp:'g-emp', end:'g-end', contato:'g-contato', autorizado:'g-autorizado', cidade:'g-cidade', uf:'g-uf', regiao:'g-regiao', eixo:'g-eixo', status:'g-status', quando:'g-quando', abl:'g-abl', menor:'g-menor', modulos:'g-modulos', pd:'g-pd', piso:'g-piso', docas:'g-docas', aluguel:'g-aluguel', cond:'g-cond', iptu:'g-iptu', obsPublica:'g-obspub', obs:'g-obs' };
+  let galpaoEditandoId = null;
+  function numBr(v) { return String(v == null ? '' : v).trim().replace(/\./g, '').replace(',', '.'); }
+  function openGalpaoForm(id) {
+    galpaoEditandoId = id || null;
+    const g = id ? (GALPOES || []).find(x => x.id === id) : null;
+    document.getElementById('galpao-titulo').textContent = g ? 'Editar galpão ' + (g.ref || g.cod) : 'Cadastrar galpão';
+    Object.keys(G_CAMPOS).forEach(k => {
+      const el = document.getElementById(G_CAMPOS[k]);
+      let v = g ? g[k] : '';
+      if (v == null) v = '';
+      if (el.tagName === 'SELECT' && v !== '' && ![...el.options].some(o => o.value === String(v))) el.add(new Option(String(v), String(v)));
+      if (!(v === '' && el.tagName === 'SELECT')) el.value = v; else el.selectedIndex = 0;
+    });
+    document.getElementById('g-ocultar').checked = g ? String(g.ocultarValores) === 'Sim' : false;
+    document.getElementById('g-publicar').checked = g ? String(g.publicar) === 'Sim' : true;
+    document.getElementById('galpao-status').textContent = '';
+    document.getElementById('galpao-overlay').classList.remove('hidden');
+  }
+  async function salvarGalpaoForm() {
+    const g = { id: galpaoEditandoId || '' };
+    Object.keys(G_CAMPOS).forEach(k => { g[k] = document.getElementById(G_CAMPOS[k]).value.trim(); });
+    ['abl', 'menor', 'aluguel', 'cond', 'iptu'].forEach(k => { g[k] = numBr(g[k]); });
+    g.uf = g.uf.toUpperCase();
+    g.ocultarValores = document.getElementById('g-ocultar').checked ? 'Sim' : 'Não';
+    g.publicar = document.getElementById('g-publicar').checked ? 'Sim' : 'Não';
+    if (!g.dev || !g.cidade) { document.getElementById('galpao-status').textContent = 'Preencha a desenvolvedora/proprietário e a cidade.'; return; }
+    const btn = document.getElementById('galpao-salvar'); btn.disabled = true;
+    document.getElementById('galpao-status').textContent = 'Salvando…';
+    try {
+      const r = await apiGet('saveGalpao', { g: JSON.stringify(g) });
+      if (r && r.ok) {
+        document.getElementById('galpao-overlay').classList.add('hidden');
+        GALPOES = null; await loadGalpoes();
+        if (r.galpao && r.galpao.ref) alert('Galpão salvo. Ref. no site: ' + r.galpao.ref + '. O site atualiza em alguns minutos.');
+      } else { document.getElementById('galpao-status').textContent = 'Erro: ' + ((r && r.error) || 'sem resposta. Confira se o Code.gs foi atualizado.'); }
+    } catch (err) { document.getElementById('galpao-status').textContent = 'Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message; }
+    btn.disabled = false;
+  }
+  async function toggleGalpaoPublicar(id) {
+    const g = (GALPOES || []).find(x => x.id === id); if (!g) return;
+    const novo = String(g.publicar) === 'Sim' ? 'Não' : 'Sim';
+    try { const r = await apiGet('saveGalpao', { g: JSON.stringify({ id, publicar: novo }) }); if (r && r.ok) { GALPOES = null; await loadGalpoes(); } else alert('Erro: ' + ((r && r.error) || 'sem resposta')); } catch (err) { alert('Servidor demorou a responder. Confira a lista: ' + err.message); }
+  }
+  async function removeGalpao(id) {
+    const g = (GALPOES || []).find(x => x.id === id); if (!g) return;
+    if (!confirm('Remover o galpão ' + (g.ref || g.cod) + ' (' + (g.emp || g.dev) + ')? Se ele só estiver oculto, prefira "publicar no site" desmarcado.')) return;
+    try { const r = await apiGet('deleteGalpao', { id }); if (r && r.ok) { GALPOES = null; await loadGalpoes(); } else alert('Erro: ' + ((r && r.error) || 'sem resposta')); } catch (err) { alert('Servidor demorou a responder. Confira a lista: ' + err.message); }
+  }
+  document.getElementById('btn-novo-galpao').addEventListener('click', () => openGalpaoForm(null));
+  document.getElementById('galpao-fechar').addEventListener('click', () => document.getElementById('galpao-overlay').classList.add('hidden'));
+  document.getElementById('galpao-salvar').addEventListener('click', salvarGalpaoForm);
 
   async function updateStatus(id, status) { try { const r = await apiPost({ action: 'updateStatus', id, status }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.status = status; updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
   async function togglePublicarSite(id, current) { try { const r = await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.publicarSite = !current; renderView(); loadLeads().catch(() => {}); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
