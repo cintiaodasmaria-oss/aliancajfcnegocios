@@ -190,6 +190,12 @@
         <button data-view="todos">Todos os cadastros</button>
       </div>
     </div>
+    <div class="side-group" id="grp-galpoes">
+      <div class="side-head" data-toggle="grp-galpoes"><span class="ico">▦</span> Galpões</div>
+      <div class="side-sub">
+        <button data-view="galpoes">Referências do site <span class="side-count" id="cnt-galpoes">0</span></button>
+      </div>
+    </div>
   </aside>
 
   <main class="content">
@@ -223,6 +229,19 @@
         <table class="simple">
           <thead><tr><th>Imóvel</th><th>Status</th><th>Anúncio</th><th>Valor</th><th>Ações</th></tr></thead>
           <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-galpoes" class="hidden">
+      <div class="search-box" style="margin-bottom:12px;">
+        <input type="text" id="galpoes-search" placeholder="Buscar por Ref. (GL-12), cidade, empreendimento ou desenvolvedora" style="width:100%;max-width:520px;">
+      </div>
+      <p class="empty-note" style="text-align:left;margin:0 0 12px;">Uso interno. A Ref. é o código que o cliente vê no anúncio do site. Empreendimento, endereço e contato nunca aparecem no site público.</p>
+      <div class="list-wrap">
+        <table class="simple">
+          <thead><tr><th>Ref. site</th><th>Empreendimento</th><th>Local</th><th>Área / valor</th><th>Contato</th></tr></thead>
+          <tbody id="tbl-galpoes"></tbody>
         </table>
       </div>
     </div>
@@ -569,7 +588,7 @@ if (result.ok) {
     el.addEventListener('click', () => setView(el.dataset.view));
   });
   // abre os grupos por padrão
-  ['grp-rascunhos','grp-fotos','grp-imoveis'].forEach(id => document.getElementById(id).classList.add('open'));
+  ['grp-rascunhos','grp-fotos','grp-imoveis','grp-galpoes'].forEach(id => document.getElementById(id).classList.add('open'));
 
   const VIEW_META = {
     inicio:    { title: 'Início', sub: 'Visão geral dos cadastros.' },
@@ -579,6 +598,7 @@ if (result.ok) {
     fotos:     { title: 'Sessões de fotos — Agendadas', sub: 'Fotos já agendadas.', status: 'fotos' },
     publicado: { title: 'Imóveis anunciados', sub: 'Publicados no seu site.', status: 'publicado' },
     todos:     { title: 'Todos os cadastros', sub: 'Busque por endereço ou código.', status: null },
+    galpoes:   { title: 'Galpões — Referências do site', sub: 'Descubra de qual empreendimento e desenvolvedora é cada Ref. do anúncio.', status: null },
   };
 
   function setView(view) {
@@ -589,7 +609,9 @@ if (result.ok) {
     document.getElementById('view-sub').textContent = meta.sub;
     document.getElementById('search-wrap').classList.toggle('hidden', view !== 'todos');
     document.getElementById('view-inicio').classList.toggle('hidden', view !== 'inicio');
-    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio');
+    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio' || view === 'galpoes');
+    document.getElementById('view-galpoes').classList.toggle('hidden', view !== 'galpoes');
+    if (view === 'galpoes') loadGalpoes();
     renderView();
   }
 
@@ -650,6 +672,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
   }
 
   function renderView() {
+    if (currentView === 'galpoes') { renderGalpoes(); return; }
     if (currentView === 'inicio') {
       const recentes = [...LEADS].sort((a,b) => (b.numero||0) - (a.numero||0)).slice(0, 6);
       document.getElementById('tbl-recentes').innerHTML = recentes.map(l => rowHtml(l, false)).join('')
@@ -671,6 +694,36 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     document.getElementById('tbl-body').innerHTML = list.map(l => rowHtml(l, true)).join('')
       || `<tr><td colspan="5" class="empty-note">Nenhum cadastro nesta categoria.</td></tr>`;
   }
+
+  // ---------- GALPÕES (referências internas) ----------
+  let GALPOES = null;
+  async function loadGalpoes() {
+    if (GALPOES) return;
+    document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="5" class="empty-note">Carregando galpões…</td></tr>';
+    const r = await apiGetRetry('listGalpoes', 3);
+    if (!r || !r.ok) {
+      document.getElementById('tbl-galpoes').innerHTML = '<tr><td colspan="5" class="empty-note">Não consegui carregar os galpões (' + escapeHtml((r && r.error) || 'sem resposta') + '). Se aparecer "Ação desconhecida", falta atualizar o Code.gs no Apps Script.</td></tr>';
+      return;
+    }
+    GALPOES = r.data || [];
+    document.getElementById('cnt-galpoes').textContent = GALPOES.length;
+    renderGalpoes();
+  }
+  function fmtNum(v) { const n = Number(v); return v !== '' && isFinite(n) ? n.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : (v || '—'); }
+  function renderGalpoes() {
+    if (!GALPOES) return;
+    const q = (document.getElementById('galpoes-search').value || '').trim().toLowerCase();
+    const ordem = g => g.ref ? 0 : 1;
+    const list = [...GALPOES].sort((a, b) => ordem(a) - ordem(b) || String(a.ref || a.cod).localeCompare(String(b.ref || b.cod))).filter(g => !q || [g.ref, g.cod, g.dev, g.emp, g.cidade, g.end].some(x => String(x || '').toLowerCase().includes(q)));
+    document.getElementById('tbl-galpoes').innerHTML = list.map(g => `<tr>
+      <td class="imovel-cell"><b>${escapeHtml(g.ref || 'Fora do site')}</b><span class="protocolo">cód. interno ${escapeHtml(g.cod)}</span></td>
+      <td class="imovel-cell"><b>${escapeHtml(g.emp)}</b>${escapeHtml(g.dev)}<span class="protocolo">${escapeHtml(g.status)} · divulgação: ${escapeHtml(g.autorizado || '—')}</span></td>
+      <td class="imovel-cell">${escapeHtml(g.cidade)}<span class="protocolo">${escapeHtml(g.end)}</span></td>
+      <td class="imovel-cell">${fmtNum(g.abl)} m²<span class="protocolo">menor módulo ${fmtNum(g.menor)} m² · ${g.aluguel !== '' ? 'R$ ' + fmtNum(g.aluguel) + '/m²' : 'valor sob consulta'}</span></td>
+      <td class="imovel-cell">${escapeHtml(g.contato || '—')}${g.obs ? `<span class="protocolo" title="${escapeHtml(g.obs)}">${escapeHtml(String(g.obs).slice(0, 140))}${String(g.obs).length > 140 ? '…' : ''}</span>` : ''}</td>
+    </tr>`).join('') || '<tr><td colspan="5" class="empty-note">Nenhum galpão encontrado.</td></tr>';
+  }
+  document.getElementById('galpoes-search').addEventListener('input', renderGalpoes);
 
   async function updateStatus(id, status) { try { const r = await apiPost({ action: 'updateStatus', id, status }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.status = status; updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
   async function togglePublicarSite(id, current) { try { const r = await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.publicarSite = !current; renderView(); loadLeads().catch(() => {}); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
