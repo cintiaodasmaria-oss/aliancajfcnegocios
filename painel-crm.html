@@ -628,7 +628,7 @@ if (result.ok) {
         document.getElementById('nav-right').classList.remove('hidden');
         loadLeads();
       } else {
-        document.getElementById('gate-error').textContent = result.error || 'Senha incorreta.';
+        var _em = String(result.error || ''); document.getElementById('gate-error').textContent = /token|senha|inv.lid/i.test(_em) ? 'Senha incorreta.' : 'O servidor do CRM esta lento ou indisponivel. Sua senha foi mantida: tente entrar de novo em alguns segundos.';
         document.getElementById('gate-error').classList.remove('hidden');
       }
     } catch (err) {
