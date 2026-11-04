@@ -696,7 +696,10 @@ async function apiPost(body) {
   document.getElementById('gate-token').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
 
   async function tryLogin() {
-    TOKEN = document.getElementById('gate-token').value.trim();
+    // Entrada automática: usa a senha guardada no navegador quando o campo está vazio (antes zerava a senha e o painel deslogava sozinho)
+    const _digitado = document.getElementById('gate-token').value.trim();
+    if (_digitado) TOKEN = _digitado;
+    if (!TOKEN) return;
     try {
 const result = await apiGetRetry('list', 3);
 if (result.ok) {
