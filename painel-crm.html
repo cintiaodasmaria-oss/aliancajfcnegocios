@@ -85,6 +85,12 @@
   .hidden{display:none !important;}
 
   /* ---------- WIZARD ---------- */
+  .selo{display:inline-block; font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:999px; margin-top:4px; margin-right:6px;}
+  .selo-r{background:#fbe9e7; color:#a23b2a;} .selo-a{background:#fff4d6; color:#8a6100;} .selo-v{background:#e3f1e6; color:#25603a;}
+  .seg-box{border:1px solid var(--line,#d9d4c7); border-radius:8px; padding:14px 16px; margin:10px 0 4px; background:rgba(255,255,255,.5);}
+  .seg-box .chk{display:flex; gap:8px; align-items:flex-start; margin:8px 0; font-size:14px;}
+  .seg-box .chk input{margin-top:3px;}
+  .wa-btn{display:inline-block; margin:6px 8px 0 0; padding:8px 14px; font-size:13px;}
   .wizard-overlay{position:fixed; inset:0; background:var(--pergaminho); z-index:50; overflow-y:auto;}
   .wizard-topbar{display:flex; justify-content:space-between; align-items:center; padding:14px clamp(16px,3vw,36px); border-bottom:1px solid var(--pergaminho-escuro); background:var(--branco);}
   .wizard-body{display:flex; max-width:900px; margin:40px auto; gap:0; min-height:520px; box-shadow:0 6px 30px rgba(61,74,52,.12); border-radius:10px; overflow:hidden;}
@@ -190,6 +196,12 @@
         <button data-view="todos">Todos os cadastros</button>
       </div>
     </div>
+    <div class="side-group" id="grp-visitas">
+      <div class="side-head" data-toggle="grp-visitas"><span class="ico">☎</span> Visitas</div>
+      <div class="side-sub">
+        <button data-view="visitas">Pedidos de visita <span class="side-count" id="cnt-visitas">0</span></button>
+      </div>
+    </div>
     <div class="side-group" id="grp-galpoes">
       <div class="side-head" data-toggle="grp-galpoes"><span class="ico">▦</span> Galpões</div>
       <div class="side-sub">
@@ -249,8 +261,59 @@
       </div>
     </div>
 
+    <div id="view-visitas" class="hidden">
+      <p class="empty-note" style="text-align:left;margin:0 0 12px;">Pedidos de visita feitos pelo site. 🔴 Interessado (só contato) · 🟡 Visita confirmada (CPF, documento conferido e ficha de visita assinada) · 🟢 Proposta (documentos completos). Só confirme a visita a partir do 🟡. Esses dados nunca aparecem no site nem nos portais.</p>
+      <div class="list-wrap">
+        <table class="simple">
+          <thead><tr><th>Interessado</th><th>Imóvel</th><th>Preferência</th><th>Situação</th><th>Ações</th></tr></thead>
+          <tbody id="tbl-visitas"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div id="loading" class="empty-note hidden">Carregando…</div>
   </main>
+</div>
+
+<!-- ========== PEDIDO DE VISITA ========== -->
+<div class="wizard-overlay hidden" id="visita-overlay">
+  <div class="wizard-topbar">
+    <div class="brand" style="font-size:1rem;" id="visita-titulo">Pedido de visita</div>
+    <button class="btn btn-ghost" id="visita-fechar">Fechar</button>
+  </div>
+  <div class="wizard-body" style="max-width:720px;">
+    <div class="wizard-panel" style="padding:36px clamp(24px,4vw,46px);">
+      <div id="visita-resumo" class="hint-box" style="margin-top:0;"></div>
+      <div class="wgrid2">
+        <div class="wfield"><label>Nome completo</label><input id="v-nome"></div>
+        <div class="wfield"><label>Telefone / WhatsApp</label><input id="v-tel"></div>
+      </div>
+      <div class="wgrid2">
+        <div class="wfield"><label>E-mail</label><input id="v-email"></div>
+        <div class="wfield"><label>CPF</label><input id="v-cpf" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="wfield"><label>Preferência de dia e horário</label><input id="v-pref"></div>
+      <div class="seg-box">
+        <div class="chk"><input type="checkbox" id="v-doc"><label for="v-doc">Documento com foto conferido (nome igual ao do CPF)</label></div>
+        <div class="chk"><input type="checkbox" id="v-ficha"><label for="v-ficha">Ficha de visita assinada</label></div>
+        <div class="chk"><input type="checkbox" id="v-prop"><label for="v-prop">Documentos completos para proposta (renda, documentos pessoais)</label></div>
+        <div id="v-selo"></div>
+      </div>
+      <div class="wfield"><label>Situação</label>
+        <select id="v-status"><option value="novo">Novo</option><option value="confirmada">Visita confirmada</option><option value="realizada">Visita realizada</option><option value="proposta">Proposta</option><option value="cancelada">Cancelada / não compareceu</option></select>
+      </div>
+      <div class="wfield"><label>Observações internas</label><textarea id="v-obs" rows="3" style="width:100%;font:inherit;padding:10px;border:1px solid var(--line,#ccc);border-radius:6px;"></textarea></div>
+      <div>
+        <a class="btn btn-ghost wa-btn" id="v-wa-docs" target="_blank" rel="noopener">📲 Pedir documentos (WhatsApp)</a>
+        <a class="btn btn-ghost wa-btn" id="v-wa-confirma" target="_blank" rel="noopener">📲 Confirmar visita (WhatsApp)</a>
+      </div>
+      <div class="save-status" id="visita-save-status"></div>
+      <div class="wizard-nav">
+        <button class="btn btn-ghost" id="visita-cancelar">Cancelar</button>
+        <button class="btn" id="visita-salvar">Salvar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ========== CADASTRO DE GALPÃO ========== -->
@@ -351,6 +414,10 @@
         <p class="sub">Informe os dados do proprietário ou responsável.</p>
         <div class="wfield"><label>Nome completo</label><input id="w-nome" required></div>
         <div class="wfield"><label>Telefone / WhatsApp</label><input id="w-tel" placeholder="+55 (00) 00000-0000"></div>
+        <div class="wgrid2">
+          <div class="wfield"><label>CPF ou CNPJ (opcional agora, obrigatório antes de publicar)</label><input id="w-cpf" placeholder="000.000.000-00"></div>
+          <div class="wfield"><label>E-mail (opcional)</label><input id="w-email" placeholder="nome@email.com"></div>
+        </div>
         <div class="hint-box">Quando você concluir o pré-cadastro, o proprietário poderá receber uma mensagem pelo WhatsApp para confirmação dos dados do imóvel.</div>
         <div class="wizard-nav">
           <button class="btn btn-ghost" data-back="0">Voltar</button>
@@ -478,6 +545,17 @@
       <h3 style="margin-top:26px;">Responsável pelo imóvel</h3>
       <div class="wfield"><label>Nome completo</label><input id="e-nome"></div>
       <div class="wfield"><label>Telefone / WhatsApp</label><input id="e-tel" placeholder="+55 (00) 00000-0000"></div>
+      <div class="seg-box">
+        <b style="font-size:14px;">Segurança do proprietário</b> <span id="e-selo"></span>
+        <div class="wgrid2" style="margin-top:10px;">
+          <div class="wfield"><label>CPF ou CNPJ</label><input id="e-cpf" placeholder="000.000.000-00"></div>
+          <div class="wfield"><label>E-mail</label><input id="e-email" placeholder="nome@email.com"></div>
+        </div>
+        <div class="chk"><input type="checkbox" id="e-doc"><label for="e-doc">Documento com foto (RG/CNH) conferido, com o mesmo nome do CPF <span id="e-doc-data" style="opacity:.7;"></span></label></div>
+        <div class="chk"><input type="checkbox" id="e-mat"><label for="e-mat">Matrícula atualizada (até 30 dias) conferida: o nome na matrícula é o do proprietário (ou a procuração foi conferida no cartório) <span id="e-mat-data" style="opacity:.7;"></span></label></div>
+        <div style="font-size:12.5px;opacity:.8;margin-top:6px;">🔴 Só contato · 🟡 Identificado (CPF + documento conferido): pode publicar · 🟢 Verificado (+ matrícula): pode negociar valores e receber sinal.</div>
+        <a class="btn btn-ghost wa-btn" id="e-wa-docs" target="_blank" rel="noopener">📲 Pedir documentos ao proprietário (WhatsApp)</a>
+      </div>
 
       <h3 style="margin-top:26px;">Dados do imóvel</h3>
       <div class="wfield"><label>Tipo de imóvel</label>
@@ -648,7 +726,7 @@ if (result.ok) {
     el.addEventListener('click', () => setView(el.dataset.view));
   });
   // abre os grupos por padrão
-  ['grp-rascunhos','grp-fotos','grp-imoveis','grp-galpoes'].forEach(id => document.getElementById(id).classList.add('open'));
+  ['grp-rascunhos','grp-fotos','grp-imoveis','grp-visitas','grp-galpoes'].forEach(id => document.getElementById(id).classList.add('open'));
 
   const VIEW_META = {
     inicio:    { title: 'Início', sub: 'Visão geral dos cadastros.' },
@@ -658,6 +736,7 @@ if (result.ok) {
     fotos:     { title: 'Sessões de fotos — Agendadas', sub: 'Fotos já agendadas.', status: 'fotos' },
     publicado: { title: 'Imóveis anunciados', sub: 'Publicados no seu site.', status: 'publicado' },
     todos:     { title: 'Todos os cadastros', sub: 'Busque por endereço ou código.', status: null },
+    visitas:   { title: 'Visitas — Pedidos pelo site', sub: 'Confira a identidade antes de confirmar qualquer visita.', status: null },
     galpoes:   { title: 'Galpões — Referências do site', sub: 'Descubra de qual empreendimento e desenvolvedora é cada Ref. do anúncio.', status: null },
   };
 
@@ -669,7 +748,9 @@ if (result.ok) {
     document.getElementById('view-sub').textContent = meta.sub;
     document.getElementById('search-wrap').classList.toggle('hidden', view !== 'todos');
     document.getElementById('view-inicio').classList.toggle('hidden', view !== 'inicio');
-    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio' || view === 'galpoes');
+    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio' || view === 'galpoes' || view === 'visitas');
+    document.getElementById('view-visitas').classList.toggle('hidden', view !== 'visitas');
+    if (view === 'visitas') loadVisitas(true);
     document.getElementById('view-galpoes').classList.toggle('hidden', view !== 'galpoes');
     if (view === 'galpoes') loadGalpoes();
     renderView();
@@ -685,6 +766,7 @@ document.getElementById('loading').classList.add('hidden');
 if (!result || !result.ok) { document.getElementById('view-sub').textContent = 'Servidor lento ou sem resposta. Os dados na tela podem estar desatualizados; tente de novo em instantes.'; return; }
     LEADS = result.data || [];
     updateCounts();
+    loadVisitas(false);
     renderView();
   }
 
@@ -715,6 +797,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
         <b>${escapeHtml(l.endereco || 'Sem endereço')}</b>
         ${escapeHtml(localTexto(l))}
         <span class="protocolo">${formatProtocolo(l.numero)} · ${escapeHtml(l.tipoImovel || '—')}</span>
+        ${seloHtml(nivelProprietario(l), 'prop')}
         ${isLeadDoSite(l) ? `<span class="badge-lead-site" title="Cadastro enviado pelo proprietário no formulário público do site">📩 Lead do site — aguardando retorno</span>` : ''}
       </td>
       <td><span class="status-pill ${STATUS_CLASS[l.status]}">${STATUS_LABEL[l.status] || l.status}</span></td>
@@ -734,6 +817,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
 
   function renderView() {
     if (currentView === 'galpoes') { renderGalpoes(); return; }
+    if (currentView === 'visitas') { renderVisitas(); return; }
     if (currentView === 'inicio') {
       const recentes = [...LEADS].sort((a,b) => (b.numero||0) - (a.numero||0)).slice(0, 6);
       document.getElementById('tbl-recentes').innerHTML = recentes.map(l => rowHtml(l, false)).join('')
@@ -755,6 +839,133 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     document.getElementById('tbl-body').innerHTML = list.map(l => rowHtml(l, true)).join('')
       || `<tr><td colspan="5" class="empty-note">Nenhum cadastro nesta categoria.</td></tr>`;
   }
+
+  // ---------- SEGURANÇA: selos e mensagens ----------
+  function hojeBr() { const d = new Date(); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); }
+  function soDigitos(t) { return String(t || '').replace(/\D/g, ''); }
+  function nivelProprietario(l) {
+    const temCpf = soDigitos(l.cpf).length >= 11;
+    if (temCpf && l.docConferido && l.matriculaConferida) return 'v';
+    if (temCpf && l.docConferido) return 'a';
+    return 'r';
+  }
+  function nivelVisita(v) {
+    const base = soDigitos(v.cpf).length >= 11 && v.docConferido && v.fichaAssinada;
+    if (base && v.docsProposta) return 'v';
+    if (base) return 'a';
+    return 'r';
+  }
+  const SELO_TXT = { prop: { r: '🔴 Só contato', a: '🟡 Identificado', v: '🟢 Verificado' }, vis: { r: '🔴 Interessado', a: '🟡 Visita liberada', v: '🟢 Pronto p/ proposta' } };
+  function seloHtml(n, tipo) { return `<span class="selo selo-${n}">${SELO_TXT[tipo][n]}</span>`; }
+  function atualizaSeloEdicao() {
+    const n = nivelProprietario({ cpf: document.getElementById('e-cpf').value, docConferido: document.getElementById('e-doc').checked, matriculaConferida: document.getElementById('e-mat').checked });
+    document.getElementById('e-selo').innerHTML = seloHtml(n, 'prop');
+  }
+  ['e-cpf', 'e-doc', 'e-mat'].forEach(id => { const el = document.getElementById(id); el.addEventListener('input', atualizaSeloEdicao); el.addEventListener('change', atualizaSeloEdicao); });
+  function waLink(tel, msg) {
+    let d = soDigitos(tel);
+    if (d.length === 10 || d.length === 11) d = '55' + d;
+    return 'https://wa.me/' + d + '?text=' + encodeURIComponent(msg);
+  }
+  function primeiroNome(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+  function msgDocsProprietario(l) {
+    return `Olá, ${primeiroNome(l.nome)}! Aqui é a Cintia, da Aliança JFC Negócios. Para publicar o anúncio do seu imóvel${l.bairro ? ' no ' + l.bairro : ''} com segurança, preciso conferir alguns dados. É um cuidado que protege você contra golpes de falsos anúncios:\n\n1. CPF (ou CNPJ, se o imóvel for de empresa)\n2. Foto do RG ou da CNH\n3. Matrícula atualizada do imóvel (até 30 dias) e o carnê do IPTU\n\nOs dados ficam só no nosso cadastro interno e não aparecem no anúncio. Se preferir, posso explicar por telefone.`;
+  }
+  function msgDocsVisita(v) {
+    return `Olá, ${primeiroNome(v.nome)}! Aqui é a Cintia, da Aliança JFC Negócios. Recebi seu pedido de visita${v.imovelTitulo ? ' ao imóvel ' + v.imovelTitulo : ''} (protocolo ${v.protocolo}). Para confirmar o horário, preciso de:\n\n1. Nome completo e CPF\n2. Foto de um documento com foto (RG ou CNH)\n\nÉ uma regra de segurança da Aliança, para proteger você e o proprietário. Os dados ficam só no nosso cadastro interno. Depois disso te envio a ficha de visita para assinar e confirmamos o dia.`;
+  }
+  function msgConfirmaVisita(v) {
+    return `Olá, ${primeiroNome(v.nome)}! Visita confirmada${v.imovelTitulo ? ' ao imóvel ' + v.imovelTitulo : ''}${v.preferencia ? ' (' + v.preferencia + ')' : ''}. Eu vou acompanhar você pessoalmente. Por segurança, o endereço exato e o ponto de encontro eu envio no dia. Qualquer imprevisto, me avise por aqui. Até lá!`;
+  }
+
+  // ---------- VISITAS ----------
+  let VISITAS = null;
+  let visitaEditId = null;
+  const VIS_STATUS = { novo: 'Novo', confirmada: 'Confirmada', realizada: 'Realizada', proposta: 'Proposta', cancelada: 'Cancelada' };
+  async function loadVisitas(forcar) {
+    if (VISITAS && !forcar) return;
+    if (forcar) document.getElementById('tbl-visitas').innerHTML = '<tr><td colspan="5" class="empty-note">Carregando pedidos de visita…</td></tr>';
+    let r;
+    try { r = await apiGet('listVisitas'); } catch (err) { r = { ok: false, error: err.message }; }
+    if (!r || !r.ok) {
+      document.getElementById('tbl-visitas').innerHTML = '<tr><td colspan="5" class="empty-note">Não consegui carregar as visitas (' + escapeHtml((r && r.error) || 'sem resposta') + ').</td></tr>';
+      return;
+    }
+    VISITAS = r.data || [];
+    document.getElementById('cnt-visitas').textContent = VISITAS.filter(v => v.status === 'novo' || !v.status).length;
+    if (currentView === 'visitas') renderVisitas();
+  }
+  function renderVisitas() {
+    if (!VISITAS) return;
+    const list = [...VISITAS].reverse();
+    document.getElementById('tbl-visitas').innerHTML = list.map(v => `<tr>
+      <td class="imovel-cell"><b>${escapeHtml(v.nome)}</b>${escapeHtml(v.telefone)}${v.email ? '<span class="protocolo">' + escapeHtml(v.email) + '</span>' : ''}<span class="protocolo">${escapeHtml(v.protocolo)} · ${escapeHtml(v.criadoEm)}</span></td>
+      <td class="imovel-cell">${v.imovelNumero ? '<b>' + formatProtocolo(v.imovelNumero) + '</b>' : ''}${escapeHtml(v.imovelTitulo || '—')}</td>
+      <td>${escapeHtml(v.preferencia || '—')}</td>
+      <td>${seloHtml(nivelVisita(v), 'vis')}<span class="protocolo">${VIS_STATUS[v.status] || 'Novo'}</span></td>
+      <td><div class="row-actions"><button class="del-btn" style="color:var(--verde-profundo);" onclick="openVisita('${v.id}')">abrir</button></div></td>
+    </tr>`).join('') || '<tr><td colspan="5" class="empty-note">Nenhum pedido de visita ainda.</td></tr>';
+  }
+  function visForm() {
+    return {
+      nome: document.getElementById('v-nome').value.trim(), telefone: document.getElementById('v-tel').value.trim(),
+      email: document.getElementById('v-email').value.trim(), cpf: document.getElementById('v-cpf').value.trim(),
+      preferencia: document.getElementById('v-pref').value.trim(),
+      docConferido: document.getElementById('v-doc').checked, fichaAssinada: document.getElementById('v-ficha').checked,
+      docsProposta: document.getElementById('v-prop').checked
+    };
+  }
+  function atualizaSeloVisita() { document.getElementById('v-selo').innerHTML = seloHtml(nivelVisita(visForm()), 'vis'); }
+  ['v-cpf', 'v-doc', 'v-ficha', 'v-prop'].forEach(id => { const el = document.getElementById(id); el.addEventListener('input', atualizaSeloVisita); el.addEventListener('change', atualizaSeloVisita); });
+  function openVisita(id) {
+    const v = (VISITAS || []).find(x => x.id === id);
+    if (!v) return;
+    visitaEditId = id;
+    document.getElementById('visita-titulo').textContent = 'Pedido de visita ' + v.protocolo;
+    document.getElementById('visita-resumo').innerHTML = `Imóvel: <b>${v.imovelNumero ? formatProtocolo(v.imovelNumero) + ' · ' : ''}${escapeHtml(v.imovelTitulo || '—')}</b><br>Pedido em ${escapeHtml(v.criadoEm)} · autorização LGPD: ${escapeHtml(v.consentimento || '—')}${v.mensagem ? '<br>Mensagem: ' + escapeHtml(v.mensagem) : ''}`;
+    document.getElementById('v-nome').value = v.nome || '';
+    document.getElementById('v-tel').value = v.telefone || '';
+    document.getElementById('v-email').value = v.email || '';
+    document.getElementById('v-cpf').value = v.cpf || '';
+    document.getElementById('v-pref').value = v.preferencia || '';
+    document.getElementById('v-doc').checked = !!v.docConferido;
+    document.getElementById('v-ficha').checked = !!v.fichaAssinada;
+    document.getElementById('v-prop').checked = !!v.docsProposta;
+    document.getElementById('v-status').value = v.status || 'novo';
+    document.getElementById('v-obs').value = v.obs || '';
+    document.getElementById('v-wa-docs').href = waLink(v.telefone, msgDocsVisita(v));
+    document.getElementById('v-wa-confirma').href = waLink(v.telefone, msgConfirmaVisita(v));
+    document.getElementById('visita-save-status').textContent = '';
+    atualizaSeloVisita();
+    document.getElementById('visita-overlay').classList.remove('hidden');
+  }
+  window.openVisita = openVisita;
+  function fecharVisita() { document.getElementById('visita-overlay').classList.add('hidden'); visitaEditId = null; }
+  document.getElementById('visita-fechar').addEventListener('click', fecharVisita);
+  document.getElementById('visita-cancelar').addEventListener('click', fecharVisita);
+  document.getElementById('visita-salvar').addEventListener('click', async () => {
+    if (!visitaEditId) return;
+    const v = VISITAS.find(x => x.id === visitaEditId) || {};
+    const f = visForm();
+    const status = document.getElementById('v-status').value;
+    if ((status === 'confirmada' || status === 'realizada') && nivelVisita(f) === 'r' &&
+        !confirm('Este interessado ainda está 🔴 (sem CPF, documento conferido e ficha assinada). Pela regra de segurança, só confirmamos visita a partir do 🟡. Confirmar mesmo assim?')) return;
+    const fields = {
+      nome: f.nome, telefone: f.telefone, email: f.email, cpf: f.cpf, preferencia: f.preferencia,
+      docConferido: f.docConferido ? (v.docConferido || hojeBr()) : '',
+      fichaAssinada: f.fichaAssinada ? (v.fichaAssinada || hojeBr()) : '',
+      docsProposta: f.docsProposta ? (v.docsProposta || hojeBr()) : '',
+      status: status, obs: document.getElementById('v-obs').value.trim()
+    };
+    const st = document.getElementById('visita-save-status');
+    st.textContent = 'Salvando…';
+    try {
+      const params = new URLSearchParams({ action: 'updateVisita', token: TOKEN, id: visitaEditId, fields: JSON.stringify(fields) });
+      const r = await jsonp(`${API_URL}?${params.toString()}`);
+      if (r && r.ok) { Object.assign(v, fields); fecharVisita(); renderVisitas(); document.getElementById('cnt-visitas').textContent = VISITAS.filter(x => x.status === 'novo' || !x.status).length; }
+      else st.textContent = 'Erro ao salvar: ' + ((r && r.error) || 'sem resposta');
+    } catch (err) { st.textContent = 'Servidor demorou a responder: ' + err.message; }
+  });
 
   // ---------- GALPÕES (referências internas) ----------
   let GALPOES = null;
@@ -846,7 +1057,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
   document.getElementById('galpao-salvar').addEventListener('click', salvarGalpaoForm);
 
   async function updateStatus(id, status) { try { const r = await apiPost({ action: 'updateStatus', id, status }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.status = status; updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
-  async function togglePublicarSite(id, current) { try { const r = await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.publicarSite = !current; renderView(); loadLeads().catch(() => {}); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
+  async function togglePublicarSite(id, current) { const _l = LEADS.find(x => x.id === id); if (!current && _l && nivelProprietario(_l) === 'r' && !confirm('Atenção: este proprietário ainda está 🔴 (sem CPF e documento conferido). Pela regra de segurança, o anúncio só vai ao ar no 🟡. Publicar mesmo assim?')) return; try { const r = await apiPost({ action: 'update', id, fields: { publicarSite: !current } }); const l = LEADS.find(x => x.id === id); if (r && r.ok && l) { l.publicarSite = !current; renderView(); loadLeads().catch(() => {}); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
   async function deleteLead(id) { if (!confirm('Remover este cadastro?')) return; try { const r = await apiPost({ action: 'delete', id }); if (r && r.ok) { LEADS = LEADS.filter(x => x.id !== id); updateCounts(); renderView(); } else { await loadLeads(); } } catch (err) { alert('Servidor demorou a responder. Confira a lista antes de repetir: ' + err.message); } }
 
   // ================= WIZARD =================
@@ -869,7 +1080,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
   function resetWizard() {
     wStep = 0; wFinalidades = new Set(); wPublicar = false;
     ['w-cep','w-cidade','w-bairro','w-end','w-nome','w-tel','w-area-construida','w-area-terreno',
-     'w-dormitorios','w-suites','w-banheiros','w-vagas','w-valor','w-valor-locacao','w-condominio','w-iptu','w-descricao','w-obs'].forEach(id => document.getElementById(id).value = '');
+     'w-dormitorios','w-suites','w-banheiros','w-vagas','w-valor','w-valor-locacao','w-condominio','w-iptu','w-descricao','w-obs','w-cpf','w-email'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('w-cep-opcoes').innerHTML = '';
     document.getElementById('w-tipo-imovel').selectedIndex = 0;
     document.querySelectorAll('#w-comodidades input').forEach(el => el.checked = false);
@@ -1093,6 +1304,8 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     return {
       nome: document.getElementById('w-nome').value.trim(),
       telefone: document.getElementById('w-tel').value.trim(),
+      cpf: document.getElementById('w-cpf').value.trim(),
+      email: document.getElementById('w-email').value.trim(),
       cep: document.getElementById('w-cep').value.trim(),
       cidade: document.getElementById('w-cidade').value.trim(),
       bairro: document.getElementById('w-bairro').value.trim(),
@@ -1203,6 +1416,14 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
     document.getElementById('e-end').value = lead.endereco || '';
     document.getElementById('e-nome').value = lead.nome || '';
     document.getElementById('e-tel').value = lead.telefone || '';
+    document.getElementById('e-cpf').value = lead.cpf || '';
+    document.getElementById('e-email').value = lead.email || '';
+    document.getElementById('e-doc').checked = !!lead.docConferido;
+    document.getElementById('e-mat').checked = !!lead.matriculaConferida;
+    document.getElementById('e-doc-data').textContent = lead.docConferido ? '(em ' + lead.docConferido + ')' : '';
+    document.getElementById('e-mat-data').textContent = lead.matriculaConferida ? '(em ' + lead.matriculaConferida + ')' : '';
+    atualizaSeloEdicao();
+    document.getElementById('e-wa-docs').href = waLink(lead.telefone, msgDocsProprietario(lead));
     if (lead.tipoImovel) document.getElementById('e-tipo-imovel').value = lead.tipoImovel;
     document.getElementById('e-area-construida').value = lead.areaConstruida || '';
     document.getElementById('e-area-terreno').value = lead.areaTerreno || '';
@@ -1383,6 +1604,10 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
       endereco: document.getElementById('e-end').value.trim(),
       nome: document.getElementById('e-nome').value.trim(),
       telefone: document.getElementById('e-tel').value.trim(),
+      cpf: document.getElementById('e-cpf').value.trim(),
+      email: document.getElementById('e-email').value.trim(),
+      docConferido: document.getElementById('e-doc').checked ? ((LEADS.find(x => x.id === editId) || {}).docConferido || hojeBr()) : '',
+      matriculaConferida: document.getElementById('e-mat').checked ? ((LEADS.find(x => x.id === editId) || {}).matriculaConferida || hojeBr()) : '',
       tipoImovel: document.getElementById('e-tipo-imovel').value,
       finalidade: eFinalidadeTexto(),
       areaConstruida: document.getElementById('e-area-construida').value,
@@ -1399,6 +1624,9 @@ statusEl.textContent = 'Demorou mais que o esperado, conferindo se salvou...';
       comodidades,
       publicarSite: publicarBtn ? publicarBtn.dataset.ePublicar === '1' : false
     };
+    const _antes = LEADS.find(x => x.id === editId) || {};
+    if (fields.publicarSite && !_antes.publicarSite && nivelProprietario(fields) === 'r' &&
+        !confirm('Atenção: este proprietário ainda está 🔴 (sem CPF e documento conferido). Pela regra de segurança, o anúncio só vai ao ar no 🟡. Publicar mesmo assim?')) return;
     // Se a ordem das fotos já cadastradas foi alterada (seta ou "Definir capa"), manda a nova
     // ordem explicitamente -- sem isso o backend mantém a ordem antiga.
     if (editFotosOrdemAlterada) fields.fotoUrl = editFotosAtuais.join(';');
