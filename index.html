@@ -498,6 +498,16 @@
     padding:24px; display:flex; flex-direction:column; gap:16px; box-shadow:0 14px 34px -18px rgba(18,63,50,.18);
   }
   .listing-page-side .agent{display:flex; gap:12px; align-items:center;}
+  .hp-field{position:absolute !important; left:-9999px !important; width:1px; height:1px; overflow:hidden;}
+  .visita-form{display:none; flex-direction:column; gap:10px; border-top:1px solid var(--line); padding-top:14px;}
+  .visita-form.open{display:flex;}
+  .visita-form input, .visita-form select{font-family:inherit; font-size:14px; padding:10px 12px; border-radius:var(--radius-sm); border:1.5px solid var(--line); background:var(--paper); color:var(--ink); width:100%; box-sizing:border-box;}
+  .visita-form label.lgpd{display:flex; gap:8px; align-items:flex-start; font-size:12px; color:var(--muted); line-height:1.45;}
+  .visita-form label.lgpd input{width:16px; height:16px; flex:none; margin-top:2px; accent-color:var(--green-dark);}
+  .visita-ok{display:none; font-size:13.5px; color:var(--green-darker); background:#e9f3ec; border-radius:var(--radius-sm); padding:12px; line-height:1.5;}
+  .seg-note{font-size:12px; color:var(--muted); line-height:1.5;}
+  .lgpd-cadastro{display:flex; gap:9px; align-items:flex-start; font-size:13px; color:var(--muted); line-height:1.5;}
+  .lgpd-cadastro input{width:16px; height:16px; flex:none; margin-top:3px; accent-color:var(--green-dark);}
   .listing-page-side .agent img{width:46px; height:46px; border-radius:50%; object-fit:cover; flex:none;}
   .listing-page-side .agent strong{display:block; font-size:14.5px; color:var(--green-darker);}
   .listing-page-side .agent span{font-size:12.5px; color:var(--muted);}
@@ -1136,6 +1146,13 @@
         </div>
         <div class="form-row single">
           <div class="field">
+            <label for="f-email">E-mail</label>
+            <input id="f-email" name="email" type="email" placeholder="seu@email.com">
+          </div>
+        </div>
+        <div class="hp-field" aria-hidden="true"><label>Não preencha<input id="f-site" name="site" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <div class="form-row single">
+          <div class="field">
             <label for="f-endereco">Endereço do imóvel</label>
             <input id="f-endereco" name="endereco" type="text" placeholder="Rua, número, bairro, cidade">
           </div>
@@ -1205,10 +1222,13 @@
             <input id="f-fotos" name="fotos" type="file" multiple accept="image/*" style="margin-top:8px;">
           </div>
         </div>
+        <div class="form-row single">
+          <label class="lgpd-cadastro"><input id="f-lgpd" type="checkbox"> Autorizo a Aliança JFC Negócios a usar meus dados para avaliar e anunciar este imóvel e entrar em contato comigo, conforme a LGPD. Antes de publicar, conferimos a documentação do imóvel e do proprietário, para proteger você contra golpes de falsos anúncios.</label>
+        </div>
         <div class="form-submit">
           <button class="btn btn-primary" type="submit">Enviar cadastro</button>
           <button class="btn btn-ghost" type="button" onclick="this.form.reset()">Limpar</button>
-          <span class="form-note">Ao enviar, você concorda em ser contatado pela Aliança JFC Negócios sobre este imóvel.</span>
+          <span class="form-note">Seus dados ficam só no nosso cadastro interno e nunca aparecem no anúncio.</span>
         </div>
       </form>
     </div>
@@ -1337,7 +1357,22 @@
           </div>
         </div>
         <div class="side-price" id="listingModalSidePrice"></div>
-        <a class="btn btn-primary" id="listingModalWhats" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <button class="btn btn-primary" id="btnAgendarVisita" type="button">Agendar visita</button>
+        <form class="visita-form" id="visitaForm" novalidate>
+          <input id="vf-nome" type="text" placeholder="Nome completo" autocomplete="name" required>
+          <input id="vf-tel" type="tel" placeholder="Telefone / WhatsApp com DDD" autocomplete="tel" required>
+          <input id="vf-email" type="email" placeholder="E-mail" autocomplete="email" required>
+          <select id="vf-pref">
+            <option value="">Melhor período para a visita</option>
+            <option>Dias úteis, manhã</option><option>Dias úteis, tarde</option><option>Sábado, manhã</option><option>Sábado, tarde</option><option>A combinar</option>
+          </select>
+          <div class="hp-field" aria-hidden="true"><label>Não preencha<input id="vf-site" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <label class="lgpd"><input id="vf-lgpd" type="checkbox"> Autorizo a Aliança JFC Negócios a usar meus dados para agendar esta visita e entrar em contato sobre o imóvel, conforme a LGPD.</label>
+          <button class="btn btn-primary" type="submit" id="vf-enviar">Enviar pedido de visita</button>
+          <p class="seg-note">Por segurança de todos, antes de confirmar a visita pedimos CPF e um documento com foto. As visitas são sempre acompanhadas pela corretora.</p>
+        </form>
+        <div class="visita-ok" id="visitaOk"></div>
+        <a class="btn btn-ghost" id="listingModalWhats" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
         <a class="btn btn-ghost" href="tel:+5511984556597">Ligar (11) 98455-6597</a>
         <button class="listing-page-copy-btn" id="listingModalCopyLink" type="button" style="justify-content:center; width:100%;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -1891,8 +1926,14 @@
     });
   }
 
+  let visitaListing = null;
   function openListingModal(l, opts) {
     currentListingId = l.id;
+    visitaListing = l;
+    const _vf = document.getElementById('visitaForm'), _vo = document.getElementById('visitaOk');
+    if (_vf) { _vf.classList.remove('open'); _vf.style.display = ''; }
+    if (_vo) { _vo.style.display = 'none'; _vo.innerHTML = ''; }
+    const _vb = document.getElementById('btnAgendarVisita'); if (_vb) _vb.style.display = '';
     const fotosBrutas = (l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean);
     modalPhotos = fotosBrutas.map(u => u.split('#amb=')[0]);
     modalAmbientes = fotosBrutas.map(u => { const m = u.split('#amb='); return m[1] ? decodeURIComponent(m[1]) : ''; });
@@ -2330,6 +2371,56 @@
     });
   }
 
+  // =============== PEDIDO DE VISITA (anúncio) ===============
+  const btnAgendarVisita = document.getElementById('btnAgendarVisita');
+  const visitaForm = document.getElementById('visitaForm');
+  if (btnAgendarVisita && visitaForm) {
+    btnAgendarVisita.addEventListener('click', () => {
+      visitaForm.classList.add('open');
+      btnAgendarVisita.style.display = 'none';
+      const n = document.getElementById('vf-nome'); if (n) n.focus();
+    });
+    visitaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const l = visitaListing || {};
+      const nome = document.getElementById('vf-nome').value.trim();
+      const tel = document.getElementById('vf-tel').value.trim();
+      const email = document.getElementById('vf-email').value.trim();
+      if (nome.split(/\s+/).length < 2) { alert('Informe seu nome completo.'); return; }
+      if (tel.replace(/\D/g, '').length < 10) { alert('Informe um telefone com DDD.'); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Informe um e-mail válido.'); return; }
+      if (!document.getElementById('vf-lgpd').checked) { alert('Para agendar, marque a autorização de uso dos dados (LGPD).'); return; }
+      const localidade = [l.bairro, l.cidade].filter(Boolean).join(', ');
+      const titulo = (l.tipoImovel || 'Imóvel') + (l.galpao ? ' ref. ' + l.id : (l.numero ? ' cód. ' + l.numero : '')) + (localidade ? ' em ' + localidade : '');
+      const vis = {
+        imovelId: l.id || '', imovelTitulo: titulo, nome, telefone: tel, email,
+        preferencia: document.getElementById('vf-pref').value,
+        site: document.getElementById('vf-site').value, consentimento: true
+      };
+      const btn = document.getElementById('vf-enviar');
+      btn.disabled = true; btn.textContent = 'Enviando...';
+      try {
+        const params = new URLSearchParams({ action: 'addVisitaPublic', v: JSON.stringify(vis) });
+        const r = await jsonp(`${API_URL}?${params.toString()}`);
+        if (r && r.ok) {
+          const prot = r.protocolo || '';
+          const msg = encodeURIComponent(`Olá! Acabei de pedir uma visita pelo site${prot ? ' (protocolo ' + prot + ')' : ''}: ${titulo}. Meu nome é ${nome}.`);
+          const ok = document.getElementById('visitaOk');
+          ok.innerHTML = `Pedido recebido${prot ? ' (protocolo <b>' + prot + '</b>)' : ''}! A Cintia vai falar com você pelo WhatsApp para confirmar o horário. Por segurança, ela vai pedir seu CPF e um documento com foto antes de confirmar.<br><a href="https://wa.me/5511984556597?text=${msg}" target="_blank" rel="noopener" style="font-weight:600;color:var(--green-darker);">Adiantar pelo WhatsApp →</a>`;
+          ok.style.display = 'block';
+          visitaForm.reset();
+          visitaForm.classList.remove('open');
+        } else {
+          alert((r && r.error) ? r.error : 'Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+        }
+      } catch (err) {
+        alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Enviar pedido de visita';
+      }
+    });
+  }
+
   // =============== FORMULÁRIO PÚBLICO DE CADASTRO ===============
   const propertyForm = document.getElementById('propertyForm');
   if (propertyForm) {
@@ -2339,6 +2430,9 @@
       const lead = {
         nome: document.getElementById('f-nome').value.trim(),
         telefone: document.getElementById('f-telefone').value.trim(),
+        email: document.getElementById('f-email').value.trim(),
+        site: document.getElementById('f-site').value,
+        consentimento: document.getElementById('f-lgpd').checked,
         endereco: document.getElementById('f-endereco').value.trim(),
         tipoImovel: document.getElementById('f-tipo').value,
         finalidade: document.getElementById('f-finalidade').value,
@@ -2348,6 +2442,7 @@
         obs: document.getElementById('f-obs').value.trim()
       };
       if (!lead.nome || !lead.telefone) { alert('Preencha ao menos nome e telefone.'); return; }
+      if (!lead.consentimento) { alert('Para enviar, marque a autorização de uso dos dados (LGPD).'); return; }
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Enviando...'; }
       try {
         const params = new URLSearchParams({ action: 'addPublic', lead: JSON.stringify(lead) });
