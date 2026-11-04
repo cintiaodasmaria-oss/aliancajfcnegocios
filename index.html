@@ -1549,7 +1549,7 @@
 
     if (currentSearch.comodidades.length) {
       const listComod = (Array.isArray(l.comodidades) ? l.comodidades : []).map(normalizeStr);
-      const listText = normalizeStr((Array.isArray(l.comodidades) ? l.comodidades.join(' ') : '') + ' ' + (l.obs || ''));
+      const listText = normalizeStr((Array.isArray(l.comodidades) ? l.comodidades.join(' ') : '') + ' ' + (l.descricao || (l.galpao ? l.obs : '') || ''));
       const okAll = currentSearch.comodidades.every(want => {
         const w = normalizeStr(want);
         return listComod.some(c => c.includes(w)) || listText.includes(w);
@@ -1959,7 +1959,8 @@
     if (l.banheiros) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.banheiros)}</strong><span>Banheiro(s)</span></div>`);
     if (l.vagas) metaParts.push(`<div class="spec-item"><strong>${escapeHtml(l.vagas)}</strong><span>Vaga(s)</span></div>`);
     listingModalMeta.innerHTML = metaParts.join('');
-    listingModalDesc.textContent = l.obs || 'Consulte mais detalhes com a corretora.';
+    // Descrição pública = campo descricao. As observações (obs) são internas; só os galpões usam obs como texto público.
+    listingModalDesc.textContent = l.descricao || (l.galpao ? l.obs : '') || 'Consulte mais detalhes com a corretora.';
     const amenities = Array.isArray(l.comodidades) ? l.comodidades.filter(Boolean) : [];
     const itemAmenities = amenities.filter(a => !isLazerCondominio(a));
     const lazerAmenities = amenities.filter(a => isLazerCondominio(a));
