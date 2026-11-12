@@ -1432,9 +1432,12 @@
   function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
   function formatPrice(l) {
     if (l.galpao) return l.aluguel ? 'R$ ' + Number(l.aluguel).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '/m² ao mês' : 'Aluguel sob consulta';
-    if (!l.valor) return 'Consulte';
-    const v = 'R$ ' + Number(l.valor).toLocaleString('pt-BR');
-    return (l.finalidade || '').toLowerCase().includes('loca') && !(l.finalidade || '').toLowerCase().includes('venda') ? v + '/mês' : v;
+    const fin = (l.finalidade || '').toLowerCase();
+    const soLoc = fin.includes('loca') && !fin.includes('venda');
+    const pv = (soLoc && Number(l.valorLocacao) > 0) ? l.valorLocacao : l.valor;
+    if (!pv) return 'Consulte';
+    const v = 'R$ ' + Number(pv).toLocaleString('pt-BR');
+    return soLoc ? v + '/mês' : v;
   }
   function firstPhoto(l) { return ((l.fotoUrl || '').split(';').map(s => s.trim()).filter(Boolean)[0] || '').split('#amb=')[0] || semFotoImagem(l); }
   function slugify(str) {
