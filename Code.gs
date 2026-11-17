@@ -331,6 +331,7 @@ function doGet(e) {
   }
 
   if (action === 'search') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
     return respond(runSearch(e.parameter.prompt || ''));
   }
 
