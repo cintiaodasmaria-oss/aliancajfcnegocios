@@ -208,6 +208,12 @@
         <button data-view="galpoes">Referências do site <span class="side-count" id="cnt-galpoes">0</span></button>
       </div>
     </div>
+    <div class="side-group" id="grp-radar">
+      <div class="side-head" data-toggle="grp-radar"><span class="ico">◎</span> Radar</div>
+      <div class="side-sub">
+        <button data-view="radar">Anúncios particulares <span class="side-count" id="cnt-radar">0</span></button>
+      </div>
+    </div>
   </aside>
 
   <main class="content">
@@ -245,6 +251,24 @@
       </div>
     </div>
 
+    <div id="view-radar" class="hidden">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+        <div class="search-box" style="flex:1;min-width:220px;margin:0;">
+          <input type="text" id="radar-search" placeholder="Buscar por endereço, bairro, anunciante, telefone ou fonte" style="width:100%;max-width:520px;">
+        </div>
+        <select id="radar-f-tipo"><option value="">Venda e aluguel</option><option value="venda">Só venda</option><option value="aluguel">Só aluguel</option></select>
+        <select id="radar-f-cidade"><option value="">Todas as cidades</option></select>
+        <select id="radar-f-status"><option value="">Todos os status</option><option value="novo" selected>Novos</option><option value="abordado">Abordados</option><option value="em conversa">Em conversa</option><option value="interessado">Interessados</option><option value="recusou">Recusaram</option><option value="já no QuintoAndar">Já no QuintoAndar</option><option value="descartado">Descartados</option></select>
+        <button class="btn" id="btn-novo-radar" style="white-space:nowrap;">+ Anúncio</button>
+      </div>
+      <p class="empty-note" style="text-align:left;margin:0 0 12px;">Anúncios particulares captados nos portais pelas rodadas diárias. O botão Abordar abre o WhatsApp com a mensagem pronta e o link do anúncio, e marca como abordado. Quem já foi abordado, recusou ou já está no QuintoAndar fica fora da lista de novos.</p>
+      <div class="list-wrap">
+        <table class="simple">
+          <thead><tr><th>Imóvel</th><th>Anunciante</th><th>Valor</th><th>Fonte / data</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tbl-radar"></tbody>
+        </table>
+      </div>
+    </div>
     <div id="view-galpoes" class="hidden">
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
         <div class="search-box" style="flex:1;min-width:240px;margin:0;">
@@ -729,7 +753,7 @@ if (result.ok) {
     el.addEventListener('click', () => setView(el.dataset.view));
   });
   // abre os grupos por padrão
-  ['grp-rascunhos','grp-fotos','grp-imoveis','grp-visitas','grp-galpoes'].forEach(id => document.getElementById(id).classList.add('open'));
+  ['grp-rascunhos','grp-fotos','grp-imoveis','grp-visitas','grp-galpoes','grp-radar'].forEach(id => document.getElementById(id).classList.add('open'));
 
   const VIEW_META = {
     inicio:    { title: 'Início', sub: 'Visão geral dos cadastros.' },
@@ -740,6 +764,7 @@ if (result.ok) {
     publicado: { title: 'Imóveis anunciados', sub: 'Publicados no seu site.', status: 'publicado' },
     todos:     { title: 'Todos os cadastros', sub: 'Busque por endereço ou código.', status: null },
     visitas:   { title: 'Visitas — Pedidos pelo site', sub: 'Confira a identidade antes de confirmar qualquer visita.', status: null },
+    radar:     { title: 'Radar — Anúncios particulares', sub: 'Proprietários que acabaram de anunciar nos portais.', status: null },
     galpoes:   { title: 'Galpões — Referências do site', sub: 'Descubra de qual empreendimento e desenvolvedora é cada Ref. do anúncio.', status: null },
   };
 
@@ -751,7 +776,9 @@ if (result.ok) {
     document.getElementById('view-sub').textContent = meta.sub;
     document.getElementById('search-wrap').classList.toggle('hidden', view !== 'todos');
     document.getElementById('view-inicio').classList.toggle('hidden', view !== 'inicio');
-    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio' || view === 'galpoes' || view === 'visitas');
+    document.getElementById('view-list').classList.toggle('hidden', view === 'inicio' || view === 'galpoes' || view === 'visitas' || view === 'radar');
+    document.getElementById('view-radar').classList.toggle('hidden', view !== 'radar');
+    if (view === 'radar') loadRadar();
     document.getElementById('view-visitas').classList.toggle('hidden', view !== 'visitas');
     if (view === 'visitas') loadVisitas(true);
     document.getElementById('view-galpoes').classList.toggle('hidden', view !== 'galpoes');
@@ -820,6 +847,7 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
 
   function renderView() {
     if (currentView === 'galpoes') { renderGalpoes(); return; }
+    if (currentView === 'radar') { renderRadar(); return; }
     if (currentView === 'visitas') { renderVisitas(); return; }
     if (currentView === 'inicio') {
       const recentes = [...LEADS].sort((a,b) => (b.numero||0) - (a.numero||0)).slice(0, 6);
@@ -1004,6 +1032,80 @@ if (!result || !result.ok) { document.getElementById('view-sub').textContent = '
     </tr>`).join('') || '<tr><td colspan="6" class="empty-note">Nenhum galpão encontrado.</td></tr>';
   }
   document.getElementById('galpoes-search').addEventListener('input', renderGalpoes);
+
+  // ---------- RADAR: anúncios particulares ----------
+  let RADAR = null;
+  const RADAR_STATUS_LIST = ['novo','abordado','em conversa','interessado','recusou','já no QuintoAndar','descartado'];
+  async function loadRadar() {
+    document.getElementById('tbl-radar').innerHTML = '<tr><td colspan="6" class="empty-note">Carregando o radar…</td></tr>';
+    const r = await apiGetRetry('listRadar', 3);
+    if (!r || !r.ok) {
+      document.getElementById('tbl-radar').innerHTML = '<tr><td colspan="6" class="empty-note">Não consegui carregar o radar (' + escapeHtml((r && r.error) || 'sem resposta') + '). Se aparecer "Ação desconhecida", falta atualizar o Code.gs no Apps Script.</td></tr>';
+      return;
+    }
+    RADAR = r.data || [];
+    const cidades = [...new Set(RADAR.map(x => String(x.cidade || '').trim()).filter(Boolean))].sort();
+    const sel = document.getElementById('radar-f-cidade'); const atual = sel.value;
+    sel.innerHTML = '<option value="">Todas as cidades</option>' + cidades.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    sel.value = atual;
+    document.getElementById('cnt-radar').textContent = RADAR.filter(x => (x.status || 'novo') === 'novo').length;
+    renderRadar();
+  }
+  function radarMsg(a) {
+    const nome = String(a.anunciante || '').trim().split(/\s+/)[0];
+    const sau = nome ? 'Olá, ' + nome + '!' : 'Olá!';
+    const onde = a.endereco || a.bairro || '';
+    const imovel = (a.imovel || 'imóvel') + (onde ? ' na ' + onde : '') + (a.cidade ? ', ' + a.cidade : '');
+    const fecho = String(a.tipo) === 'venda' ? 'sem custo e sem exclusividade — você continua anunciando onde quiser' : 'sem custo para anunciar e com aluguel garantido todo dia 12';
+    return sau + ' Aqui é a Cintia, corretora (CRECI 122.970) e consultora do QuintoAndar. Vi seu ' + imovel + '. Posso te explicar em 2 minutos como anunciar ele também no QuintoAndar, ' + fecho + '? Se preferir não receber mensagens, é só me avisar. Anúncio: ' + (a.link || '');
+  }
+  function renderRadar() {
+    if (!RADAR) return;
+    const q = (document.getElementById('radar-search').value || '').trim().toLowerCase();
+    const ft = document.getElementById('radar-f-tipo').value, fc = document.getElementById('radar-f-cidade').value, fs = document.getElementById('radar-f-status').value;
+    const list = RADAR.filter(a => (!ft || a.tipo === ft) && (!fc || a.cidade === fc) && (!fs || (a.status || 'novo') === fs)
+      && (!q || [a.endereco, a.bairro, a.cidade, a.anunciante, a.telefone, a.fonte, a.imovel].some(x => String(x || '').toLowerCase().includes(q))))
+      .sort((a, b) => String(b.capturadoEm).localeCompare(String(a.capturadoEm)));
+    document.getElementById('tbl-radar').innerHTML = list.map(a => `<tr>
+      <td class="imovel-cell"><b>${escapeHtml(a.imovel || 'Imóvel')}</b>${escapeHtml(a.endereco || a.bairro || 'endereço a confirmar')}<span class="protocolo">${escapeHtml(a.cidade)} · ${escapeHtml(a.tipo)}</span></td>
+      <td class="imovel-cell">${escapeHtml(a.anunciante || '—')}<span class="protocolo">${escapeHtml(a.telefone || 'sem telefone')}</span></td>
+      <td>${a.valor !== '' && a.valor != null ? 'R$ ' + fmtNum(a.valor) : '—'}</td>
+      <td class="imovel-cell">${a.link ? `<a href="${escapeHtml(a.link)}" target="_blank" rel="noopener">${escapeHtml(a.fonte || 'anúncio')}</a>` : escapeHtml(a.fonte)}<span class="protocolo">publ. ${escapeHtml(String(a.publicadoEm || a.capturadoEm || '').slice(0, 10))}</span></td>
+      <td><select onchange="setRadarStatus('${a.id}', this.value)">${RADAR_STATUS_LIST.map(st => `<option value="${st}"${(a.status || 'novo') === st ? ' selected' : ''}>${st}</option>`).join('')}</select></td>
+      <td><div class="row-actions">
+        ${a.telefone && (a.status || 'novo') === 'novo' ? `<button class="del-btn" style="color:var(--verde-profundo);" onclick="abordarRadar('${a.id}')">Abordar</button>` : ''}
+        <button class="del-btn" onclick="removeRadar('${a.id}')">remover</button>
+      </div></td>
+    </tr>`).join('') || '<tr><td colspan="6" class="empty-note">Nenhum anúncio com esses filtros.</td></tr>';
+  }
+  ['radar-search'].forEach(id => document.getElementById(id).addEventListener('input', renderRadar));
+  ['radar-f-tipo','radar-f-cidade','radar-f-status'].forEach(id => document.getElementById(id).addEventListener('change', renderRadar));
+  async function setRadarStatus(id, st) {
+    try { const r = await apiGet('saveRadar', { rows: JSON.stringify([{ id, status: st }]) }); if (!(r && r.ok)) alert('Erro: ' + ((r && r.error) || 'sem resposta')); } catch (err) { alert('Servidor demorou a responder. Confira a lista: ' + err.message); }
+    await loadRadar();
+  }
+  async function abordarRadar(id) {
+    const a = (RADAR || []).find(x => x.id === id); if (!a) return;
+    let tel = String(a.telefone || '').replace(/\D/g, ''); if (tel.length <= 11) tel = '55' + tel;
+    window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(radarMsg(a)), '_blank');
+    if (confirm('Enviou a mensagem? Clique em OK para marcar como "abordado".')) await setRadarStatus(id, 'abordado');
+  }
+  async function removeRadar(id) {
+    if (!confirm('Remover este anúncio do radar?')) return;
+    try { const r = await apiGet('deleteRadar', { id }); if (!(r && r.ok)) alert('Erro: ' + ((r && r.error) || 'sem resposta')); } catch (err) { alert('Servidor demorou a responder: ' + err.message); }
+    await loadRadar();
+  }
+  document.getElementById('btn-novo-radar').addEventListener('click', async () => {
+    const link = prompt('Link do anúncio:'); if (!link) return;
+    const telefone = prompt('Telefone do anunciante (com DDD):') || '';
+    const endereco = prompt('Endereço ou bairro:') || '';
+    const cidade = prompt('Cidade:') || '';
+    const tipo = (prompt('Venda ou aluguel?', 'venda') || 'venda').toLowerCase().startsWith('a') ? 'aluguel' : 'venda';
+    const r = await apiGet('saveRadar', { rows: JSON.stringify([{ link, telefone, endereco, cidade, tipo, fonte: 'manual' }]) });
+    if (!(r && r.ok)) alert('Erro: ' + ((r && r.error) || 'sem resposta'));
+    await loadRadar();
+  });
+
 
   // ---- cadastro / edição de galpões ----
   const G_CAMPOS = { dev:'g-dev', emp:'g-emp', end:'g-end', contato:'g-contato', autorizado:'g-autorizado', cidade:'g-cidade', uf:'g-uf', regiao:'g-regiao', eixo:'g-eixo', status:'g-status', quando:'g-quando', abl:'g-abl', menor:'g-menor', modulos:'g-modulos', pd:'g-pd', piso:'g-piso', docas:'g-docas', aluguel:'g-aluguel', cond:'g-cond', iptu:'g-iptu', obsPublica:'g-obspub', obs:'g-obs' };

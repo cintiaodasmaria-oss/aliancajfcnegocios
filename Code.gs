@@ -335,17 +335,36 @@ function doGet(e) {
   }
 
   if (action === 'listGalpoes') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
     return respond({ ok: true, data: galRead_() });
   }
 
   if (action === 'saveGalpao') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
     let g = {};
     try { g = JSON.parse(e.parameter.g || '{}'); } catch (err) {}
     return respond(saveGalpao(g));
   }
 
   if (action === 'deleteGalpao') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
     return respond(deleteGalpao(e.parameter.id));
+  }
+
+  // ---- RADAR de anúncios particulares (todas as rotas exigem token) ----
+  if (action === 'listRadar') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
+    return respond({ ok: true, data: radarRead_() });
+  }
+  if (action === 'saveRadar') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
+    let rows = [];
+    try { rows = JSON.parse(e.parameter.rows || '[]'); } catch (err) {}
+    return respond(saveRadar(Array.isArray(rows) ? rows : [rows]));
+  }
+  if (action === 'deleteRadar') {
+    if (!checkToken(token)) return respond({ ok: false, error: 'Token inválido' });
+    return respond(deleteRadar(e.parameter.id));
   }
 
   return respond({ ok: false, error: 'Ação desconhecida: [' + action + ']' });
@@ -475,6 +494,84 @@ function deleteGalpao(id) {
     const ids = s.sh.getRange(2, s.head.indexOf('id') + 1, Math.max(1, s.sh.getLastRow() - 1), 1).getValues();
     for (let i = 0; i < ids.length; i++) if (ids[i][0] === id) { s.sh.deleteRow(i + 2); CacheService.getScriptCache().remove('galpoes_public'); return { ok: true }; }
     return { ok: false, error: 'Galpão não encontrado.' };
+  } finally { lock.releaseLock(); }
+}
+
+// ===================== RADAR (anúncios particulares de proprietários) =====================
+// Aba "radar" da planilha. Alimentada pelas rodadas diárias (portais) e editável pelo painel-crm.
+// Dedupe: mesmo link, ou mesmo telefone + mesmo endereço, atualiza a linha existente em vez de criar outra
+// (o status já definido nunca volta para "novo").
+const RADAR_COLS = ['id','capturadoEm','fonte','link','tipo','imovel','endereco','bairro','cidade','valor','anunciante','telefone','publicadoEm','status','abordadoEm','obs'];
+const RADAR_STATUS = ['novo','abordado','em conversa','interessado','recusou','já no QuintoAndar','descartado'];
+
+function radarSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName('radar');
+  if (!sh) { sh = ss.insertSheet('radar'); sh.appendRow(RADAR_COLS); sh.setFrozenRows(1); }
+  if (sh.getLastRow() === 0) sh.appendRow(RADAR_COLS);
+  let head = sh.getRange(1, 1, 1, Math.max(1, sh.getLastColumn())).getValues()[0].map(String);
+  RADAR_COLS.forEach(c => { if (head.indexOf(c) === -1) { sh.getRange(1, head.length + 1).setValue(c); head.push(c); } });
+  return { sh: sh, head: head };
+}
+
+function radarRead_() {
+  const s = radarSheet_();
+  const n = s.sh.getLastRow() - 1;
+  if (n < 1) return [];
+  return s.sh.getRange(2, 1, n, s.head.length).getValues().map(r => {
+    const o = {};
+    s.head.forEach((h, i) => { const v = r[i]; o[h] = v instanceof Date ? Utilities.formatDate(v, 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm") : v; });
+    return o;
+  });
+}
+
+function radarNorm_(t) { return String(t || '').replace(/\D/g, ''); }
+function radarLinkKey_(l) { return String(l || '').split('?')[0].replace(/\/+$/, '').toLowerCase(); }
+function radarEndKey_(e) { return String(e || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+function saveRadar(rows) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const s = radarSheet_();
+    const todos = radarRead_();
+    let criados = 0, atualizados = 0;
+    rows.slice(0, 50).forEach(g => {
+      if (!g || typeof g !== 'object') return;
+      let idx = -1;
+      if (g.id) idx = todos.findIndex(o => o.id === g.id);
+      if (idx === -1 && g.link) { const k = radarLinkKey_(g.link); idx = todos.findIndex(o => o.link && radarLinkKey_(o.link) === k); }
+      if (idx === -1 && g.telefone && g.endereco) {
+        const t = radarNorm_(g.telefone), e = radarEndKey_(g.endereco);
+        idx = todos.findIndex(o => t && radarNorm_(o.telefone) === t && radarEndKey_(o.endereco) === e);
+      }
+      const atual = idx >= 0 ? todos[idx] : null;
+      const novo = Object.assign({}, atual || {}, g);
+      if (atual && !g.status) novo.status = atual.status;
+      if (!novo.id) novo.id = Utilities.getUuid();
+      if (!novo.capturadoEm) novo.capturadoEm = Utilities.formatDate(new Date(), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm");
+      if (RADAR_STATUS.indexOf(novo.status) === -1) novo.status = 'novo';
+      if (novo.status !== 'novo' && !novo.abordadoEm && novo.status === 'abordado') novo.abordadoEm = Utilities.formatDate(new Date(), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm");
+      const linha = s.head.map(h => novo[h] == null ? '' : novo[h]);
+      if (atual) {
+        // localiza a linha pelo id real da planilha
+        const ids = s.sh.getRange(2, s.head.indexOf('id') + 1, Math.max(1, s.sh.getLastRow() - 1), 1).getValues();
+        for (let i = 0; i < ids.length; i++) if (ids[i][0] === atual.id) { s.sh.getRange(i + 2, 1, 1, linha.length).setValues([linha]); break; }
+        todos[idx] = novo; atualizados++;
+      } else { s.sh.appendRow(linha); todos.push(novo); criados++; }
+    });
+    return { ok: true, criados: criados, atualizados: atualizados };
+  } finally { lock.releaseLock(); }
+}
+
+function deleteRadar(id) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const s = radarSheet_();
+    const ids = s.sh.getRange(2, s.head.indexOf('id') + 1, Math.max(1, s.sh.getLastRow() - 1), 1).getValues();
+    for (let i = 0; i < ids.length; i++) if (ids[i][0] === id) { s.sh.deleteRow(i + 2); return { ok: true }; }
+    return { ok: false, error: 'Linha do radar não encontrada.' };
   } finally { lock.releaseLock(); }
 }
 
